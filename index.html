@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>小信号 | SEES-QUOTATION</title>
     <style>
-        /* 样式完整保留（与您原版 100% 一致） */
+        /* 完整样式（与您原版一致） */
         :root { --bg-primary: #0a0a0a; --bg-secondary: #141414; --bg-card: #1a1a1a; --bg-card-hover: #222222; --text-primary: #e7e9ea; --text-secondary: #8899a6; --text-muted: #536471; --accent: #1d9bf0; --border: #2f3336; --shadow: rgba(0, 0, 0, 0.5); }
         [data-theme="light"] { --bg-primary: #f7f9fa; --bg-secondary: #ffffff; --bg-card: #ffffff; --bg-card-hover: #f7f9fa; --text-primary: #0f1419; --text-secondary: #536471; --text-muted: #8899a6; --accent: #1d9bf0; --border: #eff3f4; --shadow: rgba(0, 0, 0, 0.08); }
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -90,16 +90,7 @@
         .about-content { display: flex; flex-direction: column; gap: 12px; }
         .about-item { display: flex; align-items: flex-start; gap: 12px; font-size: 15px; line-height: 1.7; color: var(--text-primary); }
         .about-item span { font-size: 18px; flex-shrink: 0; }
-        @media (max-width: 640px) {
-            nav { display: none; }
-            .hero { padding: 40px 0 32px; }
-            .hero h1 { font-size: 22px; }
-            .stats { gap: 16px; }
-            .stat-value { font-size: 20px; }
-            .post { padding: 16px; }
-            .about-card { padding: 24px; }
-            .about-avatar { width: 56px; height: 56px; font-size: 22px; }
-        }
+        @media (max-width: 640px) { nav { display: none; } .hero { padding: 40px 0 32px; } .hero h1 { font-size: 22px; } .stats { gap: 16px; } .stat-value { font-size: 20px; } .post { padding: 16px; } .about-card { padding: 24px; } .about-avatar { width: 56px; height: 56px; font-size: 22px; } }
     </style>
     <base target="_blank">
 </head>
@@ -174,15 +165,11 @@
     <script>
         const RSS_URL = 'https://rsshub.app/jike/user/16120E35-EB4B-4FF1-9DBC-9BEFC1D16CCD';
         const REFRESH_INTERVAL = 3 * 60 * 1000;
-        const RETRY_DELAY = 5000;
 
         let posts = [];
-        let retryCount = 0;
         let autoRefreshInterval = null;
-
-        // 安全 localStorage
         let ls = null;
-        try { ls = window.localStorage; } catch (e) { console.warn('localStorage 不可用（sandbox），缓存已禁用'); }
+        try { ls = window.localStorage; } catch (e) { console.warn('localStorage 不可用'); }
 
         // 页面 & 主题（不变）
         const navLinks = document.querySelectorAll('nav a[data-page]');
@@ -253,20 +240,20 @@
             document.getElementById('updateTime').textContent = formatTime(new Date());
         }
 
-        // ==================== 2026 最新稳定代理列表（关键修复） ====================
+        // ==================== 最终稳定代理列表（关键） ====================
         async function fetchRSS() {
             const proxies = [
-                `https://api.allorigins.win/raw?url=${encodeURIComponent(RSS_URL)}`,           // 最稳定
-                `https://test.cors.workers.dev/?url=${encodeURIComponent(RSS_URL)}`,         // Cloudflare 新增
-                `https://cors.x2u.in/${RSS_URL}`,                                            // 前缀式 新增
-                `https://api.cors.lol/?url=${encodeURIComponent(RSS_URL)}`,
+                `https://api.allorigins.win/raw?url=${encodeURIComponent(RSS_URL)}`,   // 最稳定
+                `https://yacdn.org/proxy/${RSS_URL}`,
+                `https://corsproxy.org/?${encodeURIComponent(RSS_URL)}`,
+                `https://test.cors.workers.dev/?url=${encodeURIComponent(RSS_URL)}`,
                 `https://corsproxy.io/?url=${encodeURIComponent(RSS_URL)}`
             ];
             for (const url of proxies) {
                 try {
                     console.log(`尝试代理 → ${url.split('/')[2]}`);
                     const ctrl = new AbortController();
-                    const timeout = setTimeout(() => ctrl.abort(), 15000);
+                    const timeout = setTimeout(() => ctrl.abort(), 20000);
                     const res = await fetch(url, { signal: ctrl.signal });
                     clearTimeout(timeout);
                     if (!res.ok) { console.warn(`状态 ${res.status}`); continue; }
@@ -282,10 +269,9 @@
                     console.warn(`代理失败: ${url.split('/')[2]}`, e.message);
                 }
             }
-            throw new Error('所有代理均失败（建议关闭 Clash/V2Ray 后重试）');
+            throw new Error('所有代理均失败（请关闭 Clash/V2Ray 后重试）');
         }
 
-        // 主获取函数（优化错误提示）
         async function fetchPosts(showLoading = true) {
             const btn = document.getElementById('refreshBtn');
             btn.disabled = true;
@@ -318,10 +304,10 @@
                         <div class="error-icon">⚠️</div>
                         <h3>加载失败</h3>
                         <p>代理被限流或本地 Clash 拦截<br><br>
-                        建议：<br>
+                        <strong>必须操作：</strong><br>
                         1. 暂时关闭 Clash / V2Ray<br>
-                        2. 扩展程序错误可忽略<br>
-                        3. 点击下方重试</p>
+                        2. 点击下方“重新加载”<br>
+                        3. 扩展程序错误可忽略</p>
                         <button class="retry-btn" onclick="fetchPosts(true)">重新加载</button>
                     </div>`;
             } finally { btn.disabled = false; }
@@ -337,7 +323,7 @@
         document.getElementById('modalClose').addEventListener('click', () => modal.classList.remove('active'));
         modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('active'); });
 
-        document.getElementById('refreshBtn').addEventListener('click', () => { retryCount = 0; fetchPosts(true); });
+        document.getElementById('refreshBtn').addEventListener('click', () => fetchPosts(true));
         function startAutoRefresh() { if (autoRefreshInterval) clearInterval(autoRefreshInterval); autoRefreshInterval = setInterval(() => fetchPosts(false), REFRESH_INTERVAL); }
 
         function loadFromCache() {
