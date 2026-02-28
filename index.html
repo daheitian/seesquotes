@@ -4,6 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>小信号 | SEES-QUOTATION</title>
+    <!-- 新增：解决 CSP 拦截问题，允许必要的脚本/跨域请求 -->
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' 'unsafe-eval' 'unsafe-inline';
+        style-src 'self' 'unsafe-inline';
+        img-src 'self' data: https://*;
+        connect-src 'self' https://*.github.io https://rsshub.vercel.app https://rsshub.rssforever.com https://api.allorigins.win https://corsproxy.io https://api.codetabs.com;
+        media-src 'self';
+        object-src 'none';
+        base-uri 'self';
+    ">
     <style>
         :root {
             --bg-primary: #0a0a0a;
@@ -748,13 +759,13 @@
             
             <div class="status" id="status">
                 <span class="status-dot"></span>
-                <span id="statusText">正在连接...</span>
+                <span id="statusText">正在加载缓存...</span>
             </div>
             
             <div class="posts" id="posts">
                 <div class="loading">
                     <div class="loading-spinner"></div>
-                    <p>正在连接即刻...</p>
+                    <p>正在加载缓存...</p>
                 </div>
             </div>
         </div>
@@ -823,8 +834,8 @@
     </div>
 
     <script>
-        // RSSHub URL
-        const RSS_URL = 'https://rsshub.app/jike/user/16120E35-EB4B-4FF1-9DBC-9BEFC1D16CCD';
+        // 核心修改：替换为稳定的 RSSHub 公共镜像（避免 403）
+        const RSS_URL = 'https://rsshub.vercel.app/jike/user/16120E35-EB4B-4FF1-9DBC-9BEFC1D16CCD';
         
         const REFRESH_INTERVAL = 3 * 60 * 1000; // 3 minutes
         const RETRY_DELAY = 5000; // 5 seconds
@@ -1043,20 +1054,21 @@
             document.getElementById('updateTime').textContent = formatTime(new Date());
         }
         
-        // Fetch RSS with CORS proxy fallback
+        // 核心修改：优化请求逻辑，补充更多稳定的 CORS 代理
         async function fetchRSS() {
             const errors = [];
             
-            // Try direct fetch first
+            // 优先尝试稳定的 RSSHub 镜像直连
             try {
-                console.log('Trying direct fetch...');
+                console.log('Trying RSSHub mirror...');
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 15000);
+                const timeoutId = setTimeout(() => controller.abort(), 20000);
                 
                 const response = await fetch(RSS_URL, { 
                     signal: controller.signal,
                     headers: {
-                        'Accept': 'application/rss+xml, application/xml, text/xml, */*'
+                        'Accept': 'application/rss+xml, application/xml, text/xml, */*',
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
                     }
                 });
                 clearTimeout(timeoutId);
@@ -1067,26 +1079,26 @@
                 const posts = parseRSS(text);
                 
                 if (posts.length > 0) {
-                    console.log('Direct fetch success:', posts.length, 'posts');
+                    console.log('RSSHub mirror fetch success:', posts.length, 'posts');
                     return posts;
                 }
             } catch (err) {
-                errors.push(`Direct: ${err.message}`);
-                console.warn('Direct fetch failed:', err.message);
+                errors.push(`Mirror: ${err.message}`);
+                console.warn('RSSHub mirror failed:', err.message);
             }
             
-            // Try with CORS proxy
+            // 备用：CORS 代理请求原地址
             const corsProxies = [
-                `https://api.allorigins.win/raw?url=${encodeURIComponent(RSS_URL)}`,
-                `https://corsproxy.io/?${encodeURIComponent(RSS_URL)}`,
-                `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(RSS_URL)}`
+                `https://api.allorigins.win/raw?url=${encodeURIComponent('https://rsshub.app/jike/user/16120E35-EB4B-4FF1-9DBC-9BEFC1D16CCD')}`,
+                `https://corsproxy.io/?${encodeURIComponent('https://rsshub.app/jike/user/16120E35-EB4B-4FF1-9DBC-9BEFC1D16CCD')}`,
+                `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent('https://rsshub.app/jike/user/16120E35-EB4B-4FF1-9DBC-9BEFC1D16CCD')}`
             ];
             
             for (const proxyUrl of corsProxies) {
                 try {
                     console.log('Trying proxy:', proxyUrl);
                     const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 15000);
+                    const timeoutId = setTimeout(() => controller.abort(), 20000);
                     
                     const response = await fetch(proxyUrl, { signal: controller.signal });
                     clearTimeout(timeoutId);
@@ -1109,12 +1121,14 @@
             throw new Error('All fetch methods failed: ' + errors.join('; '));
         }
         
+        // 核心修改：缓存优先 + 后台同步最新
         async function fetchPosts(showLoading = true, isRetry = false) {
             const refreshBtn = document.getElementById('refreshBtn');
             refreshBtn.disabled = true;
             
+            // 非重试场景：显示“同步最新”状态
             if (showLoading && !isRetry) {
-                updateStatus('正在同步...', 'syncing');
+                updateStatus('正在同步最新内容...', 'syncing');
             }
             
             try {
@@ -1124,10 +1138,11 @@
                 lastFetchTime = new Date();
                 retryCount = 0;
                 
+                // 更新页面 + 缓存
                 renderPosts(posts);
-                updateStatus('实时同步中');
+                updateStatus('已同步最新内容');
                 
-                // Save to localStorage as cache
+                // 保存到 localStorage 缓存（有效期 1 小时）
                 localStorage.setItem('jikePosts', JSON.stringify({
                     posts: posts,
                     timestamp: Date.now()
@@ -1137,42 +1152,35 @@
             } catch (error) {
                 console.error('Fetch error:', error);
                 
-                // Try to load from cache
-                const cached = localStorage.getItem('jikePosts');
-                if (cached) {
-                    try {
-                        const data = JSON.parse(cached);
-                        if (data.posts && data.posts.length > 0) {
-                            posts = data.posts;
-                            renderPosts(posts);
-                            updateStatus('显示缓存数据');
-                            
-                            // Retry after delay
-                            if (retryCount < MAX_RETRIES) {
-                                retryCount++;
-                                setTimeout(() => fetchPosts(false, true), RETRY_DELAY);
+                // 失败时：如果有缓存则保留，无缓存则显示错误
+                if (!isRetry) {
+                    const cached = localStorage.getItem('jikePosts');
+                    if (cached) {
+                        try {
+                            const data = JSON.parse(cached);
+                            if (data.posts && data.posts.length > 0) {
+                                posts = data.posts;
+                                renderPosts(posts);
+                                updateStatus('同步失败，显示缓存数据', 'error');
                             }
-                            
-                            refreshBtn.disabled = false;
-                            return false;
+                        } catch (e) {
+                            console.error('Cache parse error:', e);
                         }
-                    } catch (e) {
-                        console.error('Cache parse error:', e);
+                    } else {
+                        // 无缓存时显示错误
+                        updateStatus('同步失败', 'error');
+                        document.getElementById('posts').innerHTML = `
+                            <div class="error">
+                                <div class="error-icon">⚠️</div>
+                                <h3>加载失败</h3>
+                                <p>网络连接不稳定，请检查网络后重试</p>
+                                <button class="retry-btn" onclick="fetchPosts(true)">重新加载</button>
+                            </div>
+                        `;
                     }
                 }
                 
-                // Show error
-                updateStatus('同步失败', 'error');
-                document.getElementById('posts').innerHTML = `
-                    <div class="error">
-                        <div class="error-icon">⚠️</div>
-                        <h3>加载失败</h3>
-                        <p>网络连接不稳定，请检查网络后重试</p>
-                        <button class="retry-btn" onclick="fetchPosts(true)">重新加载</button>
-                    </div>
-                `;
-                
-                // Auto retry
+                // 自动重试
                 if (retryCount < MAX_RETRIES) {
                     retryCount++;
                     setTimeout(() => fetchPosts(false, true), RETRY_DELAY);
@@ -1213,15 +1221,17 @@
             autoRefreshInterval = setInterval(() => fetchPosts(false), REFRESH_INTERVAL);
         }
         
+        // 核心修改：优先加载缓存（页面初始化立即显示）
         function loadFromCache() {
             const cached = localStorage.getItem('jikePosts');
             if (cached) {
                 try {
                     const data = JSON.parse(cached);
+                    // 缓存有效期 1 小时，超过则不加载
                     if (data.posts && data.posts.length > 0 && (Date.now() - data.timestamp) < 3600000) {
                         posts = data.posts;
                         renderPosts(posts);
-                        updateStatus('显示缓存数据');
+                        updateStatus('已加载缓存数据');
                         return true;
                     }
                 } catch (e) {
@@ -1231,9 +1241,17 @@
             return false;
         }
         
+        // 初始化逻辑：先加载缓存 → 后台同步最新
         function init() {
+            // 第一步：优先加载缓存，立即显示内容
             const hasCache = loadFromCache();
-            fetchPosts(!hasCache);
+            
+            // 第二步：后台异步请求最新内容（不阻塞页面）
+            setTimeout(() => {
+                fetchPosts(!hasCache);
+            }, 500);
+            
+            // 启动自动刷新
             startAutoRefresh();
         }
         
