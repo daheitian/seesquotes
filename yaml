@@ -1,0 +1,16 @@
+# .github/workflows/sync-jike.yml
+name: Sync Jike Posts
+on:
+  schedule:
+    - cron: '*/15 * * * *'  # 每15分钟
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Fetch Jike RSS
+        run: |
+          curl -s "https://rsshub.app/jike/user/YOUR_ID" -o public/jike-data.xml
+      - name: Deploy to Vercel
+        run: |
+          # 自动部署
