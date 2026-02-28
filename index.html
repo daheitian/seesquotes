@@ -457,6 +457,19 @@
             margin-bottom: 20px;
         }
         
+        .error-details {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin: 12px 0;
+            padding: 12px;
+            background: var(--bg-primary);
+            border-radius: 8px;
+            text-align: left;
+            max-height: 100px;
+            overflow-y: auto;
+            font-family: monospace;
+        }
+        
         .retry-btn {
             padding: 10px 24px;
             background: var(--accent);
@@ -653,6 +666,42 @@
             flex-shrink: 0;
         }
         
+        /* Debug Panel */
+        .debug-panel {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            max-width: 400px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-size: 12px;
+            font-family: monospace;
+            z-index: 999;
+            display: none;
+        }
+        
+        .debug-panel.active {
+            display: block;
+        }
+        
+        .debug-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            cursor: pointer;
+            z-index: 1000;
+        }
+        
         /* Mobile */
         @media (max-width: 640px) {
             nav {
@@ -700,7 +749,7 @@
             </a>
             <nav>
                 <a href="#" class="active" data-page="home">见室引号</a>
-                <a href="https://buercrock.notion.site/daheitian-web-fe688e111f9e47a097e422e3eb8ae35c" target="_blank">主页</a>
+                <a href="https://buercrock.notion.site/daheitian-web-fe688e111f9e47a097e422e3eb8ae35c " target="_blank">主页</a>
                 <a href="#" data-page="about">关于</a>
             </nav>
             <div class="controls">
@@ -822,18 +871,21 @@
         </div>
     </div>
 
+    <!-- Debug Toggle -->
+    <button class="debug-toggle" id="debugToggle" title="调试信息">🐛</button>
+    <div class="debug-panel" id="debugPanel"></div>
+
     <script>
         // Configuration
         const USER_ID = '16120E35-EB4B-4FF1-9DBC-9BEFC1D16CCD';
         
-        // Multiple RSS sources for redundancy
-// 在 <script> 标签中找到 const RSS_SOURCES = [...] 这一行，替换为下面的代码
-const RSS_SOURCES = [
-    // 仅保留你已验证完全可用的源
-    `https://rsshub.rss3.workers.dev/jike/user/${USER_ID}`,
-    // 可以再加一个其他可靠的公共实例作为轻量备选
-    `https://rsshub.uneasy.win/jike/user/${USER_ID}`
-];
+        // ✅ 修复：移除 URL 中的空格
+        const RSS_SOURCES = [
+            `https://rsshub.rss3.workers.dev/jike/user/${USER_ID}`,
+            `https://rsshub.uneasy.win/jike/user/${USER_ID}`,
+            `https://rsshub.app/jike/user/${USER_ID}`
+        ];
+        
         const REFRESH_INTERVAL = 3 * 60 * 1000;
         const RETRY_DELAY = 5000;
         const MAX_RETRIES = 3;
@@ -842,6 +894,22 @@ const RSS_SOURCES = [
         let lastFetchTime = null;
         let retryCount = 0;
         let autoRefreshInterval = null;
+        let debugLogs = [];
+        
+        // Debug functions
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${type}: ${message}`;
+            debugLogs.push(logEntry);
+            console.log(logEntry);
+            
+            const debugPanel = document.getElementById('debugPanel');
+            debugPanel.innerHTML = debugLogs.join('<br>');
+        }
+        
+        document.getElementById('debugToggle').addEventListener('click', () => {
+            document.getElementById('debugPanel').classList.toggle('active');
+        });
         
         // Page navigation
         const navLinks = document.querySelectorAll('nav a[data-page]');
@@ -968,18 +1036,31 @@ const RSS_SOURCES = [
         }
         
         function parseRSS(xmlText) {
+            log('Parsing RSS XML...');
             const parser = new DOMParser();
             const xml = parser.parseFromString(xmlText, 'text/xml');
-            const items = xml.querySelectorAll('item');
-            const posts = [];
             
-            items.forEach(item => {
-                posts.push({
-                    title: item.querySelector('title')?.textContent || '',
-                    description: item.querySelector('description')?.textContent || '',
-                    pubDate: item.querySelector('pubDate')?.textContent || '',
-                    link: item.querySelector('link')?.textContent || ''
-                });
+            // 检查解析错误
+            const parserError = xml.querySelector('parsererror');
+            if (parserError) {
+                throw new Error('XML parse error: ' + parserError.textContent);
+            }
+            
+            const items = xml.querySelectorAll('item');
+            log(`Found ${items.length} items in RSS`);
+            
+            const posts = [];
+            items.forEach((item, index) => {
+                try {
+                    posts.push({
+                        title: item.querySelector('title')?.textContent || '',
+                        description: item.querySelector('description')?.textContent || '',
+                        pubDate: item.querySelector('pubDate')?.textContent || '',
+                        link: item.querySelector('link')?.textContent || ''
+                    });
+                } catch (e) {
+                    log(`Error parsing item ${index}: ${e.message}`, 'error');
+                }
             });
             
             return posts;
@@ -1038,37 +1119,68 @@ const RSS_SOURCES = [
             document.getElementById('updateTime').textContent = formatTime(new Date());
         }
         
-        function fetchWithTimeout(url, timeout = 10000) {
-            return Promise.race([
-                fetch(url),
-                new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), timeout))
-            ]);
+        function fetchWithTimeout(url, timeout = 15000) {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), timeout);
+            
+            return fetch(url, { 
+                signal: controller.signal,
+                headers: {
+                    'Accept': 'application/rss+xml, application/xml, text/xml, */*'
+                }
+            }).finally(() => clearTimeout(timeoutId));
         }
         
         async function tryFetchRSS() {
             const errors = [];
             
-            for (const source of RSS_SOURCES) {
+            for (let i = 0; i < RSS_SOURCES.length; i++) {
+                const source = RSS_SOURCES[i];
                 try {
-                    console.log('Trying:', source);
-                    const response = await fetchWithTimeout(source);
-                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    log(`Trying source ${i + 1}/${RSS_SOURCES.length}: ${source}`);
+                    
+                    const response = await fetchWithTimeout(source, 15000);
+                    log(`Response status: ${response.status}`);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
                     
                     const text = await response.text();
+                    log(`Response length: ${text.length} bytes`);
+                    log(`Response preview: ${text.substring(0, 200)}...`);
                     
+                    // 检查是否是 JSON
                     if (text.trim().startsWith('{')) {
-                        const data = JSON.parse(text);
-                        if (data.items && Array.isArray(data.items)) return data.items;
-                    } else {
-                        const items = parseRSS(text);
-                        if (items.length > 0) return items;
+                        try {
+                            const data = JSON.parse(text);
+                            if (data.items && Array.isArray(data.items) && data.items.length > 0) {
+                                log('Successfully parsed as JSON');
+                                return data.items;
+                            }
+                        } catch (e) {
+                            log('Not valid JSON, trying XML...');
+                        }
                     }
+                    
+                    // 检查是否是 XML/RSS
+                    if (text.includes('<rss') || text.includes('<feed') || text.includes('<channel')) {
+                        const items = parseRSS(text);
+                        if (items.length > 0) {
+                            log(`Successfully parsed RSS with ${items.length} items`);
+                            return items;
+                        }
+                    }
+                    
+                    throw new Error('Response is not valid RSS or JSON');
+                    
                 } catch (err) {
-                    errors.push(`${source}: ${err.message}`);
+                    log(`Source ${i + 1} failed: ${err.message}`, 'error');
+                    errors.push(`Source ${i + 1}: ${err.message}`);
                 }
             }
             
-            throw new Error('All sources failed');
+            throw new Error(`All sources failed:\n${errors.join('\n')}`);
         }
         
         async function fetchPosts(showLoading = true, isRetry = false) {
@@ -1077,26 +1189,36 @@ const RSS_SOURCES = [
             
             if (showLoading && !isRetry) {
                 updateStatus('正在同步...', 'syncing');
+                document.getElementById('posts').innerHTML = `
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        <p>正在连接即刻...</p>
+                    </div>
+                `;
             }
             
             try {
+                log('Starting fetch...');
                 const items = await tryFetchRSS();
                 posts = items;
                 lastFetchTime = new Date();
                 retryCount = 0;
                 
                 renderPosts(posts);
-                updateStatus('实时同步中');
+                updateStatus(`同步成功 · ${posts.length} 条动态`);
                 
                 localStorage.setItem('jikePosts', JSON.stringify({
                     posts: posts,
                     timestamp: Date.now()
                 }));
                 
+                log('Fetch completed successfully');
                 return true;
-            } catch (error) {
-                console.error('Fetch error:', error);
                 
+            } catch (error) {
+                log(`Fetch failed: ${error.message}`, 'error');
+                
+                // 尝试使用缓存
                 const cached = localStorage.getItem('jikePosts');
                 if (cached) {
                     try {
@@ -1104,25 +1226,30 @@ const RSS_SOURCES = [
                         if (data.posts && data.posts.length > 0) {
                             posts = data.posts;
                             renderPosts(posts);
-                            updateStatus('显示缓存数据');
+                            updateStatus('显示缓存数据 (同步失败)');
                             
                             if (retryCount < MAX_RETRIES) {
                                 retryCount++;
+                                log(`Will retry in ${RETRY_DELAY/1000}s... (${retryCount}/${MAX_RETRIES})`);
                                 setTimeout(() => fetchPosts(false, true), RETRY_DELAY);
                             }
                             
                             refreshBtn.disabled = false;
                             return false;
                         }
-                    } catch (e) {}
+                    } catch (e) {
+                        log('Cache parse error: ' + e.message, 'error');
+                    }
                 }
                 
+                // 显示错误
                 updateStatus('同步失败', 'error');
                 document.getElementById('posts').innerHTML = `
                     <div class="error">
                         <div class="error-icon">⚠️</div>
                         <h3>加载失败</h3>
-                        <p>网络连接不稳定，请检查网络后重试</p>
+                        <p>无法连接到 RSSHub 服务</p>
+                        <div class="error-details">${error.message}</div>
                         <button class="retry-btn" onclick="fetchPosts(true)">重新加载</button>
                     </div>
                 `;
@@ -1176,14 +1303,18 @@ const RSS_SOURCES = [
                         posts = data.posts;
                         renderPosts(posts);
                         updateStatus('显示缓存数据');
+                        log('Loaded from cache: ' + posts.length + ' posts');
                         return true;
                     }
-                } catch (e) {}
+                } catch (e) {
+                    log('Cache load error: ' + e.message, 'error');
+                }
             }
             return false;
         }
         
         function init() {
+            log('Initializing...');
             const hasCache = loadFromCache();
             fetchPosts(!hasCache);
             startAutoRefresh();
