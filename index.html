@@ -829,14 +829,10 @@
         // Multiple RSS sources for redundancy
 // 在 <script> 标签中找到 const RSS_SOURCES = [...] 这一行，替换为下面的代码
 const RSS_SOURCES = [
-    // 首选：你已验证完全可用的 Cloudflare Workers 地址（支持 CORS）
+    // 仅保留你已验证完全可用的源
     `https://rsshub.rss3.workers.dev/jike/user/${USER_ID}`,
-    
-    // 备选1：另一个公共 RSSHub 实例，提高稳定性
-    `https://rsshub.uneasy.win/jike/user/${USER_ID}`,
-    
-    // 备选2：使用 rss2json 服务将官方源转为 JSON，作为最终后备
-    `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(`https://rsshub.app/jike/user/${USER_ID}`)}`
+    // 可以再加一个其他可靠的公共实例作为轻量备选
+    `https://rsshub.uneasy.win/jike/user/${USER_ID}`
 ];
         const REFRESH_INTERVAL = 3 * 60 * 1000;
         const RETRY_DELAY = 5000;
