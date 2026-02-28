@@ -1,218 +1,1243 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="dark">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>即刻 RSS 内容展示</title>
-  <!-- 核心：配置 CSP 策略，解决 eval 被阻止的问题 -->
-  <meta http-equiv="Content-Security-Policy" content="
-    default-src 'self';
-    script-src 'self' 'unsafe-eval' 'unsafe-inline';
-    style-src 'self' 'unsafe-inline';
-    img-src 'self' data:;
-    connect-src 'self' https://*.github.io https://rsshub.rssforever.com https://api.allorigins.win;
-    media-src 'self';
-    object-src 'none';
-    base-uri 'self';
-  ">
-  <!-- 简单美化样式，适配移动端 -->
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
-    body {
-      max-width: 800px;
-      margin: 20px auto;
-      padding: 0 20px;
-      line-height: 1.6;
-      color: #333;
-    }
-    .loading {
-      color: #666;
-      padding: 20px;
-      text-align: center;
-    }
-    .success {
-      color: #28a745;
-      margin-bottom: 15px;
-    }
-    .error {
-      color: #dc3545;
-      padding: 20px;
-      text-align: center;
-    }
-    .rss-item {
-      border-bottom: 1px solid #eee;
-      padding: 15px 0;
-    }
-    .rss-item h3 {
-      margin-bottom: 8px;
-      font-size: 18px;
-    }
-    .rss-item a {
-      color: #0366d6;
-      text-decoration: none;
-    }
-    .rss-item a:hover {
-      text-decoration: underline;
-    }
-    .rss-item .date {
-      color: #666;
-      font-size: 14px;
-      margin-top: 5px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小信号 | SEES-QUOTATION</title>
+    <style>
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #141414;
+            --bg-card: #1a1a1a;
+            --bg-card-hover: #222222;
+            --text-primary: #e7e9ea;
+            --text-secondary: #8899a6;
+            --text-muted: #536471;
+            --accent: #1d9bf0;
+            --border: #2f3336;
+            --shadow: rgba(0, 0, 0, 0.5);
+        }
+        
+        [data-theme="light"] {
+            --bg-primary: #f7f9fa;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --bg-card-hover: #f7f9fa;
+            --text-primary: #0f1419;
+            --text-secondary: #536471;
+            --text-muted: #8899a6;
+            --accent: #1d9bf0;
+            --border: #eff3f4;
+            --shadow: rgba(0, 0, 0, 0.08);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+        }
+        
+        /* Header */
+        header {
+            position: sticky;
+            top: 0;
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 100;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        [data-theme="light"] header {
+            background: rgba(255, 255, 255, 0.85);
+        }
+        
+        .header-inner {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .logo {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .logo span {
+            color: var(--accent);
+        }
+        
+        /* Navigation */
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-card);
+            padding: 6px;
+            border-radius: 100px;
+            border: 1px solid var(--border);
+        }
+        
+        nav a {
+            padding: 8px 16px;
+            border-radius: 100px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        
+        nav a:hover {
+            color: var(--text-primary);
+            background: var(--bg-card-hover);
+        }
+        
+        nav a.active {
+            color: var(--text-primary);
+            background: var(--bg-card-hover);
+        }
+        
+        /* Controls */
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-icon:hover {
+            background: var(--bg-card-hover);
+            color: var(--text-primary);
+        }
+        
+        .btn-icon:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* Main Content */
+        main {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 60px 0 40px;
+        }
+        
+        .hero-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        
+        .hero h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+            letter-spacing: 2px;
+        }
+        
+        .hero p {
+            font-size: 15px;
+            color: var(--text-secondary);
+            max-width: 400px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+        
+        /* Random Button */
+        .random-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 24px;
+            padding: 12px 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .random-btn:hover {
+            background: var(--bg-card-hover);
+            transform: translateY(-2px);
+        }
+        
+        .random-btn:active {
+            transform: translateY(0);
+        }
+        
+        /* Stats */
+        .stats {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+            margin: 32px 0;
+            padding: 16px;
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
+        }
+        
+        /* Status */
+        .status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #00ba7c;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .status.syncing .status-dot {
+            background: var(--accent);
+            animation: spin 1s linear infinite;
+        }
+        
+        .status.error .status-dot {
+            background: #f4212e;
+            animation: none;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Posts */
+        .posts {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .post {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.2s ease;
+            animation: fadeIn 0.4s ease-out;
+            cursor: pointer;
+        }
+        
+        .post:hover {
+            background: var(--bg-card-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px var(--shadow);
+        }
+        
+        .post.highlight {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px var(--accent);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .post-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .post-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: white;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        
+        .post-meta {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .post-author {
+            font-weight: 600;
+            font-size: 15px;
+            color: var(--text-primary);
+        }
+        
+        .post-time {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        
+        .post-content {
+            font-size: 15px;
+            line-height: 1.75;
+            color: var(--text-primary);
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .post-content a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        
+        .post-content a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Images */
+        .post-images {
+            margin-top: 12px;
+            display: grid;
+            gap: 8px;
+        }
+        
+        .post-images.single {
+            grid-template-columns: 1fr;
+        }
+        
+        .post-images.double {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .post-images.multiple {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .post-images img {
+            width: 100%;
+            border-radius: 12px;
+            object-fit: cover;
+            aspect-ratio: 16/10;
+            transition: transform 0.2s ease;
+        }
+        
+        .post-images img:hover {
+            transform: scale(1.02);
+        }
+        
+        /* Tags */
+        .post-tags {
+            margin-top: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .tag {
+            padding: 4px 10px;
+            background: rgba(29, 155, 240, 0.1);
+            color: var(--accent);
+            font-size: 12px;
+            border-radius: 100px;
+        }
+        
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 60px 0;
+        }
+        
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px;
+        }
+        
+        .loading p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        /* Error */
+        .error {
+            text-align: center;
+            padding: 40px 20px;
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+        }
+        
+        .error-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        
+        .error h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+        
+        .error p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        
+        .retry-btn {
+            padding: 10px 24px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 100px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        
+        .retry-btn:hover {
+            opacity: 0.9;
+        }
+        
+        /* Empty */
+        .empty {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+        
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            border-top: 1px solid var(--border);
+        }
+        
+        footer p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        
+        footer a {
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+        
+        footer a:hover {
+            color: var(--accent);
+        }
+        
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal {
+            background: var(--bg-card);
+            border-radius: 20px;
+            max-width: 560px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+        
+        .modal-overlay.active .modal {
+            transform: scale(1);
+        }
+        
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .modal-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            background: var(--bg-card-hover);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        
+        .modal-close:hover {
+            color: var(--text-primary);
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        /* About Card */
+        .about-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px;
+        }
+        
+        .about-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .about-avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            font-weight: 700;
+        }
+        
+        .about-info h2 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        
+        .about-info p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        .about-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+        
+        .about-tag {
+            padding: 6px 14px;
+            background: var(--bg-card-hover);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
+        .about-content {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .about-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 15px;
+            line-height: 1.7;
+            color: var(--text-primary);
+        }
+        
+        .about-item span {
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        
+        /* Mobile */
+        @media (max-width: 640px) {
+            nav {
+                display: none;
+            }
+            
+            .hero {
+                padding: 40px 0 32px;
+            }
+            
+            .hero h1 {
+                font-size: 22px;
+            }
+            
+            .stats {
+                gap: 16px;
+            }
+            
+            .stat-value {
+                font-size: 20px;
+            }
+            
+            .post {
+                padding: 16px;
+            }
+            
+            .about-card {
+                padding: 24px;
+            }
+            
+            .about-avatar {
+                width: 56px;
+                height: 56px;
+                font-size: 22px;
+            }
+        }
+    </style>
+<base target="_blank">
 </head>
 <body>
-  <!-- 加载状态提示 -->
-  <div id="status" class="loading">正在连接即刻...</div>
-  <!-- RSS 内容展示区域 -->
-  <div id="rss-content"></div>
-
-  <script>
-    // ========== 配置项（请根据你的仓库修改） ==========
-    const CONFIG = {
-      // 1. 你的 GitHub Pages 缓存文件地址（替换为自己的仓库地址）
-      cacheRssUrl: 'https://daheitian.github.io/data/jike-rss.xml',
-      // 2. 降级用的 RSSHub 公共镜像地址（无需修改，或换其他可用镜像）
-      fallbackRssUrl: 'https://rsshub.rssforever.com/jike/user/16120E35-EB4B-4FF1-9DBC-9BEFC1D16CCD',
-      // 3. 请求超时时间（毫秒）
-      timeout: 10000
-    };
-
-    // ========== 工具函数 ==========
-    /**
-     * 更新页面加载状态
-     * @param {string} type - loading/success/error
-     * @param {string} message - 提示文本
-     */
-    function updateStatus(type, message) {
-      const statusEl = document.getElementById('status');
-      statusEl.className = type;
-      statusEl.textContent = message;
-    }
-
-    /**
-     * 原生解析 XML（无 eval，避免 CSP 拦截）
-     * @param {string} xmlText - XML 文本内容
-     * @returns {Array} 解析后的 RSS 条目数组
-     */
-    function parseRssXml(xmlText) {
-      const parser = new DOMParser();
-      const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
-      
-      // 检查 XML 解析是否出错
-      const parseError = xmlDoc.querySelector('parsererror');
-      if (parseError) {
-        throw new Error('RSS 数据解析失败：XML 格式错误');
-      }
-
-      // 提取 RSS 条目
-      const items = xmlDoc.querySelectorAll('item');
-      const result = [];
-      items.forEach(item => {
-        result.push({
-          title: item.querySelector('title')?.textContent || '无标题',
-          link: item.querySelector('link')?.textContent || '#',
-          pubDate: item.querySelector('pubDate')?.textContent || '无时间'
-        });
-      });
-      return result;
-    }
-
-    /**
-     * 渲染 RSS 内容到页面
-     * @param {Array} rssItems - 解析后的 RSS 条目数组
-     */
-    function renderRssContent(rssItems) {
-      const contentEl = document.getElementById('rss-content');
-      if (rssItems.length === 0) {
-        contentEl.innerHTML = '<div class="error">暂无即刻内容</div>';
-        return;
-      }
-
-      // 拼接 HTML 内容
-      let html = '';
-      rssItems.forEach(item => {
-        html += `
-          <div class="rss-item">
-            <h3><a href="${item.link}" target="_blank">${item.title}</a></h3>
-            <div class="date">${item.pubDate}</div>
-          </div>
-        `;
-      });
-      contentEl.innerHTML = html;
-    }
-
-    /**
-     * 通用请求函数（带超时）
-     * @param {string} url - 请求地址
-     * @returns {Promise<string>} 响应文本
-     */
-    async function requestWithTimeout(url) {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), CONFIG.timeout);
-      
-      try {
-        const response = await fetch(url, {
-          method: 'GET',
-          signal: controller.signal,
-          headers: {
-            'Accept': 'application/rss+xml, application/xml, text/xml',
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-          }
-        });
-
-        clearTimeout(timeoutId);
-        if (!response.ok) {
-          throw new Error(`请求失败：${response.status}`);
-        }
-        return await response.text();
-      } catch (error) {
-        clearTimeout(timeoutId);
-        if (error.name === 'AbortError') {
-          throw new Error('请求超时');
-        }
-        throw error;
-      }
-    }
-
-    // ========== 核心逻辑：加载 RSS 数据 ==========
-    async function loadRssData() {
-      // 1. 优先加载 GitHub 缓存文件
-      try {
-        updateStatus('loading', '正在加载缓存数据...');
-        const cacheData = await requestWithTimeout(CONFIG.cacheRssUrl);
-        const rssItems = parseRssXml(cacheData);
+    <header>
+        <div class="header-inner">
+            <a href="#" class="logo">
+                小信号<span>.</span>
+            </a>
+            <nav>
+                <a href="#" class="active" data-page="home">见室引号</a>
+                <a href="https://buercrock.notion.site/daheitian-web-fe688e111f9e47a097e422e3eb8ae35c" target="_blank">主页</a>
+                <a href="#" data-page="about">关于</a>
+            </nav>
+            <div class="controls">
+                <button class="btn-icon" id="refreshBtn" title="刷新">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+                    </svg>
+                </button>
+                <button class="btn-icon" id="themeBtn" title="切换主题">
+                    <svg id="sunIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"/>
+                        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                    </svg>
+                    <svg id="moonIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none">
+                        <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+    
+    <main>
+        <!-- Home Page -->
+        <div id="homePage">
+            <section class="hero">
+                <div class="hero-icon">💭</div>
+                <h1>SEES-QUOTATION</h1>
+                <p>一些金句一些思考 一些优质信息源</p>
+                <button class="random-btn" id="randomBtn">
+                    <span>🎲</span>
+                    <span>随机一条</span>
+                </button>
+            </section>
+            
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="postCount">-</div>
+                    <div class="stat-label">动态</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="updateTime">-</div>
+                    <div class="stat-label">更新</div>
+                </div>
+            </div>
+            
+            <div class="status" id="status">
+                <span class="status-dot"></span>
+                <span id="statusText">正在连接...</span>
+            </div>
+            
+            <div class="posts" id="posts">
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <p>正在连接即刻...</p>
+                </div>
+            </div>
+        </div>
         
-        updateStatus('success', '缓存数据加载成功');
-        renderRssContent(rssItems);
-        return; // 缓存加载成功，终止逻辑
-      } catch (cacheError) {
-        console.warn('缓存加载失败：', cacheError.message);
-        updateStatus('loading', '缓存加载失败，尝试降级请求...');
-      }
+        <!-- About Page -->
+        <div id="aboutPage" style="display: none;">
+            <section class="hero">
+                <div class="hero-icon">👋</div>
+                <h1>关于</h1>
+                <p>认识一下</p>
+            </section>
+            
+            <div class="about-card">
+                <div class="about-header">
+                    <div class="about-avatar">黑</div>
+                    <div class="about-info">
+                        <h2>大黑天</h2>
+                        <p>室内设计师 / 效率工具爱好者</p>
+                    </div>
+                </div>
+                
+                <div class="about-tags">
+                    <span class="about-tag">空间设计</span>
+                    <span class="about-tag">建筑设计</span>
+                    <span class="about-tag">室内设计</span>
+                    <span class="about-tag">商业</span>
+                    <span class="about-tag">阅读</span>
+                    <span class="about-tag">效率工具</span>
+                </div>
+                
+                <div class="about-content">
+                    <div class="about-item">
+                        <span>💡</span>
+                        <span>关注空间、建筑、室内设计的室内设计师</span>
+                    </div>
+                    <div class="about-item">
+                        <span>☁️</span>
+                        <span>也还关注喜欢：商业、阅读、思考、折腾、教育、办公</span>
+                    </div>
+                    <div class="about-item">
+                        <span>🌲</span>
+                        <span>软件效率工具爱好者</span>
+                    </div>
+                    <div class="about-item">
+                        <span>🌲</span>
+                        <span>优质信息爱好者</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <p>同步自 <a href="https://okjk.co/ZrdvaB" target="_blank">即刻</a> · 实时更新 · 自动重试机制</p>
+    </footer>
+    
+    <!-- Random Post Modal -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title">🎲 随机一条</span>
+                <button class="modal-close" id="modalClose">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
 
-      // 2. 缓存失败，降级请求 RSSHub 公共镜像
-      try {
-        const fallbackData = await requestWithTimeout(CONFIG.fallbackRssUrl);
-        const rssItems = parseRssXml(fallbackData);
+    <script>
+        // RSSHub URL
+        const RSS_URL = 'https://rsshub.app/jike/user/16120E35-EB4B-4FF1-9DBC-9BEFC1D16CCD';
         
-        updateStatus('success', '降级请求成功');
-        renderRssContent(rssItems);
-      } catch (fallbackError) {
-        console.error('降级请求失败：', fallbackError.message);
-        updateStatus('error', `加载失败：${fallbackError.message}`);
-      }
-    }
-
-    // ========== 页面加载完成后执行 ==========
-    window.onload = () => {
-      loadRssData();
-    };
-  </script>
+        const REFRESH_INTERVAL = 3 * 60 * 1000; // 3 minutes
+        const RETRY_DELAY = 5000; // 5 seconds
+        const MAX_RETRIES = 3;
+        
+        let posts = [];
+        let lastFetchTime = null;
+        let retryCount = 0;
+        let autoRefreshInterval = null;
+        
+        // Page navigation
+        const navLinks = document.querySelectorAll('nav a[data-page]');
+        const homePage = document.getElementById('homePage');
+        const aboutPage = document.getElementById('aboutPage');
+        
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const page = link.dataset.page;
+                
+                navLinks.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+                
+                if (page === 'home') {
+                    homePage.style.display = 'block';
+                    aboutPage.style.display = 'none';
+                } else if (page === 'about') {
+                    homePage.style.display = 'none';
+                    aboutPage.style.display = 'block';
+                }
+            });
+        });
+        
+        // Theme toggle
+        const themeBtn = document.getElementById('themeBtn');
+        const sunIcon = document.getElementById('sunIcon');
+        const moonIcon = document.getElementById('moonIcon');
+        const html = document.documentElement;
+        
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        html.setAttribute('data-theme', savedTheme);
+        updateThemeIcon(savedTheme);
+        
+        themeBtn.addEventListener('click', () => {
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        });
+        
+        function updateThemeIcon(theme) {
+            if (theme === 'dark') {
+                sunIcon.style.display = 'block';
+                moonIcon.style.display = 'none';
+            } else {
+                sunIcon.style.display = 'none';
+                moonIcon.style.display = 'block';
+            }
+        }
+        
+        function formatTime(dateString) {
+            if (!dateString) return '-';
+            const date = new Date(dateString);
+            const now = new Date();
+            const diff = now - date;
+            
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
+            
+            if (minutes < 1) return '刚刚';
+            if (minutes < 60) return `${minutes}分钟前`;
+            if (hours < 24) return `${hours}小时前`;
+            if (days < 7) return `${days}天前`;
+            
+            return date.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' });
+        }
+        
+        function formatFullTime(dateString) {
+            if (!dateString) return '-';
+            const date = new Date(dateString);
+            return date.toLocaleString('zh-CN', {
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+        
+        function extractImages(content) {
+            if (!content) return [];
+            const imgRegex = /<img[^>]+src="([^"]+)"/g;
+            const images = [];
+            let match;
+            while ((match = imgRegex.exec(content)) !== null) {
+                images.push(match[1]);
+            }
+            return images;
+        }
+        
+        function cleanContent(content) {
+            if (!content) return '';
+            return content
+                .replace(/<img[^>]+>/g, '')
+                .replace(/<[^>]+>/g, '')
+                .replace(/&nbsp;/g, ' ')
+                .replace(/&quot;/g, '"')
+                .replace(/&amp;/g, '&')
+                .replace(/&lt;/g, '<')
+                .replace(/&gt;/g, '>')
+                .trim();
+        }
+        
+        function extractTags(content) {
+            if (!content) return [];
+            const tagRegex = /#([^#\s]+)/g;
+            const tags = [];
+            let match;
+            while ((match = tagRegex.exec(content)) !== null) {
+                tags.push(match[1]);
+            }
+            return tags;
+        }
+        
+        function updateStatus(text, type = 'normal') {
+            const status = document.getElementById('status');
+            const statusText = document.getElementById('statusText');
+            statusText.textContent = text;
+            status.classList.remove('syncing', 'error');
+            if (type === 'syncing') status.classList.add('syncing');
+            if (type === 'error') status.classList.add('error');
+        }
+        
+        // Parse RSS XML to JSON
+        function parseRSS(xmlText) {
+            const parser = new DOMParser();
+            const xml = parser.parseFromString(xmlText, 'text/xml');
+            
+            // Check for parse errors
+            const parseError = xml.querySelector('parsererror');
+            if (parseError) {
+                throw new Error('XML parse error');
+            }
+            
+            const items = xml.querySelectorAll('item');
+            const posts = [];
+            
+            items.forEach(item => {
+                const title = item.querySelector('title')?.textContent || '';
+                const description = item.querySelector('description')?.textContent || '';
+                const pubDate = item.querySelector('pubDate')?.textContent || '';
+                const link = item.querySelector('link')?.textContent || '';
+                
+                posts.push({
+                    title,
+                    description,
+                    pubDate,
+                    link
+                });
+            });
+            
+            return posts;
+        }
+        
+        function renderPost(item) {
+            const images = extractImages(item.description);
+            let content = cleanContent(item.description);
+            const tags = extractTags(content);
+            content = content.replace(/#([^#\s]+)/g, '').trim();
+            
+            const imageClass = images.length === 1 ? 'single' : images.length === 2 ? 'double' : 'multiple';
+            
+            return `
+                <div class="post-header">
+                    <div class="post-avatar">黑</div>
+                    <div class="post-meta">
+                        <div class="post-author">大黑天</div>
+                        <div class="post-time">${formatFullTime(item.pubDate)} · ${formatTime(item.pubDate)}</div>
+                    </div>
+                </div>
+                <div class="post-content">${content}</div>
+                ${images.length > 0 ? `
+                    <div class="post-images ${imageClass}">
+                        ${images.map(img => `<img src="${img}" alt="" loading="lazy" onerror="this.style.display='none'">`).join('')}
+                    </div>
+                ` : ''}
+                ${tags.length > 0 ? `
+                    <div class="post-tags">
+                        ${tags.map(tag => `<span class="tag">#${tag}</span>`).join('')}
+                    </div>
+                ` : ''}
+            `;
+        }
+        
+        function renderPosts(items) {
+            const container = document.getElementById('posts');
+            
+            if (!items || items.length === 0) {
+                container.innerHTML = `
+                    <div class="empty">
+                        <div class="empty-icon">📝</div>
+                        <p>暂无动态</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = items.map((item, index) => `
+                <article class="post" data-index="${index}">
+                    ${renderPost(item)}
+                </article>
+            `).join('');
+            
+            document.getElementById('postCount').textContent = items.length;
+            document.getElementById('updateTime').textContent = formatTime(new Date());
+        }
+        
+        // Fetch RSS with CORS proxy fallback
+        async function fetchRSS() {
+            const errors = [];
+            
+            // Try direct fetch first
+            try {
+                console.log('Trying direct fetch...');
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 15000);
+                
+                const response = await fetch(RSS_URL, { 
+                    signal: controller.signal,
+                    headers: {
+                        'Accept': 'application/rss+xml, application/xml, text/xml, */*'
+                    }
+                });
+                clearTimeout(timeoutId);
+                
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                
+                const text = await response.text();
+                const posts = parseRSS(text);
+                
+                if (posts.length > 0) {
+                    console.log('Direct fetch success:', posts.length, 'posts');
+                    return posts;
+                }
+            } catch (err) {
+                errors.push(`Direct: ${err.message}`);
+                console.warn('Direct fetch failed:', err.message);
+            }
+            
+            // Try with CORS proxy
+            const corsProxies = [
+                `https://api.allorigins.win/raw?url=${encodeURIComponent(RSS_URL)}`,
+                `https://corsproxy.io/?${encodeURIComponent(RSS_URL)}`,
+                `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(RSS_URL)}`
+            ];
+            
+            for (const proxyUrl of corsProxies) {
+                try {
+                    console.log('Trying proxy:', proxyUrl);
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 15000);
+                    
+                    const response = await fetch(proxyUrl, { signal: controller.signal });
+                    clearTimeout(timeoutId);
+                    
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    
+                    const text = await response.text();
+                    const posts = parseRSS(text);
+                    
+                    if (posts.length > 0) {
+                        console.log('Proxy fetch success:', posts.length, 'posts');
+                        return posts;
+                    }
+                } catch (err) {
+                    errors.push(`Proxy: ${err.message}`);
+                    console.warn('Proxy failed:', proxyUrl, err.message);
+                }
+            }
+            
+            throw new Error('All fetch methods failed: ' + errors.join('; '));
+        }
+        
+        async function fetchPosts(showLoading = true, isRetry = false) {
+            const refreshBtn = document.getElementById('refreshBtn');
+            refreshBtn.disabled = true;
+            
+            if (showLoading && !isRetry) {
+                updateStatus('正在同步...', 'syncing');
+            }
+            
+            try {
+                const items = await fetchRSS();
+                
+                posts = items;
+                lastFetchTime = new Date();
+                retryCount = 0;
+                
+                renderPosts(posts);
+                updateStatus('实时同步中');
+                
+                // Save to localStorage as cache
+                localStorage.setItem('jikePosts', JSON.stringify({
+                    posts: posts,
+                    timestamp: Date.now()
+                }));
+                
+                return true;
+            } catch (error) {
+                console.error('Fetch error:', error);
+                
+                // Try to load from cache
+                const cached = localStorage.getItem('jikePosts');
+                if (cached) {
+                    try {
+                        const data = JSON.parse(cached);
+                        if (data.posts && data.posts.length > 0) {
+                            posts = data.posts;
+                            renderPosts(posts);
+                            updateStatus('显示缓存数据');
+                            
+                            // Retry after delay
+                            if (retryCount < MAX_RETRIES) {
+                                retryCount++;
+                                setTimeout(() => fetchPosts(false, true), RETRY_DELAY);
+                            }
+                            
+                            refreshBtn.disabled = false;
+                            return false;
+                        }
+                    } catch (e) {
+                        console.error('Cache parse error:', e);
+                    }
+                }
+                
+                // Show error
+                updateStatus('同步失败', 'error');
+                document.getElementById('posts').innerHTML = `
+                    <div class="error">
+                        <div class="error-icon">⚠️</div>
+                        <h3>加载失败</h3>
+                        <p>网络连接不稳定，请检查网络后重试</p>
+                        <button class="retry-btn" onclick="fetchPosts(true)">重新加载</button>
+                    </div>
+                `;
+                
+                // Auto retry
+                if (retryCount < MAX_RETRIES) {
+                    retryCount++;
+                    setTimeout(() => fetchPosts(false, true), RETRY_DELAY);
+                }
+                
+                return false;
+            } finally {
+                refreshBtn.disabled = false;
+            }
+        }
+        
+        // Random post modal
+        const modal = document.getElementById('modal');
+        const modalBody = document.getElementById('modalBody');
+        
+        document.getElementById('randomBtn').addEventListener('click', () => {
+            if (posts.length === 0) return;
+            const randomIndex = Math.floor(Math.random() * posts.length);
+            modalBody.innerHTML = renderPost(posts[randomIndex]);
+            modal.classList.add('active');
+        });
+        
+        document.getElementById('modalClose').addEventListener('click', () => {
+            modal.classList.remove('active');
+        });
+        
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.classList.remove('active');
+        });
+        
+        document.getElementById('refreshBtn').addEventListener('click', () => {
+            retryCount = 0;
+            fetchPosts(true);
+        });
+        
+        function startAutoRefresh() {
+            if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+            autoRefreshInterval = setInterval(() => fetchPosts(false), REFRESH_INTERVAL);
+        }
+        
+        function loadFromCache() {
+            const cached = localStorage.getItem('jikePosts');
+            if (cached) {
+                try {
+                    const data = JSON.parse(cached);
+                    if (data.posts && data.posts.length > 0 && (Date.now() - data.timestamp) < 3600000) {
+                        posts = data.posts;
+                        renderPosts(posts);
+                        updateStatus('显示缓存数据');
+                        return true;
+                    }
+                } catch (e) {
+                    console.error('Cache error:', e);
+                }
+            }
+            return false;
+        }
+        
+        function init() {
+            const hasCache = loadFromCache();
+            fetchPosts(!hasCache);
+            startAutoRefresh();
+        }
+        
+        init();
+    </script>
 </body>
 </html>
