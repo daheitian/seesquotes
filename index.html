@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>小信号 | 大黑天的即刻</title>
+    <title>小信号 | SEES-QUOTATION</title>
     <style>
         :root {
             --bg-primary: #0a0a0a;
@@ -166,10 +166,11 @@
         }
         
         .hero h1 {
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 8px;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 12px;
             color: var(--text-primary);
+            letter-spacing: 2px;
         }
         
         .hero p {
@@ -505,7 +506,7 @@
             color: var(--accent);
         }
         
-        /* Modal for random post */
+        /* Modal */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -577,6 +578,81 @@
             padding: 20px;
         }
         
+        /* About Card */
+        .about-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px;
+        }
+        
+        .about-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .about-avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            font-weight: 700;
+        }
+        
+        .about-info h2 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        
+        .about-info p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        .about-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+        
+        .about-tag {
+            padding: 6px 14px;
+            background: var(--bg-card-hover);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
+        .about-content {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .about-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 15px;
+            line-height: 1.7;
+            color: var(--text-primary);
+        }
+        
+        .about-item span {
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        
         /* Mobile */
         @media (max-width: 640px) {
             nav {
@@ -588,7 +664,7 @@
             }
             
             .hero h1 {
-                font-size: 20px;
+                font-size: 22px;
             }
             
             .stats {
@@ -602,8 +678,19 @@
             .post {
                 padding: 16px;
             }
+            
+            .about-card {
+                padding: 24px;
+            }
+            
+            .about-avatar {
+                width: 56px;
+                height: 56px;
+                font-size: 22px;
+            }
         }
     </style>
+<base target="_blank">
 </head>
 <body>
     <header>
@@ -612,10 +699,9 @@
                 小信号<span>.</span>
             </a>
             <nav>
-                <a href="#" class="active">见室</a>
-                <a href="#">引號</a>
-                <a href="#">设计</a>
-                <a href="#">关于</a>
+                <a href="#" class="active" data-page="home">见室引号</a>
+                <a href="https://buercrock.notion.site/daheitian-web-fe688e111f9e47a097e422e3eb8ae35c" target="_blank">主页</a>
+                <a href="#" data-page="about">关于</a>
             </nav>
             <div class="controls">
                 <button class="btn-icon" id="refreshBtn" title="刷新">
@@ -637,36 +723,86 @@
     </header>
     
     <main>
-        <section class="hero">
-            <div class="hero-icon">💭</div>
-            <h1>大黑天的即刻</h1>
-            <p>室内设计师的思考碎片，关于空间、建筑、效率工具与优质信息</p>
-            <button class="random-btn" id="randomBtn">
-                <span>🎲</span>
-                <span>随机一条</span>
-            </button>
-        </section>
-        
-        <div class="stats">
-            <div class="stat-item">
-                <div class="stat-value" id="postCount">-</div>
-                <div class="stat-label">动态</div>
+        <!-- Home Page -->
+        <div id="homePage">
+            <section class="hero">
+                <div class="hero-icon">💭</div>
+                <h1>SEES-QUOTATION</h1>
+                <p>一些金句一些思考 一些优质信息源</p>
+                <button class="random-btn" id="randomBtn">
+                    <span>🎲</span>
+                    <span>随机一条</span>
+                </button>
+            </section>
+            
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="postCount">-</div>
+                    <div class="stat-label">动态</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="updateTime">-</div>
+                    <div class="stat-label">更新</div>
+                </div>
             </div>
-            <div class="stat-item">
-                <div class="stat-value" id="updateTime">-</div>
-                <div class="stat-label">更新</div>
+            
+            <div class="status" id="status">
+                <span class="status-dot"></span>
+                <span id="statusText">正在连接...</span>
+            </div>
+            
+            <div class="posts" id="posts">
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <p>正在连接即刻...</p>
+                </div>
             </div>
         </div>
         
-        <div class="status" id="status">
-            <span class="status-dot"></span>
-            <span id="statusText">正在连接...</span>
-        </div>
-        
-        <div class="posts" id="posts">
-            <div class="loading">
-                <div class="loading-spinner"></div>
-                <p>正在连接即刻...</p>
+        <!-- About Page -->
+        <div id="aboutPage" style="display: none;">
+            <section class="hero">
+                <div class="hero-icon">👋</div>
+                <h1>关于</h1>
+                <p>认识一下</p>
+            </section>
+            
+            <div class="about-card">
+                <div class="about-header">
+                    <div class="about-avatar">黑</div>
+                    <div class="about-info">
+                        <h2>大黑天</h2>
+                        <p>室内设计师 / 效率工具爱好者</p>
+                    </div>
+                </div>
+                
+                <div class="about-tags">
+                    <span class="about-tag">空间设计</span>
+                    <span class="about-tag">建筑设计</span>
+                    <span class="about-tag">室内设计</span>
+                    <span class="about-tag">商业</span>
+                    <span class="about-tag">阅读</span>
+                    <span class="about-tag">效率工具</span>
+                </div>
+                
+                <div class="about-content">
+                    <div class="about-item">
+                        <span>💡</span>
+                        <span>关注空间、建筑、室内设计的室内设计师</span>
+                    </div>
+                    <div class="about-item">
+                        <span>☁️</span>
+                        <span>也还关注喜欢：商业、阅读、思考、折腾、教育、办公</span>
+                    </div>
+                    <div class="about-item">
+                        <span>🌲</span>
+                        <span>软件效率工具爱好者</span>
+                    </div>
+                    <div class="about-item">
+                        <span>🌲</span>
+                        <span>优质信息爱好者</span>
+                    </div>
+                </div>
             </div>
         </div>
     </main>
@@ -682,9 +818,7 @@
                 <span class="modal-title">🎲 随机一条</span>
                 <button class="modal-close" id="modalClose">&times;</button>
             </div>
-            <div class="modal-body" id="modalBody">
-                <!-- Random post content -->
-            </div>
+            <div class="modal-body" id="modalBody"></div>
         </div>
     </div>
 
@@ -699,8 +833,8 @@
             `https://api.allorigins.win/raw?url=${encodeURIComponent(`https://rsshub.app/jike/user/${USER_ID}`)}`
         ];
         
-        const REFRESH_INTERVAL = 3 * 60 * 1000; // 3 minutes
-        const RETRY_DELAY = 5000; // 5 seconds
+        const REFRESH_INTERVAL = 3 * 60 * 1000;
+        const RETRY_DELAY = 5000;
         const MAX_RETRIES = 3;
         
         let posts = [];
@@ -708,13 +842,35 @@
         let retryCount = 0;
         let autoRefreshInterval = null;
         
+        // Page navigation
+        const navLinks = document.querySelectorAll('nav a[data-page]');
+        const homePage = document.getElementById('homePage');
+        const aboutPage = document.getElementById('aboutPage');
+        
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const page = link.dataset.page;
+                
+                navLinks.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+                
+                if (page === 'home') {
+                    homePage.style.display = 'block';
+                    aboutPage.style.display = 'none';
+                } else if (page === 'about') {
+                    homePage.style.display = 'none';
+                    aboutPage.style.display = 'block';
+                }
+            });
+        });
+        
         // Theme toggle
         const themeBtn = document.getElementById('themeBtn');
         const sunIcon = document.getElementById('sunIcon');
         const moonIcon = document.getElementById('moonIcon');
         const html = document.documentElement;
         
-        // Check saved theme
         const savedTheme = localStorage.getItem('theme') || 'dark';
         html.setAttribute('data-theme', savedTheme);
         updateThemeIcon(savedTheme);
@@ -737,7 +893,6 @@
             }
         }
         
-        // Format time
         function formatTime(dateString) {
             if (!dateString) return '-';
             const date = new Date(dateString);
@@ -753,10 +908,7 @@
             if (hours < 24) return `${hours}小时前`;
             if (days < 7) return `${days}天前`;
             
-            return date.toLocaleDateString('zh-CN', { 
-                month: 'short', 
-                day: 'numeric' 
-            });
+            return date.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' });
         }
         
         function formatFullTime(dateString) {
@@ -770,7 +922,6 @@
             });
         }
         
-        // Extract images from content
         function extractImages(content) {
             if (!content) return [];
             const imgRegex = /<img[^>]+src="([^"]+)"/g;
@@ -782,7 +933,6 @@
             return images;
         }
         
-        // Clean content
         function cleanContent(content) {
             if (!content) return '';
             return content
@@ -796,7 +946,6 @@
                 .trim();
         }
         
-        // Extract tags (topics)
         function extractTags(content) {
             if (!content) return [];
             const tagRegex = /#([^#\s]+)/g;
@@ -808,7 +957,6 @@
             return tags;
         }
         
-        // Update status
         function updateStatus(text, type = 'normal') {
             const status = document.getElementById('status');
             const statusText = document.getElementById('statusText');
@@ -818,38 +966,28 @@
             if (type === 'error') status.classList.add('error');
         }
         
-        // Parse RSS XML to JSON
         function parseRSS(xmlText) {
             const parser = new DOMParser();
             const xml = parser.parseFromString(xmlText, 'text/xml');
-            
             const items = xml.querySelectorAll('item');
             const posts = [];
             
             items.forEach(item => {
-                const title = item.querySelector('title')?.textContent || '';
-                const description = item.querySelector('description')?.textContent || '';
-                const pubDate = item.querySelector('pubDate')?.textContent || '';
-                const link = item.querySelector('link')?.textContent || '';
-                
                 posts.push({
-                    title,
-                    description,
-                    pubDate,
-                    link
+                    title: item.querySelector('title')?.textContent || '',
+                    description: item.querySelector('description')?.textContent || '',
+                    pubDate: item.querySelector('pubDate')?.textContent || '',
+                    link: item.querySelector('link')?.textContent || ''
                 });
             });
             
             return posts;
         }
         
-        // Render single post
-        function renderPost(item, isModal = false) {
+        function renderPost(item) {
             const images = extractImages(item.description);
             let content = cleanContent(item.description);
             const tags = extractTags(content);
-            
-            // Remove tags from content for display
             content = content.replace(/#([^#\s]+)/g, '').trim();
             
             const imageClass = images.length === 1 ? 'single' : images.length === 2 ? 'double' : 'multiple';
@@ -876,7 +1014,6 @@
             `;
         }
         
-        // Render posts
         function renderPosts(items) {
             const container = document.getElementById('posts');
             
@@ -896,22 +1033,17 @@
                 </article>
             `).join('');
             
-            // Update stats
             document.getElementById('postCount').textContent = items.length;
             document.getElementById('updateTime').textContent = formatTime(new Date());
         }
         
-        // Fetch with timeout
         function fetchWithTimeout(url, timeout = 10000) {
             return Promise.race([
                 fetch(url),
-                new Promise((_, reject) => 
-                    setTimeout(() => reject(new Error('Timeout')), timeout)
-                )
+                new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), timeout))
             ]);
         }
         
-        // Try fetch from multiple sources
         async function tryFetchRSS() {
             const errors = [];
             
@@ -919,36 +1051,25 @@
                 try {
                     console.log('Trying:', source);
                     const response = await fetchWithTimeout(source);
-                    
-                    if (!response.ok) {
-                        throw new Error(`HTTP ${response.status}`);
-                    }
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
                     
                     const text = await response.text();
                     
-                    // Check if it's JSON (from rss2json) or XML
                     if (text.trim().startsWith('{')) {
                         const data = JSON.parse(text);
-                        if (data.items && Array.isArray(data.items)) {
-                            return data.items;
-                        }
+                        if (data.items && Array.isArray(data.items)) return data.items;
                     } else {
-                        // Parse XML RSS
                         const items = parseRSS(text);
-                        if (items.length > 0) {
-                            return items;
-                        }
+                        if (items.length > 0) return items;
                     }
                 } catch (err) {
                     errors.push(`${source}: ${err.message}`);
-                    console.warn('Source failed:', source, err.message);
                 }
             }
             
-            throw new Error('All sources failed: ' + errors.join('; '));
+            throw new Error('All sources failed');
         }
         
-        // Main fetch function with retry
         async function fetchPosts(showLoading = true, isRetry = false) {
             const refreshBtn = document.getElementById('refreshBtn');
             refreshBtn.disabled = true;
@@ -959,7 +1080,6 @@
             
             try {
                 const items = await tryFetchRSS();
-                
                 posts = items;
                 lastFetchTime = new Date();
                 retryCount = 0;
@@ -967,7 +1087,6 @@
                 renderPosts(posts);
                 updateStatus('实时同步中');
                 
-                // Save to localStorage as cache
                 localStorage.setItem('jikePosts', JSON.stringify({
                     posts: posts,
                     timestamp: Date.now()
@@ -977,7 +1096,6 @@
             } catch (error) {
                 console.error('Fetch error:', error);
                 
-                // Try to load from cache
                 const cached = localStorage.getItem('jikePosts');
                 if (cached) {
                     try {
@@ -987,7 +1105,6 @@
                             renderPosts(posts);
                             updateStatus('显示缓存数据');
                             
-                            // Retry after delay
                             if (retryCount < MAX_RETRIES) {
                                 retryCount++;
                                 setTimeout(() => fetchPosts(false, true), RETRY_DELAY);
@@ -996,15 +1113,11 @@
                             refreshBtn.disabled = false;
                             return false;
                         }
-                    } catch (e) {
-                        console.error('Cache parse error:', e);
-                    }
+                    } catch (e) {}
                 }
                 
-                // Show error
                 updateStatus('同步失败', 'error');
-                const container = document.getElementById('posts');
-                container.innerHTML = `
+                document.getElementById('posts').innerHTML = `
                     <div class="error">
                         <div class="error-icon">⚠️</div>
                         <h3>加载失败</h3>
@@ -1013,7 +1126,6 @@
                     </div>
                 `;
                 
-                // Auto retry
                 if (retryCount < MAX_RETRIES) {
                     retryCount++;
                     setTimeout(() => fetchPosts(false, true), RETRY_DELAY);
@@ -1028,82 +1140,54 @@
         // Random post modal
         const modal = document.getElementById('modal');
         const modalBody = document.getElementById('modalBody');
-        const modalClose = document.getElementById('modalClose');
-        const randomBtn = document.getElementById('randomBtn');
         
-        function showRandomPost() {
+        document.getElementById('randomBtn').addEventListener('click', () => {
             if (posts.length === 0) return;
-            
             const randomIndex = Math.floor(Math.random() * posts.length);
-            const post = posts[randomIndex];
-            
-            modalBody.innerHTML = renderPost(post, true);
+            modalBody.innerHTML = renderPost(posts[randomIndex]);
             modal.classList.add('active');
-        }
+        });
         
-        randomBtn.addEventListener('click', showRandomPost);
-        
-        modalClose.addEventListener('click', () => {
+        document.getElementById('modalClose').addEventListener('click', () => {
             modal.classList.remove('active');
         });
         
         modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.classList.remove('active');
-            }
+            if (e.target === modal) modal.classList.remove('active');
         });
         
-        // Refresh button
         document.getElementById('refreshBtn').addEventListener('click', () => {
             retryCount = 0;
             fetchPosts(true);
         });
         
-        // Auto refresh
         function startAutoRefresh() {
-            if (autoRefreshInterval) {
-                clearInterval(autoRefreshInterval);
-            }
-            autoRefreshInterval = setInterval(() => {
-                fetchPosts(false);
-            }, REFRESH_INTERVAL);
+            if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+            autoRefreshInterval = setInterval(() => fetchPosts(false), REFRESH_INTERVAL);
         }
         
-        // Load from cache on init
         function loadFromCache() {
             const cached = localStorage.getItem('jikePosts');
             if (cached) {
                 try {
                     const data = JSON.parse(cached);
-                    const age = Date.now() - data.timestamp;
-                    
-                    // Cache valid for 1 hour
-                    if (data.posts && data.posts.length > 0 && age < 3600000) {
+                    if (data.posts && data.posts.length > 0 && (Date.now() - data.timestamp) < 3600000) {
                         posts = data.posts;
                         renderPosts(posts);
                         updateStatus('显示缓存数据');
                         return true;
                     }
-                } catch (e) {
-                    console.error('Cache error:', e);
-                }
+                } catch (e) {}
             }
             return false;
         }
         
-        // Initialize
         function init() {
-            // Try cache first for instant display
             const hasCache = loadFromCache();
-            
-            // Then fetch fresh data
             fetchPosts(!hasCache);
-            
-            // Start auto refresh
             startAutoRefresh();
         }
         
-        // Start
         init();
     </script>
 </body>
