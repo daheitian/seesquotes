@@ -1,103 +1,138 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>你的名字 | 个人品牌站</title>
+    <title>小信号 | SEES-QUOTATION</title>
     <link rel="stylesheet" href="style.css">
+    <base target="_blank">
 </head>
 <body>
-
-    <!-- 顶部固定导航栏 -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <a href="#about" class="logo">你的昵称</a>
-            <ul class="nav-links">
-                <li><a href="#about">关于</a></li>
-                <li><a href="#quotes">金句库</a></li>
-                <li><a href="#yearlog">成长线</a></li>
-                <li><a href="#contact">链接</a></li>
-            </ul>
+    <header>
+        <div class="header-inner">
+            <a href="#" class="logo">
+                小信号<span>.</span>
+            </a>
+            <nav>
+                <a href="#" class="active" data-page="home">见室引号</a>
+                <a href="https://buercrock.notion.site/daheitian-web-fe688e111f9e47a097e422e3eb8ae35c" target="_blank">主页</a>
+                <a href="#" data-page="about">关于</a>
+            </nav>
+            <div class="controls">
+                <button class="btn-icon" id="refreshBtn" title="刷新">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+                    </svg>
+                </button>
+                <button class="btn-icon" id="themeBtn" title="切换主题">
+                    <svg id="sunIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"/>
+                        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                    </svg>
+                    <svg id="moonIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none">
+                        <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+                    </svg>
+                </button>
+            </div>
         </div>
-    </nav>
-
-    <main class="container">
-        <!-- 模块 1：个人介绍 (About) -->
-        <section id="about" class="section">
-            <h1 class="section-title">你好，我是XX</h1>
-            <div class="about-content">
-                <p>这里写你的基础标签：比如「199X年生于XX，现居XX，XX职业/身份」。</p>
-                <p>这里写你的性格/兴趣：比如「MBTI: INFP，喜欢XX，专注XX」。</p>
-                
-                <div class="identity-tags">
-                    <span class="tag">前XX：一句话描述经历（如：大学折腾过年流水XX的项目）</span>
-                    <span class="tag">现XX：一句话描述现状（如：独立内容创作者，深耕金句筛选）</span>
-                    <span class="tag">标签3：你的核心成果（如：累计整理10000+条优质金句）</span>
-                </div>
-
-                <p class="manifesto">这里放你的建站初心，比如：<br>
-                “我遇到的所有最酷的人，都是通过我写的东西找到我的。” —— 你可以模仿这句。</p>
-            </div>
-        </section>
-
-        <!-- 模块 2：金句库 (Quotes) - 保留你的核心特色 -->
-        <section id="quotes" class="section">
-            <h1 class="section-title">SEES-QUOTATION 金句库</h1>
+    </header>
+    
+    <main>
+        <div id="homePage">
+            <section class="hero">
+                <div class="hero-icon">💭</div>
+                <h1>SEES-QUOTATION</h1>
+                <p>一些金句一些思考 一些优质信息源</p>
+                <button class="random-btn" id="randomBtn">
+                    <span>🎲</span>
+                    <span>随机一条</span>
+                </button>
+            </section>
             
-            <!-- 筛选按钮 -->
-            <div class="filter-buttons">
-                <button class="filter-btn active" data-category="all">全部</button>
-                <button class="filter-btn" data-category="growth">成长思考</button>
-                <button class="filter-btn" data-category="life">生活哲思</button>
-                <button class="filter-btn" data-category="random">🎲 随机一条</button>
-            </div>
-
-            <!-- 金句展示区 -->
-            <div id="quote-display" class="quote-card">
-                <p class="quote-text">点击上方按钮，开始探索金句。</p>
-                <p class="quote-interpretation" style="display: none;"></p>
-                <span class="quote-category"></span>
-            </div>
-        </section>
-
-        <!-- 模块 3：成长时间线 (YearLog) -->
-        <section id="yearlog" class="section">
-            <h1 class="section-title">YearLog 成长轨迹</h1>
-            <div class="timeline">
-                <!-- 时间线项目：复制这个块来增加年份 -->
-                <div class="timeline-item">
-                    <div class="timeline-year">2025</div>
-                    <div class="timeline-content">
-                        <h3>里程碑事件1</h3>
-                        <p>描述：比如「上线了这个个人网站，开始系统性整理自己的思考。」</p>
-                    </div>
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="postCount">-</div>
+                    <div class="stat-label">动态</div>
                 </div>
-                <div class="timeline-item">
-                    <div class="timeline-year">2024</div>
-                    <div class="timeline-content">
-                        <h3>里程碑事件2</h3>
-                        <p>描述：比如「开始做金句摘抄，累计阅读了XX本书/文章。」</p>
-                    </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="updateTime">-</div>
+                    <div class="stat-label">更新</div>
                 </div>
             </div>
-        </section>
-
-        <!-- 模块 4：联系方式 (Contact) -->
-        <section id="contact" class="section">
-            <h1 class="section-title">Talk to Me</h1>
-            <p>如果你也喜欢优质的文字，想交流思考、聊聊生活，欢迎找我。</p>
-            <div class="social-links">
-                <a href="#" class="social-link">微信：你的微信号</a>
-                <a href="#" class="social-link">即刻：@你的昵称</a>
-                <a href="#" class="social-link">GitHub：@你的ID</a>
-                <a href="#" class="social-link">Email：your@email.com</a>
+            
+            <div class="status" id="status">
+                <span class="status-dot"></span>
+                <span id="statusText">正在连接...</span>
             </div>
-        </section>
+            
+            <div class="posts" id="posts">
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <p>正在连接即刻...</p>
+                </div>
+            </div>
+        </div>
+        
+        <div id="aboutPage" style="display: none;">
+            <section class="hero">
+                <div class="hero-icon">👋</div>
+                <h1>关于</h1>
+                <p>认识一下</p>
+            </section>
+            
+            <div class="about-card">
+                <div class="about-header">
+                    <div class="about-avatar">黑</div>
+                    <div class="about-info">
+                        <h2>大黑天</h2>
+                        <p>室内设计师 / 效率工具爱好者</p>
+                    </div>
+                </div>
+                
+                <div class="about-tags">
+                    <span class="about-tag">空间设计</span>
+                    <span class="about-tag">建筑设计</span>
+                    <span class="about-tag">室内设计</span>
+                    <span class="about-tag">商业</span>
+                    <span class="about-tag">阅读</span>
+                    <span class="about-tag">效率工具</span>
+                </div>
+                
+                <div class="about-content">
+                    <div class="about-item">
+                        <span>💡</span>
+                        <span>关注空间、建筑、室内设计的室内设计师</span>
+                    </div>
+                    <div class="about-item">
+                        <span>☁️</span>
+                        <span>也还关注喜欢：商业、阅读、思考、折腾、教育、办公</span>
+                    </div>
+                    <div class="about-item">
+                        <span>🌲</span>
+                        <span>软件效率工具爱好者</span>
+                    </div>
+                    <div class="about-item">
+                        <span>🌲</span>
+                        <span>优质信息爱好者</span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
-
-    <footer class="footer">
-        <p>&copy; 2025 你的名字. Powered by GitHub Pages.</p>
+    
+    <footer>
+        <p>同步自 <a href="https://okjk.co/ZrdvaB" target="_blank">即刻</a> · 实时更新 · 自动重试机制</p>
     </footer>
+    
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title">🎲 随机一条</span>
+                <button class="modal-close" id="modalClose">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>
