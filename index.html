@@ -900,12 +900,22 @@
 
     <script>
         // Configuration
-        const USER_ID = '16120E35-EB4B-4FF1-9DBC-9BEFC1D16CCD';
-        
-        const RSS_SOURCES = [
-            `https://rsshub.rss3.workers.dev/jike/user/${USER_ID}`,
-            `https://rsshub.uneasy.win/jike/user/${USER_ID}`,
-            `https://rsshub.app/jike/user/${USER_ID}`
+        // 替换为 RSSHub 公共镜像地址
+const rssUrl = 'https://rsshub.rssforever.com/jike/user/16120E35-EB4B-4FF1-9DBC-9BEFC1D16CCD';
+
+fetch(rssUrl, {
+  method: 'GET',
+  headers: {
+    'Accept': 'application/rss+xml, application/xml, text/xml',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+  }
+})
+.then(response => {
+  if (response.ok) return response.text();
+  throw new Error(`请求失败：${response.status}`);
+})
+.then(data => console.log('RSS 数据:', data))
+.catch(err => console.error('错误:', err));
         ];
         
         const REFRESH_INTERVAL = 3 * 60 * 1000;
