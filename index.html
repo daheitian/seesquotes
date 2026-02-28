@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>小信号 | SEES-QUOTATION</title>
     <style>
-        /* 完整样式（与您原版一致） */
+        /* 样式完整保留（与您原版 100% 一致） */
         :root { --bg-primary: #0a0a0a; --bg-secondary: #141414; --bg-card: #1a1a1a; --bg-card-hover: #222222; --text-primary: #e7e9ea; --text-secondary: #8899a6; --text-muted: #536471; --accent: #1d9bf0; --border: #2f3336; --shadow: rgba(0, 0, 0, 0.5); }
         [data-theme="light"] { --bg-primary: #f7f9fa; --bg-secondary: #ffffff; --bg-card: #ffffff; --bg-card-hover: #f7f9fa; --text-primary: #0f1419; --text-secondary: #536471; --text-muted: #8899a6; --accent: #1d9bf0; --border: #eff3f4; --shadow: rgba(0, 0, 0, 0.08); }
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -90,7 +90,16 @@
         .about-content { display: flex; flex-direction: column; gap: 12px; }
         .about-item { display: flex; align-items: flex-start; gap: 12px; font-size: 15px; line-height: 1.7; color: var(--text-primary); }
         .about-item span { font-size: 18px; flex-shrink: 0; }
-        @media (max-width: 640px) { nav { display: none; } .hero { padding: 40px 0 32px; } .hero h1 { font-size: 22px; } .stats { gap: 16px; } .stat-value { font-size: 20px; } .post { padding: 16px; } .about-card { padding: 24px; } .about-avatar { width: 56px; height: 56px; font-size: 22px; } }
+        @media (max-width: 640px) {
+            nav { display: none; }
+            .hero { padding: 40px 0 32px; }
+            .hero h1 { font-size: 22px; }
+            .stats { gap: 16px; }
+            .stat-value { font-size: 20px; }
+            .post { padding: 16px; }
+            .about-card { padding: 24px; }
+            .about-avatar { width: 56px; height: 56px; font-size: 22px; }
+        }
     </style>
     <base target="_blank">
 </head>
@@ -166,17 +175,16 @@
         const RSS_URL = 'https://rsshub.app/jike/user/16120E35-EB4B-4FF1-9DBC-9BEFC1D16CCD';
         const REFRESH_INTERVAL = 3 * 60 * 1000;
         const RETRY_DELAY = 5000;
-        const MAX_RETRIES = 3;
 
         let posts = [];
         let retryCount = 0;
         let autoRefreshInterval = null;
 
-        // 安全 localStorage（已防 sandbox 错误）
+        // 安全 localStorage
         let ls = null;
-        try { ls = window.localStorage; } catch (e) { console.warn('localStorage 不可用（Vercel sandbox），缓存已禁用'); }
+        try { ls = window.localStorage; } catch (e) { console.warn('localStorage 不可用（sandbox），缓存已禁用'); }
 
-        // 页面 & 主题切换（不变）
+        // 页面 & 主题（不变）
         const navLinks = document.querySelectorAll('nav a[data-page]');
         const homePage = document.getElementById('homePage');
         const aboutPage = document.getElementById('aboutPage');
@@ -232,7 +240,11 @@
                 link: i.querySelector('link')?.textContent || ''
             }));
         }
-        function renderPost(item) { /* 完整渲染逻辑，与上版一致 */ const imgs = extractImages(item.description), content = cleanContent(item.description).replace(/#([^#\s]+)/g,'').trim(), tags = extractTags(item.description); const cls = imgs.length===1?'single':imgs.length===2?'double':'multiple'; return `<div class="post-header"><div class="post-avatar">黑</div><div class="post-meta"><div class="post-author">大黑天</div><div class="post-time">${formatFullTime(item.pubDate)} · ${formatTime(item.pubDate)}</div></div></div><div class="post-content">${content}</div>${imgs.length?`<div class="post-images ${cls}">${imgs.map(src=>`<img src="${src}" loading="lazy" onerror="this.style.display='none'">`).join('')}</div>`:''}${tags.length?`<div class="post-tags">${tags.map(t=>`<span class="tag">#${t}</span>`).join('')}</div>`:''}`; }
+        function renderPost(item) {
+            const imgs = extractImages(item.description), content = cleanContent(item.description).replace(/#([^#\s]+)/g,'').trim(), tags = extractTags(item.description);
+            const cls = imgs.length===1?'single':imgs.length===2?'double':'multiple';
+            return `<div class="post-header"><div class="post-avatar">黑</div><div class="post-meta"><div class="post-author">大黑天</div><div class="post-time">${formatFullTime(item.pubDate)} · ${formatTime(item.pubDate)}</div></div></div><div class="post-content">${content}</div>${imgs.length?`<div class="post-images ${cls}">${imgs.map(src=>`<img src="${src}" loading="lazy" onerror="this.style.display='none'">`).join('')}</div>`:''}${tags.length?`<div class="post-tags">${tags.map(t=>`<span class="tag">#${t}</span>`).join('')}</div>`:''}`;
+        }
         function renderPosts(items) {
             const c = document.getElementById('posts');
             if (!items.length) { c.innerHTML = `<div class="empty"><div class="empty-icon">📝</div><p>暂无动态</p></div>`; return; }
@@ -241,33 +253,39 @@
             document.getElementById('updateTime').textContent = formatTime(new Date());
         }
 
-        // 新增 2026 稳定代理（解决您的 403/代理问题）
+        // ==================== 2026 最新稳定代理列表（关键修复） ====================
         async function fetchRSS() {
             const proxies = [
-                `https://api.allorigins.win/raw?url=${encodeURIComponent(RSS_URL)}`,
-                `https://cors.bridged.cc/${RSS_URL}`,
+                `https://api.allorigins.win/raw?url=${encodeURIComponent(RSS_URL)}`,           // 最稳定
+                `https://test.cors.workers.dev/?url=${encodeURIComponent(RSS_URL)}`,         // Cloudflare 新增
+                `https://cors.x2u.in/${RSS_URL}`,                                            // 前缀式 新增
                 `https://api.cors.lol/?url=${encodeURIComponent(RSS_URL)}`,
-                `https://corsproxy.io/?url=${encodeURIComponent(RSS_URL)}`,
-                `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(RSS_URL)}`
+                `https://corsproxy.io/?url=${encodeURIComponent(RSS_URL)}`
             ];
             for (const url of proxies) {
                 try {
+                    console.log(`尝试代理 → ${url.split('/')[2]}`);
                     const ctrl = new AbortController();
-                    const to = setTimeout(() => ctrl.abort(), 15000);
-                    const res = await fetch(url, {signal: ctrl.signal});
-                    clearTimeout(to);
-                    if (!res.ok) continue;
+                    const timeout = setTimeout(() => ctrl.abort(), 15000);
+                    const res = await fetch(url, { signal: ctrl.signal });
+                    clearTimeout(timeout);
+                    if (!res.ok) { console.warn(`状态 ${res.status}`); continue; }
                     const text = await res.text();
                     if (text.includes('<rss') || text.includes('<channel>')) {
                         const items = parseRSS(text);
-                        if (items.length) return items;
+                        if (items.length > 0) {
+                            console.log(`✅ ${url.split('/')[2]} 成功！共 ${items.length} 条动态`);
+                            return items;
+                        }
                     }
-                } catch (e) { console.warn(`代理失败: ${url.split('/')[2]}`); }
+                } catch (e) {
+                    console.warn(`代理失败: ${url.split('/')[2]}`, e.message);
+                }
             }
-            throw new Error('所有代理均失败（RSSHub 源可能暂时不可用）');
+            throw new Error('所有代理均失败（建议关闭 Clash/V2Ray 后重试）');
         }
 
-        // 主函数（增强错误提示）
+        // 主获取函数（优化错误提示）
         async function fetchPosts(showLoading = true) {
             const btn = document.getElementById('refreshBtn');
             btn.disabled = true;
@@ -285,7 +303,12 @@
                     if (cached) {
                         try {
                             const data = JSON.parse(cached);
-                            if (data.posts?.length) { posts = data.posts; renderPosts(posts); updateStatus('显示缓存数据'); return; }
+                            if (data.posts?.length) {
+                                posts = data.posts;
+                                renderPosts(posts);
+                                updateStatus('显示缓存数据');
+                                return;
+                            }
                         } catch (_) {}
                     }
                 }
@@ -294,17 +317,17 @@
                     <div class="error">
                         <div class="error-icon">⚠️</div>
                         <h3>加载失败</h3>
-                        <p>网络连接不稳定或 RSSHub 源暂时不可用<br><br>
+                        <p>代理被限流或本地 Clash 拦截<br><br>
                         建议：<br>
-                        1. 暂时关闭 Clash / V2Ray 等本地代理<br>
-                        2. 扩展程序日志（clipper / highlight）可忽略<br>
-                        3. 点击下方按钮重试</p>
+                        1. 暂时关闭 Clash / V2Ray<br>
+                        2. 扩展程序错误可忽略<br>
+                        3. 点击下方重试</p>
                         <button class="retry-btn" onclick="fetchPosts(true)">重新加载</button>
                     </div>`;
             } finally { btn.disabled = false; }
         }
 
-        // 随机弹窗 & 刷新 & 自动刷新
+        // 随机弹窗 & 刷新 & 自动刷新（不变）
         const modal = document.getElementById('modal'), modalBody = document.getElementById('modalBody');
         document.getElementById('randomBtn').addEventListener('click', () => {
             if (!posts.length) return;
