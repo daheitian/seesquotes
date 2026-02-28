@@ -465,9 +465,10 @@
             background: var(--bg-primary);
             border-radius: 8px;
             text-align: left;
-            max-height: 100px;
+            max-height: 150px;
             overflow-y: auto;
             font-family: monospace;
+            white-space: pre-wrap;
         }
         
         .retry-btn {
@@ -669,19 +670,20 @@
         /* Debug Panel */
         .debug-panel {
             position: fixed;
-            bottom: 20px;
+            bottom: 60px;
             right: 20px;
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 12px;
             padding: 16px;
-            max-width: 400px;
-            max-height: 300px;
+            width: 500px;
+            max-height: 400px;
             overflow-y: auto;
-            font-size: 12px;
-            font-family: monospace;
+            font-size: 11px;
+            font-family: 'Courier New', monospace;
             z-index: 999;
             display: none;
+            box-shadow: 0 8px 32px var(--shadow);
         }
         
         .debug-panel.active {
@@ -700,7 +702,22 @@
             color: var(--text-secondary);
             cursor: pointer;
             z-index: 1000;
+            font-size: 18px;
         }
+        
+        .debug-toggle:hover {
+            background: var(--bg-card-hover);
+        }
+        
+        .debug-line {
+            margin: 2px 0;
+            padding: 2px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .debug-error { color: #f4212e; }
+        .debug-success { color: #00ba7c; }
+        .debug-info { color: var(--text-secondary); }
         
         /* Mobile */
         @media (max-width: 640px) {
@@ -736,6 +753,12 @@
                 width: 56px;
                 height: 56px;
                 font-size: 22px;
+            }
+            
+            .debug-panel {
+                width: calc(100vw - 40px);
+                right: 20px;
+                left: 20px;
             }
         }
     </style>
@@ -879,7 +902,6 @@
         // Configuration
         const USER_ID = '16120E35-EB4B-4FF1-9DBC-9BEFC1D16CCD';
         
-        // ✅ 修复：移除 URL 中的空格
         const RSS_SOURCES = [
             `https://rsshub.rss3.workers.dev/jike/user/${USER_ID}`,
             `https://rsshub.uneasy.win/jike/user/${USER_ID}`,
@@ -899,12 +921,28 @@
         // Debug functions
         function log(message, type = 'info') {
             const timestamp = new Date().toLocaleTimeString();
-            const logEntry = `[${timestamp}] ${type}: ${message}`;
+            const logEntry = { time: timestamp, message, type };
             debugLogs.push(logEntry);
-            console.log(logEntry);
+            
+            // Keep only last 50 logs
+            if (debugLogs.length > 50) debugLogs.shift();
             
             const debugPanel = document.getElementById('debugPanel');
-            debugPanel.innerHTML = debugLogs.join('<br>');
+            const className = type === 'error' ? 'debug-error' : type === 'success' ? 'debug-success' : 'debug-info';
+            const line = document.createElement('div');
+            line.className = `debug-line ${className}`;
+            line.textContent = `[${timestamp}] ${message}`;
+            
+            // Clear and rebuild
+            debugPanel.innerHTML = '';
+            debugLogs.forEach(log => {
+                const div = document.createElement('div');
+                div.className = `debug-line ${log.type === 'error' ? 'debug-error' : log.type === 'success' ? 'debug-success' : 'debug-info'}`;
+                div.textContent = `[${log.time}] ${log.message}`;
+                debugPanel.appendChild(div);
+            });
+            
+            console.log(`[${type}] ${message}`);
         }
         
         document.getElementById('debugToggle').addEventListener('click', () => {
@@ -1035,35 +1073,74 @@
             if (type === 'error') status.classList.add('error');
         }
         
+        // ✅ 修复：改进的 RSS 解析函数
         function parseRSS(xmlText) {
-            log('Parsing RSS XML...');
-            const parser = new DOMParser();
-            const xml = parser.parseFromString(xmlText, 'text/xml');
+            log('Starting RSS parse...');
             
-            // 检查解析错误
-            const parserError = xml.querySelector('parsererror');
-            if (parserError) {
-                throw new Error('XML parse error: ' + parserError.textContent);
-            }
-            
-            const items = xml.querySelectorAll('item');
-            log(`Found ${items.length} items in RSS`);
-            
-            const posts = [];
-            items.forEach((item, index) => {
-                try {
-                    posts.push({
-                        title: item.querySelector('title')?.textContent || '',
-                        description: item.querySelector('description')?.textContent || '',
-                        pubDate: item.querySelector('pubDate')?.textContent || '',
-                        link: item.querySelector('link')?.textContent || ''
-                    });
-                } catch (e) {
-                    log(`Error parsing item ${index}: ${e.message}`, 'error');
+            try {
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(xmlText, 'application/xml');
+                
+                // 检查解析错误
+                const parseError = xmlDoc.querySelector('parsererror');
+                if (parseError) {
+                    throw new Error('XML parse error: ' + parseError.textContent);
                 }
-            });
-            
-            return posts;
+                
+                // 尝试不同的 RSS 格式
+                let items = xmlDoc.querySelectorAll('item');
+                
+                // 如果没有 item，尝试 Atom 格式
+                if (items.length === 0) {
+                    items = xmlDoc.querySelectorAll('entry');
+                    log('Using Atom format');
+                } else {
+                    log(`Found ${items.length} RSS items`);
+                }
+                
+                if (items.length === 0) {
+                    throw new Error('No items found in feed');
+                }
+                
+                const posts = [];
+                
+                items.forEach((item, index) => {
+                    try {
+                        // RSS 格式
+                        let title = item.querySelector('title')?.textContent || '';
+                        let description = item.querySelector('description')?.textContent || 
+                                        item.querySelector('content')?.textContent || '';
+                        let pubDate = item.querySelector('pubDate')?.textContent || 
+                                    item.querySelector('published')?.textContent || 
+                                    item.querySelector('updated')?.textContent || '';
+                        let link = item.querySelector('link')?.textContent || '';
+                        
+                        // Atom 格式 link 处理
+                        if (!link) {
+                            const linkEl = item.querySelector('link');
+                            if (linkEl) link = linkEl.getAttribute('href') || '';
+                        }
+                        
+                        if (title || description) {
+                            posts.push({
+                                title: title,
+                                description: description,
+                                pubDate: pubDate,
+                                link: link
+                            });
+                        }
+                    } catch (itemError) {
+                        log(`Error parsing item ${index}: ${itemError.message}`, 'error');
+                    }
+                });
+                
+                log(`Successfully parsed ${posts.length} posts`, 'success');
+                return posts;
+                
+            } catch (error) {
+                log(`Parse error: ${error.message}`, 'error');
+                throw error;
+            }
         }
         
         function renderPost(item) {
@@ -1126,7 +1203,7 @@
             return fetch(url, { 
                 signal: controller.signal,
                 headers: {
-                    'Accept': 'application/rss+xml, application/xml, text/xml, */*'
+                    'Accept': 'application/rss+xml, application/xml, text/xml, application/atom+xml, */*'
                 }
             }).finally(() => clearTimeout(timeoutId));
         }
@@ -1137,46 +1214,50 @@
             for (let i = 0; i < RSS_SOURCES.length; i++) {
                 const source = RSS_SOURCES[i];
                 try {
-                    log(`Trying source ${i + 1}/${RSS_SOURCES.length}: ${source}`);
+                    log(`Trying source ${i + 1}: ${source}`);
                     
                     const response = await fetchWithTimeout(source, 15000);
-                    log(`Response status: ${response.status}`);
+                    log(`Response: HTTP ${response.status}`, response.ok ? 'success' : 'error');
                     
                     if (!response.ok) {
                         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                     }
                     
                     const text = await response.text();
-                    log(`Response length: ${text.length} bytes`);
-                    log(`Response preview: ${text.substring(0, 200)}...`);
+                    log(`Got ${text.length} bytes`);
                     
-                    // 检查是否是 JSON
-                    if (text.trim().startsWith('{')) {
-                        try {
-                            const data = JSON.parse(text);
-                            if (data.items && Array.isArray(data.items) && data.items.length > 0) {
-                                log('Successfully parsed as JSON');
-                                return data.items;
-                            }
-                        } catch (e) {
-                            log('Not valid JSON, trying XML...');
-                        }
-                    }
+                    // 检查内容类型
+                    const contentType = response.headers.get('content-type') || '';
+                    log(`Content-Type: ${contentType}`);
                     
-                    // 检查是否是 XML/RSS
-                    if (text.includes('<rss') || text.includes('<feed') || text.includes('<channel')) {
+                    // 尝试解析为 RSS/XML
+                    if (text.includes('<rss') || text.includes('<feed') || text.includes('<channel') || text.includes('<item')) {
+                        log('Detected RSS/XML format');
                         const items = parseRSS(text);
                         if (items.length > 0) {
-                            log(`Successfully parsed RSS with ${items.length} items`);
+                            log(`Success: ${items.length} items`, 'success');
                             return items;
                         }
                     }
                     
-                    throw new Error('Response is not valid RSS or JSON');
+                    // 尝试解析为 JSON
+                    if (text.trim().startsWith('{') || text.trim().startsWith('[')) {
+                        try {
+                            const data = JSON.parse(text);
+                            if (data.items && Array.isArray(data.items) && data.items.length > 0) {
+                                log(`Success: JSON with ${data.items.length} items`, 'success');
+                                return data.items;
+                            }
+                        } catch (e) {
+                            log('Not valid JSON', 'error');
+                        }
+                    }
+                    
+                    throw new Error('Unknown response format');
                     
                 } catch (err) {
                     log(`Source ${i + 1} failed: ${err.message}`, 'error');
-                    errors.push(`Source ${i + 1}: ${err.message}`);
+                    errors.push(`${source}: ${err.message}`);
                 }
             }
             
@@ -1198,7 +1279,7 @@
             }
             
             try {
-                log('Starting fetch...');
+                log('=== Starting fetch ===');
                 const items = await tryFetchRSS();
                 posts = items;
                 lastFetchTime = new Date();
@@ -1207,12 +1288,17 @@
                 renderPosts(posts);
                 updateStatus(`同步成功 · ${posts.length} 条动态`);
                 
-                localStorage.setItem('jikePosts', JSON.stringify({
-                    posts: posts,
-                    timestamp: Date.now()
-                }));
+                // 保存到缓存
+                try {
+                    localStorage.setItem('jikePosts', JSON.stringify({
+                        posts: posts,
+                        timestamp: Date.now()
+                    }));
+                    log('Saved to cache', 'success');
+                } catch (e) {
+                    log('Cache save failed: ' + e.message, 'error');
+                }
                 
-                log('Fetch completed successfully');
                 return true;
                 
             } catch (error) {
@@ -1230,7 +1316,7 @@
                             
                             if (retryCount < MAX_RETRIES) {
                                 retryCount++;
-                                log(`Will retry in ${RETRY_DELAY/1000}s... (${retryCount}/${MAX_RETRIES})`);
+                                log(`Will retry ${retryCount}/${MAX_RETRIES}...`);
                                 setTimeout(() => fetchPosts(false, true), RETRY_DELAY);
                             }
                             
@@ -1303,7 +1389,7 @@
                         posts = data.posts;
                         renderPosts(posts);
                         updateStatus('显示缓存数据');
-                        log('Loaded from cache: ' + posts.length + ' posts');
+                        log('Loaded from cache: ' + posts.length + ' posts', 'success');
                         return true;
                     }
                 } catch (e) {
