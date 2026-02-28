@@ -1,0 +1,37 @@
+name: 定时同步即刻 RSS 数据
+on:
+  # 1. 定时触发：每小时同步一次（可修改 cron 表达式）
+  schedule:
+    - cron: '0 * * * *' # 格式：分 时 日 月 周，* 表示每单位
+  # 2. 手动触发（可选，方便测试）
+  workflow_dispatch:
+
+jobs:
+  sync-rss:
+    runs-on: ubuntu-latest
+    steps:
+      # 步骤 1：拉取仓库代码
+      - name: 拉取仓库代码
+        uses: actions/checkout@v4
+
+      # 步骤 2：安装 Node.js 环境
+      - name: 安装 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # 指定 Node 版本
+
+      # 步骤 3：安装依赖（axios）
+      - name: 安装依赖
+        run: npm install axios
+
+      # 步骤 4：运行抓取脚本
+      - name: 抓取 RSS 数据并保存
+        run: node scripts/fetch-rss.js
+
+      # 步骤 5：提交缓存文件到仓库
+      - name: 提交缓存文件
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: '自动更新即刻 RSS 缓存（${{ github.run_id }}）'
+          file_pattern: 'data/jike-rss.xml' # 仅提交缓存文件
+          branch: main # 替换为你的仓库主分支（比如 master）
