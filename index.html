@@ -827,12 +827,19 @@
         const USER_ID = '16120E35-EB4B-4FF1-9DBC-9BEFC1D16CCD';
         
         // Multiple RSS sources for redundancy
-        const RSS_SOURCES = [
-            `https://rsshub.rss3.workers.dev/jike/user/${USER_ID}`,
-            `https://r.jina.ai/http://rsshub.app/jike/user/${USER_ID}`,
-            `https://api.allorigins.win/raw?url=${encodeURIComponent(`https://rsshub.app/jike/user/${USER_ID}`)}`
-        ];
-        
+     const RSS_SOURCES = [
+    // 首选：你已验证可用的 Cloudflare Workers 地址
+    `https://rsshub.rss3.workers.dev/jike/user/${USER_ID}`,
+    
+    // 备选1：使用 rss2json 服务将官方源转为 JSON，可以绕过跨域和部分访问限制
+    `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(`https://rsshub.app/jike/user/${USER_ID}`)}`,
+    
+    // 备选2：通过 cors-proxy 代理请求官方源，尝试绕过限制
+    `https://cors-anywhere.herokuapp.com/https://rsshub.app/jike/user/${USER_ID}`,
+    
+    // 备选3：另一个公共 RSSHub 实例
+    `https://rsshub.uneasy.win/jike/user/${USER_ID}`
+];
         const REFRESH_INTERVAL = 3 * 60 * 1000;
         const RETRY_DELAY = 5000;
         const MAX_RETRIES = 3;
