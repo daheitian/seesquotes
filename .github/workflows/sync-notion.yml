@@ -4,8 +4,9 @@ on:
   schedule:
     - cron: '0 */3 * * *'  # 每3小时同步一次
   workflow_dispatch:  # 允许手动触发
-  push:
-    branches: [ main, master ]  # 推送时也触发（首次配置时用）
+
+permissions:
+  contents: write  # 关键：允许写入仓库
 
 jobs:
   sync:
@@ -14,22 +15,30 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          token: ${{ secrets.GITHUB_TOKEN }}  # 使用自动生成的 token
+          fetch-depth: 0  # 获取完整历史
       
-      - name: Fetch Notion Data
+      - name: Setup Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global --add safe.directory /github/workspace
+      
+      - name: Create data directory
+        run: mkdir -p _data
+      
+      - name: Fetch Notion Ideas
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           NOTION_DB_IDEAS: ${{ secrets.NOTION_DB_IDEAS }}
-          NOTION_DB_READING: ${{ secrets.NOTION_DB_READING }}
         run: |
-          mkdir -p _data
+          if [ -z "$NOTION_TOKEN" ] || [ -z "$NOTION_DB_IDEAS" ]; then
+            echo "❌ Error: NOTION_TOKEN or NOTION_DB_IDEAS is not set"
+            exit 1
+          fi
           
-          # 同步见室引号（想法）
-          echo "Syncing Ideas..."
+          echo "📝 Fetching ideas from Notion..."
           curl -s -X POST \
             -H "Authorization: Bearer $NOTION_TOKEN" \
             -H "Notion-Version: 2022-06-28" \
@@ -40,8 +49,28 @@ jobs:
               "page_size": 100
             }' | jq '.' > _data/notion_ideas.json
           
-          # 同步阅览（阅读清单）
-          echo "Syncing Reading..."
+          # 验证 JSON 是否有效
+          if jq empty _data/notion_ideas.json 2>/dev/null; then
+            COUNT=$(jq '.results | length' _data/notion_ideas.json)
+            echo "✅ Ideas fetched: $COUNT items"
+          else
+            echo "❌ Error: Invalid JSON response"
+            cat _data/notion_ideas.json
+            exit 1
+          fi
+      
+      - name: Fetch Notion Reading
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_DB_READING: ${{ secrets.NOTION_DB_READING }}
+        run: |
+          if [ -z "$NOTION_TOKEN" ] || [ -z "$NOTION_DB_READING" ]; then
+            echo "⚠️ Warning: NOTION_DB_READING not set, skipping reading sync"
+            echo '{"results":[]}' > _data/notion_reading.json
+            exit 0
+          fi
+          
+          echo "📚 Fetching reading list from Notion..."
           curl -s -X POST \
             -H "Authorization: Bearer $NOTION_TOKEN" \
             -H "Notion-Version: 2022-06-28" \
@@ -52,13 +81,32 @@ jobs:
               "page_size": 100
             }' | jq '.' > _data/notion_reading.json
           
-          # 验证文件
-          echo "Ideas count: $(jq '.results | length' _data/notion_ideas.json)"
-          echo "Reading count: $(jq '.results | length' _data/notion_reading.json)"
+          if jq empty _data/notion_reading.json 2>/dev/null; then
+            COUNT=$(jq '.results | length' _data/notion_reading.json)
+            echo "✅ Reading list fetched: $COUNT items"
+          else
+            echo "⚠️ Warning: Invalid JSON for reading list, creating empty file"
+            echo '{"results":[]}' > _data/notion_reading.json
+          fi
+      
+      - name: Check for changes
+        id: check_changes
+        run: |
+          git add _data/
+          if git diff --cached --quiet; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "ℹ️ No changes to commit"
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "📝 Changes detected"
+          fi
       
       - name: Commit and Push
+        if: steps.check_changes.outputs.changed == 'true'
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add _data/
-          git diff --quiet && git diff --staged --quiet || (git commit -m "🔄 Auto-sync Notion data [$(date +'%Y-%m-%d %H:%M')]" && git push)
+          git commit -m "🔄 Auto-sync Notion data [$(date +'%Y-%m-%d %H:%M UTC')]"
+          
+          # 使用 GITHUB_TOKEN 推送
+          git push "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:${{ github.ref }}
+          
+          echo "✅ Data synced successfully"
