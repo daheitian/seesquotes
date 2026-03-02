@@ -26,7 +26,7 @@ title: 见室引号
 
 <div class="status" id="status">
   <span class="status-dot"></span>
-  <span id="statusText">正在连接 Notion...</span>
+  <span id="statusText">加载中...</span>
 </div>
 
 <div class="search-box">
@@ -37,30 +37,19 @@ title: 见室引号
 <div class="posts" id="posts">
   <div class="loading">
     <div class="loading-spinner"></div>
-    <p>正在从 Notion 加载...</p>
+    <p>正在加载...</p>
   </div>
 </div>
 
 <script>
 // ============================================
-// 见室引号 - Notion 同步配置
+// 见室引号 - 读取本地 JSON 数据
 // ============================================
-
-// ⚠️ 需要你自己配置的部分：
-const NOTION_TOKEN = '{{ site.notion_token }}';  // 从 _config.yml 读取，或这里直接写死
-const NOTION_DATABASE_ID = '{{ site.notion_database_id_ideas }}';  // 你的想法数据库ID
-
-// 备用：如果上面为空，直接在这里填写（不推荐，会暴露token）
-// const NOTION_TOKEN = 'secret_xxxxxxxx';
-// const NOTION_DATABASE_ID = 'xxxxxxxx';
-
-const REFRESH_INTERVAL = 5 * 60 * 1000; // 5分钟刷新
 
 let posts = [];
 let ls = null;
 try { ls = window.localStorage; } catch (e) {}
 
-// 格式化时间
 function formatTime(d) {
   if (!d) return '-';
   const date = new Date(d);
@@ -96,41 +85,43 @@ function updateStatus(t, type = 'normal') {
   if (type === 'error') s.classList.add('error');
 }
 
-// 从 Notion API 获取数据
-async function fetchFromNotion() {
-  // 如果没有配置，显示提示
-  if (!NOTION_TOKEN || !NOTION_DATABASE_ID || NOTION_TOKEN.includes('{{')) {
-    throw new Error('请配置 Notion Token 和 Database ID');
-  }
-
-  const response = await fetch(`https://api.notion.com/v1/databases/${NOTION_DATABASE_ID}/query`, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${NOTION_TOKEN}`,
-      'Notion-Version': '2022-06-28',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      sorts: [{ timestamp: 'created_time', direction: 'descending' }],
-      page_size: 100
-    })
-  });
-
-  if (!response.ok) {
-    throw new Error(`Notion API Error: ${response.status}`);
-  }
-
-  const data = await response.json();
+// 解析 Notion API 返回的数据
+function parseNotionData(data) {
+  if (!data || !data.results) return [];
+  
   return data.results.map(page => {
     const props = page.properties;
+    
+    // 获取标题（可能是 Name 或 title）
+    const title = props.Name?.title?.[0]?.plain_text || 
+                  props.title?.title?.[0]?.plain_text || 
+                  '无标题';
+    
+    // 获取内容（可能是 Content 或正文）
+    const content = props.Content?.rich_text?.[0]?.plain_text || 
+                    props.内容?.rich_text?.[0]?.plain_text ||
+                    props.Note?.rich_text?.[0]?.plain_text ||
+                    title;  // 如果没有内容字段，用标题
+    
+    // 获取标签
+    const tags = props.Tags?.multi_select?.map(t => t.name) || 
+                 props.tags?.multi_select?.map(t => t.name) ||
+                 props.标签?.multi_select?.map(t => t.name) || [];
+    
+    // 获取封面图
+    const cover = page.cover?.external?.url || 
+                  page.cover?.file?.url || 
+                  null;
+    
     return {
       id: page.id,
-      title: props.Name?.title?.[0]?.plain_text || '无标题',
-      content: props.Content?.rich_text?.[0]?.plain_text || '',
-      tags: props.Tags?.multi_select?.map(t => t.name) || [],
+      title: title,
+      content: content,
+      tags: tags,
       created_time: page.created_time,
+      last_edited_time: page.last_edited_time,
       url: page.url,
-      cover: page.cover?.external?.url || page.cover?.file?.url || null
+      cover: cover
     };
   });
 }
@@ -175,7 +166,14 @@ function renderPost(item, isModal = false) {
 function renderPosts(items) {
   const c = document.getElementById('posts');
   if (!items || !items.length) {
-    c.innerHTML = `<div class="empty"><div class="empty-icon">📝</div><p>暂无想法，去 Notion 添加吧</p></div>`;
+    c.innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">📝</div>
+        <p>暂无想法</p>
+        <p style="font-size: 13px; margin-top: 8px; color: var(--text-muted);">
+          在 Notion 中添加内容，GitHub Actions 会自动同步
+        </p>
+      </div>`;
     return;
   }
   
@@ -192,7 +190,8 @@ function filterPosts(query) {
   if (!query) return posts;
   const lower = query.toLowerCase();
   return posts.filter(p => 
-    (p.content || p.title).toLowerCase().includes(lower) ||
+    (p.content || '').toLowerCase().includes(lower) ||
+    (p.title || '').toLowerCase().includes(lower) ||
     p.tags?.some(t => t.toLowerCase().includes(lower))
   );
 }
@@ -202,22 +201,37 @@ document.getElementById('searchInput').addEventListener('input', (e) => {
   renderPosts(filtered);
 });
 
-// 获取数据
-async function fetchPosts(showLoading = true) {
-  const refreshBtn = document.getElementById('refreshBtn');
-  if (refreshBtn) refreshBtn.disabled = true;
-  if (showLoading) updateStatus('正在同步 Notion...', 'syncing');
+// 加载数据（优先本地缓存，然后 fetch JSON）
+async function loadData() {
+  updateStatus('加载中...', 'syncing');
   
   try {
-    const items = await fetchFromNotion();
-    posts = items;
-    renderPosts(posts);
-    updateStatus('已同步 Notion');
-    if (ls) ls.setItem('notionIdeas', JSON.stringify({ posts, timestamp: Date.now() }));
-  } catch (error) {
-    console.error('获取失败:', error);
+    // 尝试从本地 JSON 文件加载
+    const response = await fetch('{{ site.baseurl }}/_data/notion_ideas.json?t=' + Date.now());
     
-    // 尝试缓存
+    if (!response.ok) {
+      throw new Error('数据文件不存在，等待首次同步');
+    }
+    
+    const data = await response.json();
+    posts = parseNotionData(data);
+    
+    // 缓存到 localStorage
+    if (ls) {
+      ls.setItem('notionIdeas', JSON.stringify({ 
+        posts, 
+        timestamp: Date.now(),
+        source: 'json'
+      }));
+    }
+    
+    renderPosts(posts);
+    updateStatus('已同步');
+    
+  } catch (error) {
+    console.error('加载失败:', error);
+    
+    // 尝试从 localStorage 读取缓存
     if (ls) {
       const cached = ls.getItem('notionIdeas');
       if (cached) {
@@ -233,25 +247,18 @@ async function fetchPosts(showLoading = true) {
       }
     }
     
-    updateStatus('同步失败: ' + error.message, 'error');
+    updateStatus('等待首次同步', 'error');
     document.getElementById('posts').innerHTML = `
       <div class="error">
-        <div class="error-icon">⚠️</div>
-        <h3>Notion 连接失败</h3>
-        <p>${error.message}</p>
-        <div style="text-align: left; margin-top: 16px; padding: 16px; background: var(--bg-card-hover); border-radius: 8px; font-size: 13px;">
-          <p><strong>配置步骤：</strong></p>
-          <ol style="margin-left: 16px; margin-top: 8px; line-height: 1.8;">
-            <li>访问 <a href="https://www.notion.so/my-integrations" target="_blank">Notion Integrations</a> 创建集成</li>
-            <li>复制 Token 填入 _config.yml 的 notion_token</li>
-            <li>在 Notion 数据库页面点击 Share，邀请你的集成</li>
-            <li>复制数据库 ID（URL 中 32 位字符）填入 notion_database_id_ideas</li>
-          </ol>
-        </div>
-        <button class="retry-btn" onclick="window.fetchPosts(true)" style="margin-top: 16px;">重新加载</button>
+        <div class="error-icon">⏳</div>
+        <h3>等待数据同步</h3>
+        <p>GitHub Actions 正在首次同步 Notion 数据...</p>
+        <p style="font-size: 13px; margin-top: 8px; color: var(--text-muted);">
+          1. 确保已在仓库 Secrets 中配置 NOTION_TOKEN 和数据库 ID<br>
+          2. 手动运行一次 GitHub Actions workflow<br>
+          3. 刷新页面
+        </p>
       </div>`;
-  } finally {
-    if (refreshBtn) refreshBtn.disabled = false;
   }
 }
 
@@ -263,29 +270,11 @@ document.getElementById('randomBtn').addEventListener('click', () => {
   document.getElementById('modal').classList.add('active');
 });
 
-// 初始化
-function init() {
-  const hasCache = (() => {
-    if (!ls) return false;
-    const cached = ls.getItem('notionIdeas');
-    if (cached) {
-      try {
-        const data = JSON.parse(cached);
-        if (data.posts && data.posts.length && Date.now() - data.timestamp < 3600000) {
-          posts = data.posts;
-          renderPosts(posts);
-          updateStatus('显示缓存数据');
-          return true;
-        }
-      } catch (e) {}
-    }
-    return false;
-  })();
-  
-  fetchPosts(!hasCache);
-  setInterval(() => fetchPosts(false), REFRESH_INTERVAL);
-}
+// 刷新按钮（重新加载 JSON）
+document.getElementById('refreshBtn').addEventListener('click', () => {
+  loadData();
+});
 
-window.fetchPosts = fetchPosts;
-init();
+// 初始化
+loadData();
 </script>
