@@ -1,0 +1,129 @@
+---
+layout: default
+title: 写作
+---
+
+<div class="page-header">
+  <div class="hero-icon">✍️</div>
+  <h1>写作</h1>
+  <p>思考、记录、分享</p>
+</div>
+
+<div class="search-box">
+  <input type="text" id="blogSearch" placeholder="搜索文章..." autocomplete="off">
+</div>
+
+<div class="posts" id="blogList">
+  <div class="loading">
+    <div class="loading-spinner"></div>
+    <p>正在从 GitHub 加载...</p>
+  </div>
+</div>
+
+<script>
+// ============================================
+// 写作 - GitHub Issues 配置
+// ============================================
+
+const GITHUB_USER = '{{ site.github_username }}';
+const GITHUB_REPO = '{{ site.github_repo }}';
+const GITHUB_ISSUES_URL = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/issues?state=open&per_page=50&labels=blog`;
+
+let blogs = [];
+
+function formatTime(d) {
+  if (!d) return '-';
+  const date = new Date(d);
+  const now = new Date();
+  const diff = now - date;
+  const da = Math.floor(diff / 86400000);
+  
+  if (da < 1) return '今天';
+  if (da < 2) return '昨天';
+  if (da < 7) return da + '天前';
+  if (da < 30) return Math.floor(da / 7) + '周前';
+  return date.toLocaleDateString('zh-CN', { year: 'numeric', month: 'short', day: 'numeric' });
+}
+
+function renderBlogList(items) {
+  const c = document.getElementById('blogList');
+  if (!items || !items.length) {
+    c.innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">📝</div>
+        <p>暂无文章</p>
+        <p style="font-size: 13px; margin-top: 8px; color: var(--text-muted);">
+          在 GitHub Issues 添加标签为 "blog" 的 Issue 即可显示在这里
+        </p>
+      </div>`;
+    return;
+  }
+  
+  c.innerHTML = items.map((item, i) => {
+    const labels = item.labels || [];
+    // 提取摘要（移除 Markdown 标记）
+    const excerpt = item.body ? item.body
+      .replace(/#+ /g, '')
+      .replace(/[#*`>\[\]\(\)]/g, '')
+      .replace(/!\[.*?\]\(.*?\)/g, '[图片]')
+      .slice(0, 120) + '...' : '';
+      
+    return `
+      <a href="${item.html_url}" target="_blank" class="blog-item" data-index="${i}">
+        <div class="blog-item-title">${item.title}</div>
+        <div class="blog-item-meta">${formatTime(item.created_at)} · ${item.comments} 条评论</div>
+        <div class="blog-item-excerpt">${excerpt}</div>
+        ${labels.length ? `<div class="blog-item-tags">${labels.map(l => 
+          `<span class="blog-item-tag">${l.name}</span>`
+        ).join('')}</div>` : ''}
+      </a>
+    `;
+  }).join('');
+}
+
+async function loadBlogs() {
+  const c = document.getElementById('blogList');
+  c.innerHTML = `<div class="loading"><div class="loading-spinner"></div><p>正在加载文章...</p></div>`;
+  
+  try {
+    const response = await fetch(GITHUB_ISSUES_URL, {
+      headers: { 
+        'Accept': 'application/vnd.github.v3+json',
+        'If-None-Match': '' // 禁用缓存
+      }
+    });
+    
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    
+    const data = await response.json();
+    // 过滤掉 Pull Request
+    blogs = data.filter(item => !item.pull_request);
+    renderBlogList(blogs);
+  } catch (error) {
+    console.error('加载失败:', error);
+    c.innerHTML = `
+      <div class="error">
+        <div class="error-icon">⚠️</div>
+        <h3>加载失败</h3>
+        <p>无法连接到 GitHub API</p>
+        <button class="retry-btn" onclick="loadBlogs()">重试</button>
+      </div>`;
+  }
+}
+
+// 搜索
+document.getElementById('blogSearch').addEventListener('input', (e) => {
+  const query = e.target.value.toLowerCase();
+  if (!query) {
+    renderBlogList(blogs);
+    return;
+  }
+  const filtered = blogs.filter(b => 
+    b.title.toLowerCase().includes(query) ||
+    (b.body && b.body.toLowerCase().includes(query))
+  );
+  renderBlogList(filtered);
+});
+
+loadBlogs();
+</script>
