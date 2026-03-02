@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>搜索 | 小信号</title>
+  <meta name="description" content="搜索所有内容">
+  <link rel="stylesheet" href="./assets/css/style.css">
+  <style>
+    .search-container {
+      max-width: 600px;
+      margin: 0 auto 40px;
+    }
+    
+    .search-input-wrapper {
+      position: relative;
+    }
+    
+    .search-input {
+      width: 100%;
+      padding: 16px 24px 16px 52px;
+      background: var(--bg-card);
+      border: 2px solid var(--border);
+      border-radius: 100px;
+      color: var(--text-primary);
+      font-size: 16px;
+      outline: none;
+      transition: all 0.2s;
+    }
+    
+    .search-input:focus {
+      border-color: var(--accent);
+      background: var(--bg-card-hover);
+    }
+    
+    .search-icon {
+      position: absolute;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+    }
+    
+    .search-stats {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-top: 12px;
+    }
+    
+    .search-filters {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    
+    .search-filter {
+      padding: 6px 14px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      color: var(--text-secondary);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .search-filter:hover, .search-filter.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+    
+    .search-results {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    
+    .result-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      transition: all 0.2s ease;
+    }
+    
+    .result-item:hover {
+      background: var(--bg-card-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px var(--shadow);
+    }
+    
+    .result-type {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    
+    .type-idea { background: rgba(29, 155, 240, 0.15); color: var(--accent); }
+    .type-book { background: rgba(0, 186, 124, 0.15); color: #00ba7c; }
+    .type-writing { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; }
+    
+    .result-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+    
+    .result-content {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    
+    .result-meta {
+      display: flex;
+      gap: 12px;
+      margin-top: 12px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    
+    .highlight {
+      background: rgba(29, 155, 240, 0.3);
+      padding: 0 2px;
+      border-radius: 2px;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+    }
+    
+    .empty-icon { font-size: 48px; margin-bottom: 16px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <a href="./" class="logo">小信号<span>.</span></a>
+      <nav>
+        <a href="./">见室引号</a>
+        <a href="./writing.html">写作</a>
+        <a href="./reading.html">阅览</a>
+        <a href="./about.html">关于</a>
+      </nav>
+      <div class="controls">
+        <button class="btn-icon active" id="themeBtn" title="切换主题">
+          <svg id="sunIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"/>
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+          </svg>
+          <svg id="moonIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none">
+            <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="page-header">
+      <div class="hero-icon">🔍</div>
+      <h1>SEARCH</h1>
+      <p>搜索所有内容</p>
+    </div>
+
+    <div class="search-container">
+      <div class="search-input-wrapper">
+        <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+        <input type="text" class="search-input" id="searchInput" placeholder="输入关键词搜索..." autocomplete="off">
+      </div>
+      <div class="search-stats" id="searchStats"></div>
+    </div>
+
+    <div class="search-filters" id="searchFilters">
+      <button class="search-filter active" data-type="all">全部</button>
+      <button class="search-filter" data-type="idea">💭 见室引号</button>
+      <button class="search-filter" data-type="book">📚 阅览</button>
+      <button class="search-filter" data-type="writing">✍️ 写作</button>
+    </div>
+
+    <div id="content">
+      <div class="empty-state">
+        <div class="empty-icon">🔎</div>
+        <p>输入关键词开始搜索</p>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>跨内容类型搜索</p>
+  </footer>
+
+  <script src="./assets/js/main.js"></script>
+  <script>
+    let searchIndex = [];
+    let currentFilter = 'all';
+    
+    // 加载搜索索引
+    async function loadSearchIndex() {
+      try {
+        const response = await fetch('./_data/search_index.json');
+        if (!response.ok) throw new Error('Failed to load');
+        searchIndex = await response.json();
+        console.log('✅ Search index loaded:', searchIndex.length, 'items');
+      } catch (error) {
+        console.error('Failed to load search index:', error);
+      }
+    }
+    
+    // 搜索函数
+    function performSearch(query) {
+      const content = document.getElementById('content');
+      const stats = document.getElementById('searchStats');
+      
+      if (!query.trim()) {
+        content.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">🔎</div>
+            <p>输入关键词开始搜索</p>
+          </div>
+        `;
+        stats.textContent = '';
+        return;
+      }
+      
+      const terms = query.toLowerCase().split(/\s+/).filter(t => t);
+      
+      let results = searchIndex.filter(item => {
+        if (currentFilter !== 'all' && item.type !== currentFilter) return false;
+        
+        const text = `${item.title} ${item.content} ${item.tags || ''} ${item.author || ''}`.toLowerCase();
+        return terms.every(term => text.includes(term));
+      });
+      
+      // 排序：标题匹配优先
+      results.sort((a, b) => {
+        const aTitle = a.title.toLowerCase().includes(query.toLowerCase());
+        const bTitle = b.title.toLowerCase().includes(query.toLowerCase());
+        return bTitle - aTitle;
+      });
+      
+      stats.textContent = `找到 ${results.length} 个结果`;
+      
+      if (results.length === 0) {
+        content.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">😕</div>
+            <p>未找到相关内容</p>
+            <p style="font-size: 13px; margin-top: 8px;">试试其他关键词</p>
+          </div>
+        `;
+        return;
+      }
+      
+      content.innerHTML = `<div class="search-results">${results.map(item => {
+        const typeLabels = {
+          idea: ['💭', '见室引号', 'type-idea'],
+          book: ['📚', '阅览', 'type-book'],
+          writing: ['✍️', '写作', 'type-writing']
+        };
+        const [icon, label, className] = typeLabels[item.type];
+        
+        let content = highlightText(item.content || '', terms);
+        const title = highlightText(item.title || '', terms);
+        
+        return `
+          <a href="${item.url}" class="result-item">
+            <span class="result-type ${className}">${icon} ${label}</span>
+            <div class="result-title">${title}</div>
+            <div class="result-content">${content}</div>
+            <div class="result-meta">
+              ${item.date ? `<span>📅 ${new Date(item.date).toLocaleDateString('zh-CN')}</span>` : ''}
+              ${item.author ? `<span>👤 ${escapeHtml(item.author)}</span>` : ''}
+              ${item.tags ? `<span>🏷️ ${escapeHtml(item.tags)}</span>` : ''}
+            </div>
+          </a>
+        `;
+      }).join('')}</div>`;
+    }
+    
+    function highlightText(text, terms) {
+      if (!text) return '';
+      let result = escapeHtml(text.substring(0, 200));
+      terms.forEach(term => {
+        const regex = new RegExp(`(${escapeRegex(term)})`, 'gi');
+        result = result.replace(regex, '<span class="highlight">$1</span>');
+      });
+      return result + (text.length > 200 ? '...' : '');
+    }
+    
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+    
+    function escapeRegex(string) {
+      return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+    
+    // 事件监听
+    const searchInput = document.getElementById('searchInput');
+    let debounceTimer;
+    
+    searchInput.addEventListener('input', (e) => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => performSearch(e.target.value), 300);
+    });
+    
+    // 筛选按钮
+    document.querySelectorAll('.search-filter').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.search-filter').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.dataset.type;
+        performSearch(searchInput.value);
+      });
+    });
+    
+    // 初始化
+    loadSearchIndex();
+    
+    // 如果有 URL 参数，自动搜索
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get('q');
+    if (q) {
+      searchInput.value = q;
+      performSearch(q);
+    }
+  </script>
+</body>
+</html>
