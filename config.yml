@@ -1,0 +1,31 @@
+# _config.yml
+title: 小信号 | SEES-QUOTATION
+description: 一些金句一些思考 一些优质信息源
+baseurl: "" # 如果是项目页，填 "/seesquotes"，否则留空
+url: "https://daheitian.github.io" # 你的 GitHub Pages 地址
+
+author: 大黑天
+email: your-email@example.com
+
+# 永久链接配置 (Permalink)
+# 生成格式：https://yoursite.com/2026/03/文章标题/
+permalink: /:year/:month/:title/
+
+# 构建设置
+markdown: kramdown
+highlighter: rouge
+
+# 插件 (GitHub Pages 原生支持)
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-seo-tag
+
+# 排除文件
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+
+# 时区
+timezone: Asia/Shanghai
