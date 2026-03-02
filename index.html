@@ -1,280 +1,942 @@
----
-layout: default
-title: 见室引号
----
-
-<div class="page-header">
-  <div class="hero-icon">💭</div>
-  <h1>SEES-QUOTATION</h1>
-  <p>一些金句一些思考 一些优质信息源</p>
-  <button class="random-btn" id="randomBtn">
-    <span>🎲</span>
-    <span>随机一条</span>
-  </button>
-</div>
-
-<div class="stats">
-  <div class="stat-item">
-    <div class="stat-value" id="postCount">-</div>
-    <div class="stat-label">动态</div>
-  </div>
-  <div class="stat-item">
-    <div class="stat-value" id="updateTime">-</div>
-    <div class="stat-label">更新</div>
-  </div>
-</div>
-
-<div class="status" id="status">
-  <span class="status-dot"></span>
-  <span id="statusText">加载中...</span>
-</div>
-
-<div class="search-box">
-  <input type="text" id="searchInput" placeholder="搜索想法..." autocomplete="off">
-  <button id="searchBtn">🔍</button>
-</div>
-
-<div class="posts" id="posts">
-  <div class="loading">
-    <div class="loading-spinner"></div>
-    <p>正在加载...</p>
-  </div>
-</div>
-
-<script>
-// ============================================
-// 见室引号 - 读取本地 JSON 数据
-// ============================================
-
-let posts = [];
-let ls = null;
-try { ls = window.localStorage; } catch (e) {}
-
-function formatTime(d) {
-  if (!d) return '-';
-  const date = new Date(d);
-  const now = new Date();
-  const diff = now - date;
-  const m = Math.floor(diff / 60000);
-  const h = Math.floor(diff / 3600000);
-  const da = Math.floor(diff / 86400000);
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>见室引号 | 小信号</title>
+  <meta name="description" content="一些金句一些思考 一些优质信息源">
   
-  if (m < 1) return '刚刚';
-  if (m < 60) return m + '分钟前';
-  if (h < 24) return h + '小时前';
-  if (da < 7) return da + '天前';
-  return date.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' });
-}
-
-function formatFullTime(d) {
-  if (!d) return '-';
-  return new Date(d).toLocaleString('zh-CN', { 
-    month: '2-digit', 
-    day: '2-digit', 
-    hour: '2-digit', 
-    minute: '2-digit' 
-  });
-}
-
-function updateStatus(t, type = 'normal') {
-  const s = document.getElementById('status');
-  const st = document.getElementById('statusText');
-  st.textContent = t;
-  s.classList.remove('syncing', 'error');
-  if (type === 'syncing') s.classList.add('syncing');
-  if (type === 'error') s.classList.add('error');
-}
-
-// 解析 Notion API 返回的数据
-function parseNotionData(data) {
-  if (!data || !data.results) return [];
-  
-  return data.results.map(page => {
-    const props = page.properties;
+  <style>
+    :root {
+      --bg-primary: #0d0d0d;
+      --bg-secondary: #141414;
+      --bg-card: #1a1a1a;
+      --bg-card-hover: #222222;
+      --bg-content: #e8e8e8;
+      --text-primary: #e7e9ea;
+      --text-secondary: #8899a6;
+      --text-muted: #536471;
+      --text-dark: #1a1a1a;
+      --accent: #1d9bf0;
+      --border: #2f3336;
+      --shadow: rgba(0, 0, 0, 0.5);
+      --radius: 16px;
+      --radius-lg: 24px;
+    }
     
-    // 获取标题（可能是 Name 或 title）
-    const title = props.Name?.title?.[0]?.plain_text || 
-                  props.title?.title?.[0]?.plain_text || 
-                  '无标题';
+    [data-theme="light"] {
+      --bg-primary: #f5f5f5;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-hover: #f7f9fa;
+      --bg-content: #ffffff;
+      --text-primary: #0f1419;
+      --text-secondary: #536471;
+      --text-muted: #8899a6;
+      --text-dark: #0f1419;
+      --accent: #1d9bf0;
+      --border: #e1e8ed;
+      --shadow: rgba(0, 0, 0, 0.08);
+    }
     
-    // 获取内容（可能是 Content 或正文）
-    const content = props.Content?.rich_text?.[0]?.plain_text || 
-                    props.内容?.rich_text?.[0]?.plain_text ||
-                    props.Note?.rich_text?.[0]?.plain_text ||
-                    title;  // 如果没有内容字段，用标题
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     
-    // 获取标签
-    const tags = props.Tags?.multi_select?.map(t => t.name) || 
-                 props.tags?.multi_select?.map(t => t.name) ||
-                 props.标签?.multi_select?.map(t => t.name) || [];
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
     
-    // 获取封面图
-    const cover = page.cover?.external?.url || 
-                  page.cover?.file?.url || 
-                  null;
+    /* Header */
+    header {
+      position: sticky;
+      top: 0;
+      background: rgba(13, 13, 13, 0.95);
+      backdrop-filter: blur(20px);
+      z-index: 100;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+    }
     
-    return {
-      id: page.id,
-      title: title,
-      content: content,
-      tags: tags,
-      created_time: page.created_time,
-      last_edited_time: page.last_edited_time,
-      url: page.url,
-      cover: cover
-    };
-  });
-}
-
-// 渲染单条想法
-function renderPost(item, isModal = false) {
-  const tags = item.tags || [];
-  const content = item.content || item.title;
-  
-  // 链接可点击
-  const linkedContent = content.replace(
-    /(https?:\/\/[^\s<]+)/g,
-    '<a href="$1" target="_blank" rel="noopener">$1</a>'
-  );
-
-  let html = `
-    <div class="post-header">
-      <div class="post-avatar">黑</div>
-      <div class="post-meta">
-        <div class="post-author">大黑天</div>
-        <div class="post-time">${formatFullTime(item.created_time)} · ${formatTime(item.created_time)}</div>
+    [data-theme="light"] header {
+      background: rgba(255, 255, 255, 0.95);
+    }
+    
+    .header-inner {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .logo {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-primary);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .logo span { color: var(--accent); }
+    
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--bg-card);
+      padding: 6px;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+    }
+    
+    nav a {
+      padding: 8px 16px;
+      border-radius: 100px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    
+    nav a:hover, nav a.active {
+      color: var(--text-primary);
+      background: var(--bg-card-hover);
+    }
+    
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .btn-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+    
+    .btn-icon:hover {
+      background: var(--bg-card-hover);
+      color: var(--text-primary);
+    }
+    
+    main {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+    
+    .page-header {
+      text-align: center;
+      padding: 40px 0 32px;
+    }
+    
+    .hero-icon { font-size: 48px; margin-bottom: 16px; }
+    
+    .page-header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--text-primary);
+      letter-spacing: 2px;
+    }
+    
+    .page-header p {
+      font-size: 15px;
+      color: var(--text-secondary);
+      max-width: 400px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+    
+    .random-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 24px;
+      padding: 12px 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      color: var(--text-primary);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .random-btn:hover {
+      background: var(--bg-card-hover);
+      transform: translateY(-2px);
+    }
+    
+    .stats {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      margin: 24px 0;
+      padding: 16px;
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+    
+    .stat-item { text-align: center; }
+    
+    .stat-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    
+    .stat-label {
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 4px;
+    }
+    
+    .status {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+    
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #00ba7c;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    .status.syncing .status-dot {
+      background: var(--accent);
+      animation: spin 1s linear infinite;
+    }
+    
+    .status.error .status-dot {
+      background: #f4212e;
+      animation: none;
+    }
+    
+    @keyframes spin { to { transform: rotate(360deg); } }
+    
+    .search-box {
+      position: relative;
+      margin-bottom: 24px;
+    }
+    
+    .search-box input {
+      width: 100%;
+      padding: 12px 44px 12px 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      color: var(--text-primary);
+      font-size: 14px;
+      outline: none;
+      transition: all 0.2s;
+    }
+    
+    .search-box input:focus {
+      border-color: var(--accent);
+      background: var(--bg-card-hover);
+    }
+    
+    .search-box input::placeholder {
+      color: var(--text-muted);
+    }
+    
+    .posts {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    
+    .post {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      transition: all 0.2s ease;
+      animation: fadeIn 0.4s ease-out;
+    }
+    
+    .post:hover {
+      background: var(--bg-card-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px var(--shadow);
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .post-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    
+    .post-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: white;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    
+    .post-meta { flex: 1; min-width: 0; }
+    
+    .post-author {
+      font-weight: 600;
+      font-size: 15px;
+      color: var(--text-primary);
+    }
+    
+    .post-time {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    
+    .post-content {
+      font-size: 15px;
+      line-height: 1.75;
+      color: var(--text-primary);
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    
+    .post-content a {
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.2s;
+    }
+    
+    .post-content a:hover {
+      border-bottom-color: var(--accent);
+    }
+    
+    .post-tags {
+      margin-top: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    
+    .tag {
+      padding: 4px 10px;
+      background: rgba(29, 155, 240, 0.1);
+      color: var(--accent);
+      font-size: 12px;
+      border-radius: 100px;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 60px 0;
+    }
+    
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 16px;
+    }
+    
+    .error {
+      text-align: center;
+      padding: 40px 20px;
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+    
+    .error-icon { font-size: 48px; margin-bottom: 16px; }
+    
+    .error h3 {
+      font-size: 18px;
+      margin-bottom: 8px;
+      color: var(--text-primary);
+    }
+    
+    .error p {
+      color: var(--text-secondary);
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+    
+    .retry-btn {
+      padding: 10px 24px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 100px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    
+    .retry-btn:hover { opacity: 0.9; }
+    
+    .empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-secondary);
+    }
+    
+    .empty-icon { font-size: 48px; margin-bottom: 16px; }
+    
+    footer {
+      text-align: center;
+      padding: 40px 20px;
+      border-top: 1px solid var(--border);
+      margin-top: 40px;
+    }
+    
+    footer p {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    
+    footer a {
+      color: var(--text-secondary);
+      text-decoration: none;
+    }
+    
+    footer a:hover { color: var(--accent); }
+    
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .modal {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      max-width: 560px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      transform: scale(0.9);
+      transition: transform 0.3s ease;
+    }
+    
+    .modal-overlay.active .modal {
+      transform: scale(1);
+    }
+    
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .modal-title { font-size: 16px; font-weight: 600; }
+    
+    .modal-close {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: none;
+      background: var(--bg-card-hover);
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    
+    .modal-close:hover { color: var(--text-primary); }
+    
+    .modal-body { padding: 20px; }
+    
+    .menu-btn {
+      display: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .mobile-nav {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 999;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+    }
+    
+    .mobile-nav.active {
+      display: flex;
+    }
+    
+    .mobile-nav a {
+      font-size: 24px;
+      color: white;
+      text-decoration: none;
+      padding: 12px 24px;
+    }
+    
+    .mobile-nav-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+    }
+    
+    @media (max-width: 640px) {
+      nav { display: none; }
+      .menu-btn { display: flex; }
+      
+      .page-header { padding: 32px 0 24px; }
+      .page-header h1 { font-size: 22px; }
+      
+      .stats { gap: 16px; padding: 12px; }
+      .stat-value { font-size: 20px; }
+      
+      .post { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <a href="./" class="logo">小信号<span>.</span></a>
+      <nav>
+        <a href="./" class="active">见室引号</a>
+        <a href="./writing.html">写作</a>
+        <a href="./reading.html">阅览</a>
+        <a href="./about.html">关于</a>
+      </nav>
+      <div class="controls">
+        <button class="btn-icon" id="refreshBtn" title="刷新">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+          </svg>
+        </button>
+        <button class="btn-icon" id="themeBtn" title="切换主题">
+          <svg id="sunIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"/>
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+          </svg>
+          <svg id="moonIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none">
+            <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+          </svg>
+        </button>
+        <button class="menu-btn" id="menuBtn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 12h18M3 6h18M3 18h18"/>
+          </svg>
+        </button>
       </div>
     </div>
-    <div class="post-content">${linkedContent}</div>
-  `;
-  
-  if (item.cover) {
-    html += `
-      <div class="post-images single">
-        <img src="${item.cover}" loading="lazy" onclick="openLightbox('${item.cover}')" alt="">
+  </header>
+
+  <div class="mobile-nav" id="mobileNav">
+    <button class="mobile-nav-close" id="mobileNavClose">&times;</button>
+    <a href="./">见室引号</a>
+    <a href="./writing.html">写作</a>
+    <a href="./reading.html">阅览</a>
+    <a href="./about.html">关于</a>
+  </div>
+
+  <main>
+    <div class="page-header">
+      <div class="hero-icon">💭</div>
+      <h1>SEES-QUOTATION</h1>
+      <p>一些金句一些思考 一些优质信息源</p>
+      <button class="random-btn" id="randomBtn">
+        <span>🎲</span>
+        <span>随机一条</span>
+      </button>
+    </div>
+
+    <div class="stats">
+      <div class="stat-item">
+        <div class="stat-value" id="postCount">-</div>
+        <div class="stat-label">动态</div>
       </div>
-    `;
-  }
-  
-  if (tags.length > 0) {
-    html += `<div class="post-tags">${tags.map(t => `<span class="tag">#${t}</span>`).join('')}</div>`;
-  }
-  
-  return html;
-}
+      <div class="stat-item">
+        <div class="stat-value" id="tagCount">-</div>
+        <div class="stat-label">标签</div>
+      </div>
+    </div>
 
-function renderPosts(items) {
-  const c = document.getElementById('posts');
-  if (!items || !items.length) {
-    c.innerHTML = `
-      <div class="empty">
-        <div class="empty-icon">📝</div>
-        <p>暂无想法</p>
-        <p style="font-size: 13px; margin-top: 8px; color: var(--text-muted);">
-          在 Notion 中添加内容，GitHub Actions 会自动同步
-        </p>
-      </div>`;
-    return;
-  }
-  
-  c.innerHTML = items.map((item, i) => 
-    `<article class="post" data-index="${i}">${renderPost(item)}</article>`
-  ).join('');
-  
-  document.getElementById('postCount').textContent = items.length;
-  document.getElementById('updateTime').textContent = formatTime(new Date());
-}
+    <div class="status" id="status">
+      <div class="status-dot"></div>
+      <span id="statusText">已连接 Notion</span>
+    </div>
 
-// 搜索功能
-function filterPosts(query) {
-  if (!query) return posts;
-  const lower = query.toLowerCase();
-  return posts.filter(p => 
-    (p.content || '').toLowerCase().includes(lower) ||
-    (p.title || '').toLowerCase().includes(lower) ||
-    p.tags?.some(t => t.toLowerCase().includes(lower))
-  );
-}
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="搜索金句、思考、标签...">
+    </div>
 
-document.getElementById('searchInput').addEventListener('input', (e) => {
-  const filtered = filterPosts(e.target.value);
-  renderPosts(filtered);
-});
+    <div id="postsContainer">
+      <div class="loading">
+        <div class="loading-spinner"></div>
+        <p>正在从 Notion 加载...</p>
+      </div>
+    </div>
+  </main>
 
-// 加载数据（优先本地缓存，然后 fetch JSON）
-async function loadData() {
-  updateStatus('加载中...', 'syncing');
-  
-  try {
-    // 尝试从本地 JSON 文件加载
-    const response = await fetch('{{ site.baseurl }}/_data/notion_ideas.json?t=' + Date.now());
-    
-    if (!response.ok) {
-      throw new Error('数据文件不存在，等待首次同步');
+  <footer>
+    <p>© 2024 小信号 · 由 Notion 驱动</p>
+  </footer>
+
+  <div class="modal-overlay" id="modal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">随机金句</div>
+        <button class="modal-close" id="modalClose">&times;</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <script>
+    // 配置 - 使用相对路径
+    const CONFIG = {
+      dataPath: './_data/notion_ideas.json',
+      refreshInterval: 5 * 60 * 1000 // 5分钟
+    };
+
+    let allPosts = [];
+    let currentModalPost = null;
+
+    // 主题切换
+    function initTheme() {
+      const savedTheme = localStorage.getItem('theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      updateThemeIcon(savedTheme);
     }
-    
-    const data = await response.json();
-    posts = parseNotionData(data);
-    
-    // 缓存到 localStorage
-    if (ls) {
-      ls.setItem('notionIdeas', JSON.stringify({ 
-        posts, 
-        timestamp: Date.now(),
-        source: 'json'
-      }));
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+      updateThemeIcon(next);
     }
-    
-    renderPosts(posts);
-    updateStatus('已同步');
-    
-  } catch (error) {
-    console.error('加载失败:', error);
-    
-    // 尝试从 localStorage 读取缓存
-    if (ls) {
-      const cached = ls.getItem('notionIdeas');
-      if (cached) {
-        try {
-          const data = JSON.parse(cached);
-          if (data.posts && data.posts.length) {
-            posts = data.posts;
-            renderPosts(posts);
-            updateStatus('显示缓存数据');
-            return;
-          }
-        } catch (e) {}
+
+    function updateThemeIcon(theme) {
+      const sun = document.getElementById('sunIcon');
+      const moon = document.getElementById('moonIcon');
+      if (theme === 'dark') {
+        sun.style.display = 'block';
+        moon.style.display = 'none';
+      } else {
+        sun.style.display = 'none';
+        moon.style.display = 'block';
       }
     }
-    
-    updateStatus('等待首次同步', 'error');
-    document.getElementById('posts').innerHTML = `
-      <div class="error">
-        <div class="error-icon">⏳</div>
-        <h3>等待数据同步</h3>
-        <p>GitHub Actions 正在首次同步 Notion 数据...</p>
-        <p style="font-size: 13px; margin-top: 8px; color: var(--text-muted);">
-          1. 确保已在仓库 Secrets 中配置 NOTION_TOKEN 和数据库 ID<br>
-          2. 手动运行一次 GitHub Actions workflow<br>
-          3. 刷新页面
-        </p>
-      </div>`;
-  }
-}
 
-// 随机功能
-document.getElementById('randomBtn').addEventListener('click', () => {
-  if (!posts.length) return;
-  const randomPost = posts[Math.floor(Math.random() * posts.length)];
-  document.getElementById('modalBody').innerHTML = renderPost(randomPost, true);
-  document.getElementById('modal').classList.add('active');
-});
+    // 移动端菜单
+    function initMobileMenu() {
+      const menuBtn = document.getElementById('menuBtn');
+      const mobileNav = document.getElementById('mobileNav');
+      const closeBtn = document.getElementById('mobileNavClose');
+      
+      menuBtn.addEventListener('click', () => mobileNav.classList.add('active'));
+      closeBtn.addEventListener('click', () => mobileNav.classList.remove('active'));
+      
+      // 点击链接后关闭菜单
+      mobileNav.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => mobileNav.classList.remove('active'));
+      });
+    }
 
-// 刷新按钮（重新加载 JSON）
-document.getElementById('refreshBtn').addEventListener('click', () => {
-  loadData();
-});
+    // 加载数据
+    async function loadPosts() {
+      const container = document.getElementById('postsContainer');
+      const status = document.getElementById('status');
+      const statusText = document.getElementById('statusText');
+      
+      try {
+        status.className = 'status syncing';
+        statusText.textContent = '同步中...';
+        
+        const response = await fetch(CONFIG.dataPath + '?t=' + Date.now());
+        if (!response.ok) throw new Error('加载失败');
+        
+        const data = await response.json();
+        allPosts = (data.results || []).map(item => ({
+          id: item.id,
+          content: extractContent(item),
+          tags: extractTags(item),
+          date: new Date(item.created_time).toLocaleDateString('zh-CN'),
+          timestamp: new Date(item.created_time).getTime()
+        }));
+        
+        // 按时间排序
+        allPosts.sort((a, b) => b.timestamp - a.timestamp);
+        
+        renderPosts(allPosts);
+        updateStats();
+        
+        status.className = 'status';
+        statusText.textContent = `已同步 ${allPosts.length} 条 · ${new Date().toLocaleTimeString()}`;
+        
+      } catch (err) {
+        console.error('加载失败:', err);
+        status.className = 'status error';
+        statusText.textContent = '同步失败，使用本地数据';
+        
+        container.innerHTML = `
+          <div class="error">
+            <div class="error-icon">⚠️</div>
+            <h3>加载失败</h3>
+            <p>${err.message}</p>
+            <button class="retry-btn" onclick="loadPosts()">重试</button>
+          </div>
+        `;
+      }
+    }
 
-// 初始化
-loadData();
-</script>
+    // 从 Notion 数据结构提取内容
+    function extractContent(item) {
+      const props = item.properties || {};
+      
+      // 尝试不同的字段名
+      const fields = ['Name', 'Title', '内容', 'Content', 'Idea', 'Quote', '想法'];
+      for (const field of fields) {
+        if (props[field]) {
+          const prop = props[field];
+          if (prop.title && prop.title[0]) {
+            return prop.title[0].plain_text || prop.title[0].text?.content || '';
+          }
+        }
+      }
+      
+      // 尝试 rich_text 字段
+      for (const key in props) {
+        const prop = props[key];
+        if (prop.rich_text && prop.rich_text[0]) {
+          return prop.rich_text[0].plain_text || prop.rich_text[0].text?.content || '';
+        }
+      }
+      
+      return '无内容';
+    }
+
+    function extractTags(item) {
+      const props = item.properties || {};
+      const tags = [];
+      
+      // 查找 Tags 或 Multi-select 字段
+      for (const key in props) {
+        const prop = props[key];
+        if (prop.multi_select) {
+          prop.multi_select.forEach(tag => tags.push(tag.name));
+        }
+        if (prop.select && prop.select.name) {
+          tags.push(prop.select.name);
+        }
+      }
+      
+      return tags;
+    }
+
+    // 渲染帖子
+    function renderPosts(posts) {
+      const container = document.getElementById('postsContainer');
+      
+      if (posts.length === 0) {
+        container.innerHTML = `
+          <div class="empty">
+            <div class="empty-icon">📝</div>
+            <p>还没有内容，去 Notion 添加一些想法吧</p>
+          </div>
+        `;
+        return;
+      }
+      
+      container.innerHTML = posts.map(post => `
+        <article class="post" data-id="${post.id}">
+          <div class="post-header">
+            <div class="post-avatar">💭</div>
+            <div class="post-meta">
+              <div class="post-author">见室引号</div>
+              <div class="post-time">${post.date}</div>
+            </div>
+          </div>
+          <div class="post-content">${formatContent(post.content)}</div>
+          ${post.tags.length ? `
+            <div class="post-tags">
+              ${post.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+            </div>
+          ` : ''}
+        </article>
+      `).join('');
+    }
+
+    function formatContent(text) {
+      // 自动链接 URL
+      return text
+        .replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>')
+        .replace(/\n/g, '<br>');
+    }
+
+    // 更新统计
+    function updateStats() {
+      document.getElementById('postCount').textContent = allPosts.length;
+      
+      const allTags = new Set();
+      allPosts.forEach(post => post.tags.forEach(tag => allTags.add(tag)));
+      document.getElementById('tagCount').textContent = allTags.size;
+    }
+
+    // 搜索
+    function initSearch() {
+      const input = document.getElementById('searchInput');
+      input.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        if (!query) {
+          renderPosts(allPosts);
+          return;
+        }
+        
+        const filtered = allPosts.filter(post => 
+          post.content.toLowerCase().includes(query) ||
+          post.tags.some(tag => tag.toLowerCase().includes(query))
+        );
+        renderPosts(filtered);
+      });
+    }
+
+    // 随机功能
+    function initRandom() {
+      const btn = document.getElementById('randomBtn');
+      const modal = document.getElementById('modal');
+      const modalClose = document.getElementById('modalClose');
+      const modalBody = document.getElementById('modalBody');
+      
+      btn.addEventListener('click', () => {
+        if (allPosts.length === 0) return;
+        const random = allPosts[Math.floor(Math.random() * allPosts.length)];
+        currentModalPost = random;
+        
+        modalBody.innerHTML = `
+          <div class="post" style="margin:0;border:none;background:transparent;">
+            <div class="post-content" style="font-size:18px;line-height:1.8;margin-bottom:20px;">
+              ${formatContent(random.content)}
+            </div>
+            ${random.tags.length ? `
+              <div class="post-tags" style="margin-bottom:20px;">
+                ${random.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+              </div>
+            ` : ''}
+            <div style="text-align:center;color:var(--text-muted);font-size:13px;">
+              ${random.date}
+            </div>
+          </div>
+        `;
+        
+        modal.classList.add('active');
+      });
+      
+      modalClose.addEventListener('click', () => modal.classList.remove('active'));
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.classList.remove('active');
+      });
+    }
+
+    // 初始化
+    document.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      initMobileMenu();
+      loadPosts();
+      initSearch();
+      initRandom();
+      
+      // 刷新按钮
+      document.getElementById('refreshBtn').addEventListener('click', loadPosts);
+      document.getElementById('themeBtn').addEventListener('click', toggleTheme);
+      
+      // 定时刷新
+      setInterval(loadPosts, CONFIG.refreshInterval);
+    });
+  </script>
+</body>
+</html>
