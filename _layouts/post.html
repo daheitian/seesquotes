@@ -1,0 +1,24 @@
+---
+layout: default
+---
+
+<article class="blog-detail" style="margin-top: 20px;">
+    <header class="blog-detail-header">
+        <h1 class="blog-detail-title">{{ page.title }}</h1>
+        <p class="blog-detail-meta">
+            <time datetime="{{ page.date | date_to_xmlschema }}">
+                {{ page.date | date: "%Y年%m月%d日" }}
+            </time>
+            {% if page.tags.size > 0 %}
+             · 标签: {{ page.tags | join: ", " }}
+            {% endif %}
+        </p>
+    </header>
+
+    <div class="blog-detail-content">
+        {{ content }}
+    </div>
+    
+    <hr style="margin: 40px 0; border-color: var(--border);">
+    <a href="{{ site.baseurl }}/archive" class="back-btn">← 返回归档列表</a>
+</article>
