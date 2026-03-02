@@ -1,0 +1,60 @@
+<!-- _layouts/default.html -->
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO 优化 (由 jekyll-seo-tag 自动生成) -->
+    {% seo %}
+    
+    <!-- 这里粘贴你原来的 <style> 标签里的所有 CSS 代码 -->
+    <!-- 为了节省篇幅，这里假设你已经把 CSS 放在这里 -->
+    <style>
+       /* 把你原来那一大串 CSS 粘贴到这里 */
+       /* 注意：可以稍微修改一下 :root 变量以确保兼容性 */
+       :root {
+            --bg-primary: #0d0d0d;
+            --bg-secondary: #141414;
+            /* ... 其余 CSS ... */
+       }
+    </style>
+    <base target="_blank">
+</head>
+<body>
+    <!-- 这里粘贴你原来的 Header 代码 -->
+    <header>
+        <div class="header-inner">
+            <a href="{{ site.baseurl }}/" class="logo">小信号<span>.</span></a>
+            <nav id="desktopNav">
+                <!-- 修改链接指向 Jekyll 页面 -->
+                <a href="{{ site.baseurl }}/" class="{% if page.url == '/' %}active{% endif %}">见室引号</a>
+                <a href="{{ site.baseurl }}/archive" class="{% if page.url == '/archive' %}active{% endif %}">归档</a>
+                <a href="{{ site.baseurl }}/about" class="{% if page.url == '/about' %}active{% endif %}">关于</a>
+            </nav>
+            <!-- ... 其余 Header 代码 (主题切换等) ... -->
+            <div class="controls">
+                 <!-- 保留你的刷新和主题切换按钮 JS -->
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- 这里是页面内容的占位符 -->
+        {{ content }}
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>同步自 <a href="https://okjk.co/ZrdvaB">即刻</a> · Powered by Jekyll</p>
+    </footer>
+
+    <!-- 这里粘贴你原来的 JS 代码 -->
+    <!-- 注意：JS 主要保留在首页，布局页只保留主题切换等基础功能 -->
+    <script>
+        // 主题切换逻辑
+        const themeBtn = document.getElementById('themeBtn');
+        // ... 粘贴主题切换的 JS ...
+    </script>
+</body>
+</html>
