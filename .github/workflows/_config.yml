@@ -1,0 +1,48 @@
+# Site settings
+title: "小信号"
+subtitle: "SEES-QUOTATION"
+description: "一些金句一些思考 一些优质信息源"
+author: "大黑天"
+email: ""
+
+# GitHub 配置（用于写作部分）
+github_username: daheitian
+github_repo: seesquotes
+
+# Notion 配置（需要你填写）
+notion_token: ""  # 你的 Notion Integration Token
+notion_database_id_ideas: "https://buerc.notion.site/e531e10e2b5b4ae593808bea3ca71d9e?v=2b3b32de3def80b3b726000c3726a2c3&source=copy_link "  # 见室引号 - 想法数据库ID
+notion_database_id_reading: "https://www.notion.so/buerc/a76e4fa8e68048928988f62d897c3181?v=21eb32de3def81afab0c000cad53edb2&source=copy_link"  # 阅览 - 阅读数据库ID
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+permalink: /:year/:month/:day/:title/
+
+# Plugins
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+
+# Collections
+collections:
+  posts:
+    output: true
+    permalink: /:collection/:year/:month/:day/:title/
+
+# Exclude
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
+  - scripts/
+  - README.md
+
+# Defaults
+defaults:
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "post"
