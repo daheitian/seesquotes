@@ -137,6 +137,46 @@
       font-size: 14px;
       outline: none;
     }
+
+    .error-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 40px 20px;
+      text-align: center;
+    }
+    
+    .error-box .error-icon { 
+      font-size: 48px; 
+      margin-bottom: 16px; 
+    }
+    
+    .error-box h3 {
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+    
+    .error-box p {
+      color: var(--text-secondary);
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+    
+    .error-box .btn-retry {
+      padding: 8px 20px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 100px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-right: 8px;
+    }
+    
+    .error-box a {
+      color: var(--accent);
+      text-decoration: none;
+    }
   </style>
 </head>
 <body>
@@ -208,7 +248,7 @@
   <script>
     // 配置
     const REPO = 'daheitian/seesquotes';
-    const GITHUB_API = `https://api.github.com/repos/${REPO}/issues?state=open&per_page=100`;
+    const GITHUB_API = `https://api.github.com/repos/${REPO}/issues?state=all&per_page=100`;
     
     let allIssues = [];
     let currentLabel = '';
@@ -216,11 +256,31 @@
     
     async function loadIssues() {
       const content = document.getElementById('content');
+      content.innerHTML = `
+        <div class="loading">
+          <div class="loading-spinner"></div>
+          <p>加载文章...</p>
+        </div>
+      `;
       
       try {
-        // 直接调用 GitHub API
-        const response = await fetch(GITHUB_API);
-        if (!response.ok) throw new Error('无法获取 Issues');
+        // 直接调用 GitHub API，添加超时和错误处理
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10秒超时
+        
+        const response = await fetch(GITHUB_API, {
+          signal: controller.signal,
+          headers: {
+            'Accept': 'application/vnd.github.v3+json'
+          }
+        });
+        
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
         allIssues = await response.json();
         
         // 过滤掉 Pull Requests（GitHub API 会混进来）
@@ -242,14 +302,24 @@
         populateLabelFilter();
         renderIssues();
       } catch (error) {
+        console.error('加载失败:', error);
+        
+        let errorMsg = error.message;
+        let isCorsError = error.name === 'TypeError' && error.message.includes('Failed to fetch');
+        
+        if (isCorsError) {
+          errorMsg = '跨域请求被阻止 (CORS)';
+        } else if (error.name === 'AbortError') {
+          errorMsg = '请求超时';
+        }
+        
         content.innerHTML = `
-          <div class="error">
+          <div class="error-box">
             <div class="error-icon">⚠️</div>
             <h3>加载失败</h3>
-            <p>${error.message}</p>
-            <p style="font-size: 13px; margin-top: 8px;">
-              请检查仓库是否公开，或网络连接是否正常
-            </p>
+            <p>${errorMsg}</p>
+            <button class="btn-retry" onclick="loadIssues()">重试</button>
+            <a href="https://github.com/${REPO}/issues" target="_blank">直接访问 Issues →</a>
           </div>
         `;
       }
@@ -370,6 +440,11 @@
     const script = document.createElement('script');
     script.src = 'https://cdn.jsdelivr.net/npm/marked/marked.min.js';
     script.onload = loadIssues;
+    script.onerror = () => {
+      // marked.js 加载失败也能显示，只是不解析 markdown
+      window.marked = { parse: (text) => text.replace(/\n/g, '<br>') };
+      loadIssues();
+    };
     document.head.appendChild(script);
   </script>
 </body>
