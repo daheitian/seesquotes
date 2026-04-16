@@ -1,33 +1,66 @@
-name: 同步 Issues 到 JSON
+name: Sync Notion Data
 
 on:
-  issues:
-    types: [opened, edited, closed, reopened, labeled, unlabeled, deleted]
   schedule:
-    - cron: '0 */6 * * *'  # 每6小时同步一次
-  workflow_dispatch:
+    - cron: '0 0 * * *'  # 每天 UTC 0:00 运行
+  workflow_dispatch:  # 支持手动触发
 
 jobs:
   sync:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      issues: read
-    
     steps:
-      - uses: actions/checkout@v4
-      
-      - name: 获取 Issues 并保存
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          mkdir -p _data
-          # 使用 GitHub CLI 获取 Issues
-          gh api repos/${{ github.repository }}/issues?state=all > _data/issues.json
-          echo "同步完成，共 $(cat _data/issues.json | jq length) 条"
-          
-      - name: 提交更新
-        uses: stefanzweifel/git-auto-commit-action@v5
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
         with:
-          commit_message: '自动同步 Issues 数据 [skip ci]'
-          file_pattern: '_data/issues.json'
+          node-version: '18'
+
+      - name: Fetch Notion Data
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+        run: |
+          npm install axios
+          node << 'EOF'
+          const axios = require('axios');
+          const fs = require('fs');
+
+          async function sync() {
+            const response = await axios.post(
+              `https://api.notion.com/v1/databases/${process.env.NOTION_DATABASE_ID}/query`,
+              {},
+              {
+                headers: {
+                  'Authorization': `Bearer ${process.env.NOTION_TOKEN}`,
+                  'Notion-Version': '2022-06-28'
+                }
+              }
+            );
+
+            const data = response.data.results.map(page => ({
+              title: page.properties.Name?.title?.[0]?.plain_text || page.properties.标题?.title?.[0]?.plain_text || '',
+              content: page.properties.Content?.rich_text?.[0]?.plain_text || page.properties.内容?.rich_text?.[0]?.plain_text || '',
+              tags: page.properties.Tags?.multi_select?.map(t => t.name) || page.properties.标签?.multi_select?.map(t => t.name) || [],
+              date: page.created_time,
+              pubDate: page.created_time,
+              author: page.properties.Author?.rich_text?.[0]?.plain_text || page.properties.作者?.rich_text?.[0]?.plain_text || 'Notion',
+              url: page.public_url || ''
+            }));
+
+            fs.writeFileSync('notion-data.json', JSON.stringify(data, null, 2));
+            console.log(`✅ 同步成功：${data.length} 条数据`);
+          }
+
+          sync().catch(err => {
+            console.error('❌ 同步失败:', err.message);
+            process.exit(1);
+          });
+          EOF
+
+      - name: Commit Changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "Notion Sync Bot"
+          git add notion-data.json
+          git commit -m "chore: sync notion data $(date '+%Y-%m-%d %H:%M:%S')" || true
+          git push
