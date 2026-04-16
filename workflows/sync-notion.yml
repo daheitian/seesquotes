@@ -1,32 +1,33 @@
-name: 同步 Notion 数据
+name: 同步 Issues 到 JSON
 
 on:
+  issues:
+    types: [opened, edited, closed, reopened, labeled, unlabeled, deleted]
   schedule:
-    - cron: '0 */3 * * *'  # 每3小时同步一次
-  workflow_dispatch:  # 支持手动触发
+    - cron: '0 */6 * * *'  # 每6小时同步一次
+  workflow_dispatch:
 
 jobs:
   sync:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: read
+    
     steps:
       - uses: actions/checkout@v4
       
-      - name: 安装 Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      
-      - name: 安装依赖
-        run: npm install @notionhq/client
-      
-      - name: 同步 Notion 数据
+      - name: 获取 Issues 并保存
         env:
-          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
-          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
-        run: node scripts/sync-notion.js
-      
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p _data
+          # 使用 GitHub CLI 获取 Issues
+          gh api repos/${{ github.repository }}/issues?state=all > _data/issues.json
+          echo "同步完成，共 $(cat _data/issues.json | jq length) 条"
+          
       - name: 提交更新
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: '自动同步 Notion 数据'
-          file_pattern: '_data/*.json'
+          commit_message: '自动同步 Issues 数据 [skip ci]'
+          file_pattern: '_data/issues.json'
