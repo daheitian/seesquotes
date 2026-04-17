@@ -1,0 +1,120 @@
+name: Sync GitHub Issues to JSON
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'  # 每6小时自动运行
+  workflow_dispatch:        # 支持手动触发
+
+jobs:
+  sync-issues:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write       # 允许推送代码
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install axios
+
+      - name: Fetch GitHub Issues
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 自动提供，无需额外配置
+        run: |
+          node -e "
+          const axios = require('axios');
+          const fs = require('fs');
+          
+          (async () => {
+            try {
+              const owner = 'daheitian';
+              const repo = 'seesquotes';
+              const baseUrl = \`https://api.github.com/repos/\${owner}/\${repo}/issues\`;
+              
+              const headers = {
+                'Authorization': \`Bearer \${process.env.GITHUB_TOKEN}\`,
+                'Accept': 'application/vnd.github.v3+json'
+              };
+              
+              let allIssues = [];
+              let page = 1;
+              let hasMore = true;
+              
+              console.log('🚀 开始获取 Issues...');
+              
+              while (hasMore) {
+                const url = \`\${baseUrl}?state=all&per_page=100&page=\${page}\`;
+                console.log(\`📄 获取第 \${page} 页...\`);
+                
+                const response = await axios.get(url, { headers });
+                const issues = response.data;
+                
+                if (issues.length > 0) {
+                  allIssues.push(...issues);
+                  console.log(\`   本页 \${issues.length} 条，累计 \${allIssues.length} 条\`);
+                  page++;
+                } else {
+                  hasMore = false;
+                }
+                
+                // 避免触发次级速率限制（可选）
+                await new Promise(resolve => setTimeout(resolve, 200));
+              }
+              
+              console.log(\`✅ 总计获取 \${allIssues.length} 条 Issues\`);
+              
+              // 提取需要的字段
+              const simplified = allIssues.map(issue => ({
+                id: issue.id,
+                number: issue.number,
+                title: issue.title,
+                body: issue.body,
+                state: issue.state,
+                created_at: issue.created_at,
+                updated_at: issue.updated_at,
+                html_url: issue.html_url,
+                labels: issue.labels.map(l => l.name),
+                comments: issue.comments,
+                user: {
+                  login: issue.user.login,
+                  avatar_url: issue.user.avatar_url
+                }
+              }));
+              
+              fs.writeFileSync('issues.json', JSON.stringify(simplified, null, 2));
+              console.log(\`💾 已保存 issues.json\`);
+              
+              // 打印前3条检查
+              simplified.slice(0,3).forEach((iss, i) => {
+                console.log(\`\${i+1}. #\${iss.number} \${iss.title.substring(0,40)} (\${iss.state})\`);
+              });
+              
+            } catch (error) {
+              console.error('❌ 错误:', error.message);
+              if (error.response) {
+                console.error('状态码:', error.response.status);
+                console.error('详情:', error.response.data);
+              }
+              process.exit(1);
+            }
+          })();
+          "
+      
+      - name: Commit and push JSON
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          if git diff --quiet issues.json; then
+            echo "📭 No changes in issues.json"
+          else
+            git add issues.json
+            git commit -m "sync: update issues.json ($(date '+%Y-%m-%d %H:%M:%S'))"
+            git push
+            echo "✅ issues.json pushed to repository"
+          fi
