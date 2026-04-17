@@ -36,6 +36,7 @@
     .error-icon { font-size: 48px; margin-bottom: 16px; }
     .empty { text-align: center; padding: 60px 20px; }
     .empty-icon { font-size: 48px; margin-bottom: 16px; }
+    .sync-info { text-align: center; font-size: 12px; color: var(--text-muted); margin-top: 8px; }
   </style>
 </head>
 <body>
@@ -84,6 +85,7 @@
         <p>加载中...</p>
       </div>
     </div>
+    <p class="sync-info" id="syncTime"></p>
   </main>
   <footer>
     <p>由 Notion 驱动 · 自动同步</p>
@@ -91,24 +93,48 @@
   <script src="./assets/js/main.js"></script>
   <script>
     let allPosts = [];
+    
+    // ✅ 核心修复：添加时间戳防止缓存，实现"实时"同步
     async function loadPosts() {
       const content = document.getElementById('content');
       try {
-        const response = await fetch('./notion-data.json');
-        if (!response.ok) throw new Error('Failed to load');
+        // 关键：添加 ?t=时间戳，强制浏览器获取最新文件，不读缓存
+        const timestamp = new Date().getTime();
+        const response = await fetch(`./notion-data.json?t=${timestamp}`);
+        
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        
         const data = await response.json();
         allPosts = Array.isArray(data) ? data : (data.results || []);
+        
+        // 更新统计
         document.getElementById('postCount').textContent = allPosts.length;
+        
         if (allPosts.length > 0) {
           const lastDate = new Date(allPosts[0].date || allPosts[0].pubDate);
-          document.getElementById('lastUpdate').textContent = `${lastDate.getMonth()+1}/${lastDate.getDate()}`;
+          document.getElementById('lastUpdate').textContent = 
+            `${lastDate.getMonth()+1}/${lastDate.getDate()}`;
         }
+        
+        // 显示同步时间
+        document.getElementById('syncTime').textContent = 
+          `同步于 ${new Date().toLocaleTimeString('zh-CN')}`;
+        
         renderPosts(allPosts);
+        
       } catch (error) {
         console.error('加载失败:', error);
-        content.innerHTML = `<div class="error"><div class="error-icon">⚠️</div><h3>加载失败</h3><p>无法加载想法数据</p><button onclick="loadPosts()" style="margin-top:10px;padding:8px 16px;background:var(--accent);color:white;border:none;border-radius:100px;cursor:pointer;">重试</button></div>`;
+        content.innerHTML = `
+          <div class="error">
+            <div class="error-icon">⚠️</div>
+            <h3>加载失败</h3>
+            <p>${error.message}</p>
+            <button onclick="loadPosts()" style="margin-top:10px;padding:8px 16px;background:var(--accent);color:white;border:none;border-radius:100px;cursor:pointer;">重试</button>
+          </div>
+        `;
       }
     }
+    
     function renderPosts(posts) {
       const content = document.getElementById('content');
       if (posts.length === 0) {
@@ -116,17 +142,20 @@
         return;
       }
       content.innerHTML = `<div class="posts">${posts.map(post => {
-        const text = post.title || '';
-        const date = new Date(post.date || post.pubDate);
+        const text = post.title || post.content || '';
+        const date = new Date(post.date || post.pubDate || Date.now());
         return `<article class="post"><div class="post-content">${escapeHtml(text)}</div><div class="post-date">📅 ${date.toLocaleDateString('zh-CN')}</div></article>`;
       }).join('')}</div>`;
     }
+    
     function escapeHtml(text) {
       if (!text) return '';
       const div = document.createElement('div');
       div.textContent = text;
       return div.innerHTML;
     }
+    
+    // 搜索
     document.getElementById('searchInput').addEventListener('input', (e) => {
       const query = e.target.value.toLowerCase();
       if (!query) {
@@ -136,35 +165,16 @@
       const filtered = allPosts.filter(p => (p.title || '').toLowerCase().includes(query));
       renderPosts(filtered);
     });
+    
+    // 随机
     document.getElementById('randomBtn').addEventListener('click', () => {
       if (allPosts.length === 0) return;
       const random = allPosts[Math.floor(Math.random() * allPosts.length)];
       renderPosts([random]);
     });
-    const themeBtn = document.getElementById('themeBtn');
-    const sunIcon = document.getElementById('sunIcon');
-    const moonIcon = document.getElementById('moonIcon');
-    const html = document.documentElement;
-    const savedTheme = localStorage.getItem('theme') || 'dark';
-    html.setAttribute('data-theme', savedTheme);
-    updateThemeIcon(savedTheme);
-    themeBtn.addEventListener('click', () => {
-      const current = html.getAttribute('data-theme');
-      const next = current === 'dark' ? 'light' : 'dark';
-      html.setAttribute('data-theme', next);
-      localStorage.setItem('theme', next);
-      updateThemeIcon(next);
-    });
-    function updateThemeIcon(theme) {
-      if (theme === 'dark') {
-        sunIcon.style.display = 'block';
-        moonIcon.style.display = 'none';
-      } else {
-        sunIcon.style.display = 'none';
-        moonIcon.style.display = 'block';
-      }
-    }
+    
+    // 初始化
     loadPosts();
   </script>
 </body>
-</html> 
+</html>
