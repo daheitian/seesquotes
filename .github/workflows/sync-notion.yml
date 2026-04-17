@@ -45,9 +45,12 @@ jobs:
               let allResults = [];
               let hasMore = true;
               let startCursor = undefined;
+              let pageCount = 0;
               
-              // 分页获取全部数据
               while (hasMore) {
+                pageCount++;
+                console.log(\`\\n📌 发起第 \${pageCount} 次请求，cursor: \${startCursor ? startCursor.substring(0,10)+'...' : 'undefined'}\`);
+                
                 const response = await axios.post(url, {
                   start_cursor: startCursor,
                   page_size: 100
@@ -58,10 +61,16 @@ jobs:
                 hasMore = response.data.has_more;
                 startCursor = response.data.next_cursor;
                 
-                console.log(\`📄 已获取 \${results.length} 条，累计 \${allResults.length} 条\`);
+                console.log(\`📄 本次获取 \${results.length} 条，累计 \${allResults.length} 条\`);
+                console.log(\`🔁 has_more: \${hasMore}, next_cursor: \${startCursor ? startCursor.substring(0,10)+'...' : 'null'}\`);
+                
+                if (hasMore && !startCursor) {
+                  console.warn('⚠️ 警告：hasMore 为 true 但未返回 next_cursor，强制终止循环');
+                  break;
+                }
               }
               
-              console.log(\`✅ API 响应完成，总计 \${allResults.length} 条记录\`);
+              console.log(\`\\n✅ 总计获取 \${allResults.length} 条记录\`);
               
               const data = allResults.map(page => ({
                 title: page.properties.Name?.title?.[0]?.plain_text || '',
@@ -70,20 +79,19 @@ jobs:
                 date: page.properties.Date?.date?.start || page.created_time,
                 pubDate: page.created_time,
                 author: page.properties.Author?.rich_text?.[0]?.plain_text || 'Notion',
-                url: page.url || ''   // 修正字段名
+                url: page.url || ''
               }));
               
               fs.writeFileSync('notion-data.json', JSON.stringify(data, null, 2));
-              console.log(\`✅ 已保存 \${data.length} 条数据到 notion-data.json\`);
+              console.log(\`💾 已保存 \${data.length} 条数据到 notion-data.json\`);
               
-              // 打印前3条检查
               data.slice(0,3).forEach((d,i) => console.log(\`\${i+1}. \${d.title.substring(0,40)}\`));
               
             } catch (error) {
               console.error('❌ 错误:', error.message);
               if (error.response) {
                 console.error('状态码:', error.response.status);
-                console.error('详情:', error.response.data);
+                console.error('详情:', JSON.stringify(error.response.data, null, 2));
               }
               process.exit(1);
             }
