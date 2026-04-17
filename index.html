@@ -18,26 +18,52 @@ body {
   line-height:1.7;
 }
 
-/* 容器 */
+/* ✅ 保留你的导航结构 */
+header {
+  position: sticky;
+  top: 0;
+  background: rgba(245,245,240,0.8);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid #eee;
+}
+
+.header-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-size: 14px;
+  color:#666;
+  text-decoration:none;
+}
+
+nav a {
+  margin-left:16px;
+  font-size:13px;
+  color:#888;
+  text-decoration:none;
+}
+
+nav a:hover {
+  color:#000;
+}
+
+/* 主体 */
 .container {
   max-width: 680px;
   margin: 0 auto;
   padding: 100px 24px 60px;
 }
 
-/* 顶部（极简） */
-.header {
-  position: fixed;
-  top: 20px;
-  left: 24px;
-  font-size: 13px;
-  color:#888;
-}
-
-/* Hero（灵魂） */
+/* Hero */
 .hero {
   text-align:center;
-  margin-bottom:60px;
+  margin-bottom:50px;
 }
 
 .tagline {
@@ -46,11 +72,9 @@ body {
   line-height:1.5;
 }
 
-.tagline p {
-  margin-bottom:6px;
-}
+.tagline p { margin-bottom:6px; }
 
-/* 搜索（弱存在） */
+/* 搜索 */
 .search {
   margin: 40px 0;
 }
@@ -72,56 +96,58 @@ body {
   margin:40px 0;
 }
 
-/* 内容流（重点） */
+/* 内容（关键：不是卡片） */
 .posts {
   display:flex;
   flex-direction:column;
   gap:28px;
 }
 
-/* 每条内容 */
 .post {
   font-size:16px;
   line-height:1.8;
 }
 
-/* 金句风格 */
+/* 金句强调 */
 .post strong {
   font-family:'Playfair Display', serif;
   font-style: italic;
   font-size:20px;
 }
 
-/* 时间（弱化） */
+/* 时间 */
 .post-date {
   font-size:12px;
   color:#999;
   margin-top:6px;
 }
 
-/* 空状态 */
+/* 空 */
 .empty {
   text-align:center;
   color:#999;
   padding:60px 0;
 }
 
-/* 响应式 */
-@media (max-width:640px){
-  .container { padding:80px 20px; }
-  .tagline { font-size:22px; }
-}
 </style>
 
 </head>
 
 <body>
 
-<div class="header">小信号</div>
+<header>
+  <div class="header-inner">
+    <a href="./" class="logo">小信号</a>
+    <nav>
+      <a href="./">见室引号</a>
+      <a href="./writing.html">写作</a>
+      <a href="./reading.html">阅览</a>
+      <a href="./about.html">关于</a>
+    </nav>
+  </div>
+</header>
 
 <div class="container">
-
-  <!-- Hero -->
 
   <section class="hero">
     <div class="tagline">
@@ -131,15 +157,11 @@ body {
     </div>
   </section>
 
-  <!-- 搜索 -->
-
   <div class="search">
     <input type="text" id="searchInput" placeholder="搜索一句话...">
   </div>
 
   <hr class="divider">
-
-  <!-- 内容 -->
 
   <div id="content">
     <div class="empty">加载中...</div>
@@ -181,7 +203,7 @@ function render(posts){
 
         return `
           <div class="post">
-            <div class="post-content">${format(text)}</div>
+            <div>${format(text)}</div>
             <div class="post-date">${date.toLocaleDateString()}</div>
           </div>
         `;
@@ -190,7 +212,6 @@ function render(posts){
   `;
 }
 
-/* 核心：让句子更像“引用” */
 function format(text){
   if(text.length < 60){
     return `<strong>"${escape(text)}"</strong>`;
@@ -204,7 +225,6 @@ function escape(str){
   return div.innerHTML;
 }
 
-/* 搜索 */
 document.getElementById('searchInput').addEventListener('input', e=>{
   const q = e.target.value.toLowerCase();
   render(allPosts.filter(p => (p.title||'').toLowerCase().includes(q)));
