@@ -2,7 +2,7 @@ name: Sync Notion Data
 
 on:
   schedule:
-    - cron: '0 */6 * * *'  # 每6小时
+    - cron: '0 */6 * * *'
   workflow_dispatch:
 
 jobs:
@@ -47,14 +47,26 @@ jobs:
               let startCursor = undefined;
               let pageCount = 0;
               
+              // ✅ 添加排序规则：按 Created 日期字段倒序（最新的在前）
+              // 注意：如果属性名不是 'Created'，请改为实际名称，例如 'Date'
+              const sortConfig = [
+                {
+                  property: 'Created',
+                  direction: 'descending'
+                }
+              ];
+              
               while (hasMore) {
                 pageCount++;
                 console.log(\`\\n📌 发起第 \${pageCount} 次请求，cursor: \${startCursor ? startCursor.substring(0,10)+'...' : 'undefined'}\`);
                 
-                const response = await axios.post(url, {
+                const requestBody = {
                   start_cursor: startCursor,
-                  page_size: 100
-                }, { headers });
+                  page_size: 100,
+                  sorts: sortConfig   // 明确排序
+                };
+                
+                const response = await axios.post(url, requestBody, { headers });
                 
                 const results = response.data.results;
                 allResults.push(...results);
@@ -64,6 +76,9 @@ jobs:
                 console.log(\`📄 本次获取 \${results.length} 条，累计 \${allResults.length} 条\`);
                 console.log(\`🔁 has_more: \${hasMore}, next_cursor: \${startCursor ? startCursor.substring(0,10)+'...' : 'null'}\`);
                 
+                // 可选延时，避免速率限制
+                await new Promise(resolve => setTimeout(resolve, 300));
+                
                 if (hasMore && !startCursor) {
                   console.warn('⚠️ 警告：hasMore 为 true 但未返回 next_cursor，强制终止循环');
                   break;
@@ -72,21 +87,33 @@ jobs:
               
               console.log(\`\\n✅ 总计获取 \${allResults.length} 条记录\`);
               
-              // 调试：打印第一条数据的所有属性名（帮助你确认实际属性名称）
+              // 调试：打印第一条数据的所有属性名和类型
               if (allResults.length > 0) {
                 console.log('📋 第一条数据的所有属性名：', Object.keys(allResults[0].properties).join(', '));
-                console.log('🔍 第一条数据属性详情（节选）：', JSON.stringify(allResults[0].properties, null, 2).substring(0, 500));
+                // 打印第一条数据的属性详情（帮助确认字段类型）
+                const firstProps = allResults[0].properties;
+                Object.keys(firstProps).forEach(key => {
+                  console.log(\`  属性 \${key}: type=\${firstProps[key].type}\`);
+                });
               }
               
               const data = allResults.map(page => {
                 const props = page.properties;
+                // 根据你的截图调整映射
+                // 标题：可能是 'Name' 或 '标题'
+                const title = props.Name?.title?.[0]?.plain_text || props.标题?.title?.[0]?.plain_text || '';
+                // 日期：优先 'Created'，其次 'Date'，最后用页面创建时间
+                const date = props.Created?.date?.start || props.Date?.date?.start || page.created_time;
+                // 作者：'CreatedBy' 可能是 rich_text 或 title 类型
+                const author = props.CreatedBy?.rich_text?.[0]?.plain_text || props.CreatedBy?.title?.[0]?.plain_text || 'Notion';
+                // 链接：'链接' URL 类型，或回退页面 URL
+                const url = props.链接?.url || page.url || '';
+                
                 return {
-                  // 根据截图调整的属性映射
-                  title: props.Name?.title?.[0]?.plain_text || props.标题?.title?.[0]?.plain_text || '',
-                  date: props.Created?.date?.start || page.created_time,
-                  author: props.CreatedBy?.rich_text?.[0]?.plain_text || props.CreatedBy?.title?.[0]?.plain_text || 'Notion',
-                  url: props.链接?.url || page.url || '',
-                  // 保留字段（若无对应属性则为空）
+                  title,
+                  date,
+                  author,
+                  url,
                   content: props.Content?.rich_text?.[0]?.plain_text || '',
                   tags: props.Tags?.multi_select?.map(t => t.name) || [],
                   pubDate: page.created_time
@@ -96,7 +123,12 @@ jobs:
               fs.writeFileSync('notion-data.json', JSON.stringify(data, null, 2));
               console.log(\`💾 已保存 \${data.length} 条数据到 notion-data.json\`);
               
-              data.slice(0,3).forEach((d,i) => console.log(\`\${i+1}. \${d.title.substring(0,40)} | \${d.date} | \${d.author}\`));
+              // 打印前3条和新的一条检查
+              console.log('📌 前3条记录：');
+              data.slice(0,3).forEach((d,i) => console.log(\`  \${i+1}. \${d.title.substring(0,40)} | \${d.date} | \${d.author}\`));
+              console.log('📌 最后一条记录：');
+              const last = data[data.length-1];
+              console.log(\`  最后: \${last.title.substring(0,40)} | \${last.date} | \${last.author}\`);
               
             } catch (error) {
               console.error('❌ 错误:', error.message);
