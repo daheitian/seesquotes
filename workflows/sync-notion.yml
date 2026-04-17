@@ -28,7 +28,7 @@ jobs:
           
           (async () => {
             const res = await axios.post(
-              \`https://api.notion.com/v1/databases/\${process.env.NOTION_DATABASE_ID}/query\`,
+              \`https://api.notion.com/v1/databases/${process.env.NOTION_DATABASE_ID}/query\`,
               {},
               {
                 headers: {
