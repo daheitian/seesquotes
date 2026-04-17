@@ -47,11 +47,10 @@ jobs:
               let startCursor = undefined;
               let pageCount = 0;
               
-              // ✅ 添加排序规则：按 Created 日期字段倒序（最新的在前）
-              // 注意：如果属性名不是 'Created'，请改为实际名称，例如 'Date'
+              // ✅ 使用系统字段 created_time 排序（页面创建时间倒序）
               const sortConfig = [
                 {
-                  property: 'Created',
+                  timestamp: 'created_time',
                   direction: 'descending'
                 }
               ];
@@ -63,7 +62,7 @@ jobs:
                 const requestBody = {
                   start_cursor: startCursor,
                   page_size: 100,
-                  sorts: sortConfig   // 明确排序
+                  sorts: sortConfig
                 };
                 
                 const response = await axios.post(url, requestBody, { headers });
@@ -76,7 +75,6 @@ jobs:
                 console.log(\`📄 本次获取 \${results.length} 条，累计 \${allResults.length} 条\`);
                 console.log(\`🔁 has_more: \${hasMore}, next_cursor: \${startCursor ? startCursor.substring(0,10)+'...' : 'null'}\`);
                 
-                // 可选延时，避免速率限制
                 await new Promise(resolve => setTimeout(resolve, 300));
                 
                 if (hasMore && !startCursor) {
@@ -87,10 +85,8 @@ jobs:
               
               console.log(\`\\n✅ 总计获取 \${allResults.length} 条记录\`);
               
-              // 调试：打印第一条数据的所有属性名和类型
               if (allResults.length > 0) {
                 console.log('📋 第一条数据的所有属性名：', Object.keys(allResults[0].properties).join(', '));
-                // 打印第一条数据的属性详情（帮助确认字段类型）
                 const firstProps = allResults[0].properties;
                 Object.keys(firstProps).forEach(key => {
                   console.log(\`  属性 \${key}: type=\${firstProps[key].type}\`);
@@ -99,14 +95,9 @@ jobs:
               
               const data = allResults.map(page => {
                 const props = page.properties;
-                // 根据你的截图调整映射
-                // 标题：可能是 'Name' 或 '标题'
                 const title = props.Name?.title?.[0]?.plain_text || props.标题?.title?.[0]?.plain_text || '';
-                // 日期：优先 'Created'，其次 'Date'，最后用页面创建时间
                 const date = props.Created?.date?.start || props.Date?.date?.start || page.created_time;
-                // 作者：'CreatedBy' 可能是 rich_text 或 title 类型
                 const author = props.CreatedBy?.rich_text?.[0]?.plain_text || props.CreatedBy?.title?.[0]?.plain_text || 'Notion';
-                // 链接：'链接' URL 类型，或回退页面 URL
                 const url = props.链接?.url || page.url || '';
                 
                 return {
@@ -123,7 +114,6 @@ jobs:
               fs.writeFileSync('notion-data.json', JSON.stringify(data, null, 2));
               console.log(\`💾 已保存 \${data.length} 条数据到 notion-data.json\`);
               
-              // 打印前3条和新的一条检查
               console.log('📌 前3条记录：');
               data.slice(0,3).forEach((d,i) => console.log(\`  \${i+1}. \${d.title.substring(0,40)} | \${d.date} | \${d.author}\`));
               console.log('📌 最后一条记录：');
