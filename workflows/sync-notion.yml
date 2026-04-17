@@ -2,61 +2,132 @@ name: Sync Notion Data
 
 on:
   schedule:
-    - cron: '0 0 * * *'
-  workflow_dispatch:
+    - cron: '0 0 * * *'      # 每天 0 点
+    - cron: '0 */6 * * *'    # 每 6 小时也同步一次（新增）
+  workflow_dispatch:          # 手动触发
 
 jobs:
   sync:
     runs-on: ubuntu-latest
+    
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
       
-      - run: npm install axios
-      
-      - name: Fetch and sync Notion data
+      - name: Sync Notion data
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
         run: |
-          node -e "
+          cat > sync.js << 'EOF'
           const axios = require('axios');
           const fs = require('fs');
-          
+
           (async () => {
-            const res = await axios.post(
-              \`https://api.notion.com/v1/databases/${process.env.NOTION_DATABASE_ID}/query\`,
-              {},
-              {
-                headers: {
-                  'Authorization': \`Bearer \${process.env.NOTION_TOKEN}\`,
-                  'Notion-Version': '2022-06-28'
-                }
+            try {
+              // 检查环境变量
+              if (!process.env.NOTION_TOKEN || !process.env.NOTION_DATABASE_ID) {
+                console.error('❌ 错误: 缺少 NOTION_TOKEN 或 NOTION_DATABASE_ID');
+                process.exit(1);
               }
-            );
-            
-            const data = res.data.results.map(p => ({
-              title: p.properties.Name?.title?.[0]?.plain_text || '',
-              date: p.created_time,
-              pubDate: p.created_time,
-              author: 'Notion',
-              content: '',
-              tags: [],
-              url: ''
-            }));
-            
-            fs.writeFileSync('notion-data.json', JSON.stringify(data, null, 2));
-            console.log('✅ Synced ' + data.length + ' items');
+
+              console.log('🔄 开始同步...');
+              console.log('Database ID:', process.env.NOTION_DATABASE_ID.substring(0, 8) + '...');
+
+              // ✅ 修复：URL 没有空格
+              const url = `https://api.notion.com/v1/databases/${process.env.NOTION_DATABASE_ID}/query`;
+              console.log('请求 URL:', url.replace(process.env.NOTION_DATABASE_ID, '***'));
+
+              const res = await axios.post(
+                url,
+                {},
+                {
+                  headers: {
+                    'Authorization': `Bearer ${process.env.NOTION_TOKEN}`,
+                    'Notion-Version': '2022-06-28',
+                    'Content-Type': 'application/json'
+                  },
+                  timeout: 30000
+                }
+              );
+
+              console.log('✅ API 响应成功，获取', res.data.results.length, '条记录');
+
+              // 解析数据（支持多种字段名）
+              const data = res.data.results.map(p => {
+                const props = p.properties;
+                
+                // 尝试多种可能的标题字段
+                const title = 
+                  props.Name?.title?.[0]?.plain_text ||
+                  props.Title?.title?.[0]?.plain_text ||
+                  props.标题?.title?.[0]?.plain_text ||
+                  '无标题';
+                
+                // 尝试多种可能的内容字段
+                const content = 
+                  props.Content?.rich_text?.[0]?.plain_text ||
+                  props.内容?.rich_text?.[0]?.plain_text ||
+                  props.Note?.rich_text?.[0]?.plain_text ||
+                  '';
+                
+                // 提取标签
+                const tags = (props.Tags?.multi_select || props.标签?.multi_select || [])
+                  .map(t => t.name);
+
+                return {
+                  id: p.id,
+                  title: title,
+                  content: content,
+                  date: p.created_time,
+                  pubDate: p.created_time,
+                  lastEdited: p.last_edited_time,
+                  author: 'Notion',
+                  tags: tags,
+                  url: p.url
+                };
+              });
+
+              // 写入文件
+              const output = {
+                lastSync: new Date().toISOString(),
+                source: 'notion',
+                count: data.length,
+                posts: data
+              };
+
+              fs.writeFileSync('notion-data.json', JSON.stringify(output, null, 2));
+              console.log('✅ 同步完成:', data.length, '条数据已保存');
+
+            } catch (err) {
+              console.error('❌ 同步失败:', err.message);
+              
+              if (err.response) {
+                console.error('状态码:', err.response.status);
+                console.error('错误详情:', JSON.stringify(err.response.data, null, 2));
+              }
+              
+              process.exit(1);
+            }
           })();
-          "
-      
+          EOF
+
+          node sync.js
+
       - name: Commit and push
         run: |
           git config --local user.email 'bot@github.com'
           git config --local user.name 'Notion Sync Bot'
+          
+          # 检查是否有变化
+          if git diff --quiet && git diff --staged --quiet; then
+            echo "📭 无变化，跳过提交"
+            exit 0
+          fi
+          
           git add notion-data.json
-          git commit -m 'chore: sync notion data' || true
+          git commit -m "sync: update from Notion [$(date +'%Y-%m-%d %H:%M:%S')]"
           git push
