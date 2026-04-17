@@ -2,22 +2,28 @@ name: Sync Notion Data
 
 on:
   schedule:
-    - cron: '0 */6 * * *'  # 每6小时
+    - cron: '0 */6 * * *'  # 每6小时，更频繁
   workflow_dispatch:
 
 jobs:
   sync:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
     steps:
-      - uses: actions/checkout@v4
-      
-      - uses: actions/setup-node@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
-      
-      - run: npm install @notionhq/client
-      
-      - name: Sync from Notion
+
+      - name: Install dependencies
+        run: npm install @notionhq/client  # 用官方 SDK 更稳定
+
+      - name: Fetch Notion data
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
@@ -26,118 +32,75 @@ jobs:
           const { Client } = require('@notionhq/client');
           const fs = require('fs');
 
-          const notion = new Client({ 
-            auth: process.env.NOTION_TOKEN,
-            notionVersion: '2022-06-28'
-          });
+          const notion = new Client({ auth: process.env.NOTION_TOKEN });
 
           async function sync() {
             try {
-              console.log('🔄 连接 Notion...');
-              
-              // 查询数据库
+              console.log('🔄 开始同步...');
+              console.log('Database ID:', process.env.NOTION_DATABASE_ID);
+
+              // ✅ 正确：没有空格，使用 SDK
               const response = await notion.databases.query({
                 database_id: process.env.NOTION_DATABASE_ID,
                 sorts: [{ timestamp: 'created_time', direction: 'descending' }]
               });
 
-              console.log(`📊 获取到 ${response.results.length} 条记录`);
+              console.log('📊 获取到', response.results.length, '条记录');
 
-              if (response.results.length === 0) {
-                console.log('⚠️ 数据库为空');
-                return;
+              // 调试：打印第一条的字段结构
+              if (response.results.length > 0) {
+                console.log('\n第一条的字段:');
+                Object.entries(response.results[0].properties).forEach(([k, v]) => {
+                  console.log('  -', k, ':', v.type);
+                });
               }
 
-              // 分析第一条记录的结构（调试用）
-              const firstPage = response.results[0];
-              console.log('\n📋 第一条记录结构:');
-              Object.entries(firstPage.properties).forEach(([key, value]) => {
-                console.log(`  - ${key}: ${value.type}`);
-              });
-
-              // 解析数据 - 自动识别字段类型
-              const posts = response.results.map(page => {
+              const data = response.results.map(page => {
                 const props = page.properties;
                 
-                // 自动找 title 字段（任意名称）
-                let title = '无标题';
-                for (const [key, value] of Object.entries(props)) {
-                  if (value.type === 'title' && value.title?.length > 0) {
-                    title = value.title.map(t => t.plain_text).join('');
+                // 自动找 title 字段（任意名字）
+                let title = '';
+                for (const [key, val] of Object.entries(props)) {
+                  if (val.type === 'title' && val.title?.length > 0) {
+                    title = val.title.map(t => t.plain_text).join('');
                     break;
                   }
                 }
                 
-                // 自动找 rich_text 字段作为内容（取最长的那个）
+                // 自动找内容字段（最长的 rich_text）
                 let content = '';
-                let maxLength = 0;
-                for (const [key, value] of Object.entries(props)) {
-                  if (value.type === 'rich_text' && value.rich_text) {
-                    const text = value.rich_text.map(t => t.plain_text).join('');
-                    if (text.length > maxLength) {
+                let maxLen = 0;
+                for (const [key, val] of Object.entries(props)) {
+                  if (val.type === 'rich_text' && val.rich_text) {
+                    const text = val.rich_text.map(t => t.plain_text).join('');
+                    if (text.length > maxLen) {
                       content = text;
-                      maxLength = text.length;
+                      maxLen = text.length;
                     }
-                  }
-                }
-                
-                // 如果没找到 rich_text，尝试 formula 或其他
-                if (!content) {
-                  for (const [key, value] of Object.entries(props)) {
-                    if (value.type === 'formula' && value.formula?.string) {
-                      content = value.formula.string;
-                      break;
-                    }
-                  }
-                }
-
-                // 提取标签（multi_select）
-                let tags = [];
-                for (const [key, value] of Object.entries(props)) {
-                  if (value.type === 'multi_select' && value.multi_select) {
-                    tags = value.multi_select.map(t => t.name);
-                    break;
                   }
                 }
 
                 return {
-                  id: page.id,
-                  title: title,
+                  title: title || '无标题',
                   content: content,
                   date: page.created_time,
                   pubDate: page.created_time,
-                  lastEdited: page.last_edited_time,
-                  author: 'Notion',
-                  tags: tags,
                   url: page.url
                 };
               });
 
-              // 过滤空内容（标题和内容都为空）
-              const validPosts = posts.filter(p => p.title !== '无标题' || p.content);
-              
-              const output = {
+              fs.writeFileSync('notion-data.json', JSON.stringify({
                 lastSync: new Date().toISOString(),
-                source: 'notion',
-                databaseId: process.env.NOTION_DATABASE_ID,
-                count: validPosts.length,
-                posts: validPosts
-              };
+                count: data.length,
+                posts: data
+              }, null, 2));
 
-              fs.writeFileSync('notion-data.json', JSON.stringify(output, null, 2));
-              
-              console.log(`\n✅ 成功保存 ${validPosts.length} 条记录`);
-              console.log('\n📝 前3条预览:');
-              validPosts.slice(0, 3).forEach((p, i) => {
-                console.log(`  ${i+1}. ${p.title.substring(0, 40)}${p.title.length > 40 ? '...' : ''}`);
-                if (p.content) console.log(`     内容: ${p.content.substring(0, 50)}...`);
-              });
+              console.log('✅ 同步完成:', data.length, '条');
+              console.log('前3条:', data.slice(0,3).map(p => p.title.substring(0,30)));
 
-            } catch (error) {
-              console.error('❌ 同步失败:', error.message);
-              if (error.code === 'object_not_found') {
-                console.error('💡 提示: 数据库ID可能错误，或Integration未授权访问该数据库');
-              }
+            } catch (err) {
+              console.error('❌ 失败:', err.message);
+              if (err.code) console.error('错误码:', err.code);
               process.exit(1);
             }
           }
@@ -149,14 +112,13 @@ jobs:
 
       - name: Commit and push
         run: |
-          git config user.email 'bot@github.com'
-          git config user.name 'Notion Bot'
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
           
-          if git diff --quiet && git diff --staged --quiet; then
-            echo "📭 无变化"
-            exit 0
+          if git diff --quiet notion-data.json; then
+            echo "No changes"
+          else
+            git add notion-data.json
+            git commit -m "sync: $(date '+%Y-%m-%d %H:%M:%S')"
+            git push
           fi
-          
-          git add notion-data.json
-          git commit -m "sync: ${date '+%Y-%m-%d %H:%M:%S'}"
-          git push
