@@ -2,14 +2,12 @@ name: Sync Notion Data
 
 on:
   schedule:
-    - cron: '0 0 * * *'      # 每天 0 点
-    - cron: '0 */6 * * *'    # 每 6 小时也同步一次（新增）
-  workflow_dispatch:          # 手动触发
+    - cron: '0 */6 * * *'  # 每6小时
+  workflow_dispatch:
 
 jobs:
   sync:
     runs-on: ubuntu-latest
-    
     steps:
       - uses: actions/checkout@v4
       
@@ -17,117 +15,148 @@ jobs:
         with:
           node-version: '20'
       
-      - name: Sync Notion data
+      - run: npm install @notionhq/client
+      
+      - name: Sync from Notion
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
         run: |
           cat > sync.js << 'EOF'
-          const axios = require('axios');
+          const { Client } = require('@notionhq/client');
           const fs = require('fs');
 
-          (async () => {
+          const notion = new Client({ 
+            auth: process.env.NOTION_TOKEN,
+            notionVersion: '2022-06-28'
+          });
+
+          async function sync() {
             try {
-              // 检查环境变量
-              if (!process.env.NOTION_TOKEN || !process.env.NOTION_DATABASE_ID) {
-                console.error('❌ 错误: 缺少 NOTION_TOKEN 或 NOTION_DATABASE_ID');
-                process.exit(1);
+              console.log('🔄 连接 Notion...');
+              
+              // 查询数据库
+              const response = await notion.databases.query({
+                database_id: process.env.NOTION_DATABASE_ID,
+                sorts: [{ timestamp: 'created_time', direction: 'descending' }]
+              });
+
+              console.log(`📊 获取到 ${response.results.length} 条记录`);
+
+              if (response.results.length === 0) {
+                console.log('⚠️ 数据库为空');
+                return;
               }
 
-              console.log('🔄 开始同步...');
-              console.log('Database ID:', process.env.NOTION_DATABASE_ID.substring(0, 8) + '...');
+              // 分析第一条记录的结构（调试用）
+              const firstPage = response.results[0];
+              console.log('\n📋 第一条记录结构:');
+              Object.entries(firstPage.properties).forEach(([key, value]) => {
+                console.log(`  - ${key}: ${value.type}`);
+              });
 
-              // ✅ 修复：URL 没有空格
-              const url = `https://api.notion.com/v1/databases/${process.env.NOTION_DATABASE_ID}/query`;
-              console.log('请求 URL:', url.replace(process.env.NOTION_DATABASE_ID, '***'));
-
-              const res = await axios.post(
-                url,
-                {},
-                {
-                  headers: {
-                    'Authorization': `Bearer ${process.env.NOTION_TOKEN}`,
-                    'Notion-Version': '2022-06-28',
-                    'Content-Type': 'application/json'
-                  },
-                  timeout: 30000
+              // 解析数据 - 自动识别字段类型
+              const posts = response.results.map(page => {
+                const props = page.properties;
+                
+                // 自动找 title 字段（任意名称）
+                let title = '无标题';
+                for (const [key, value] of Object.entries(props)) {
+                  if (value.type === 'title' && value.title?.length > 0) {
+                    title = value.title.map(t => t.plain_text).join('');
+                    break;
+                  }
                 }
-              );
+                
+                // 自动找 rich_text 字段作为内容（取最长的那个）
+                let content = '';
+                let maxLength = 0;
+                for (const [key, value] of Object.entries(props)) {
+                  if (value.type === 'rich_text' && value.rich_text) {
+                    const text = value.rich_text.map(t => t.plain_text).join('');
+                    if (text.length > maxLength) {
+                      content = text;
+                      maxLength = text.length;
+                    }
+                  }
+                }
+                
+                // 如果没找到 rich_text，尝试 formula 或其他
+                if (!content) {
+                  for (const [key, value] of Object.entries(props)) {
+                    if (value.type === 'formula' && value.formula?.string) {
+                      content = value.formula.string;
+                      break;
+                    }
+                  }
+                }
 
-              console.log('✅ API 响应成功，获取', res.data.results.length, '条记录');
-
-              // 解析数据（支持多种字段名）
-              const data = res.data.results.map(p => {
-                const props = p.properties;
-                
-                // 尝试多种可能的标题字段
-                const title = 
-                  props.Name?.title?.[0]?.plain_text ||
-                  props.Title?.title?.[0]?.plain_text ||
-                  props.标题?.title?.[0]?.plain_text ||
-                  '无标题';
-                
-                // 尝试多种可能的内容字段
-                const content = 
-                  props.Content?.rich_text?.[0]?.plain_text ||
-                  props.内容?.rich_text?.[0]?.plain_text ||
-                  props.Note?.rich_text?.[0]?.plain_text ||
-                  '';
-                
-                // 提取标签
-                const tags = (props.Tags?.multi_select || props.标签?.multi_select || [])
-                  .map(t => t.name);
+                // 提取标签（multi_select）
+                let tags = [];
+                for (const [key, value] of Object.entries(props)) {
+                  if (value.type === 'multi_select' && value.multi_select) {
+                    tags = value.multi_select.map(t => t.name);
+                    break;
+                  }
+                }
 
                 return {
-                  id: p.id,
+                  id: page.id,
                   title: title,
                   content: content,
-                  date: p.created_time,
-                  pubDate: p.created_time,
-                  lastEdited: p.last_edited_time,
+                  date: page.created_time,
+                  pubDate: page.created_time,
+                  lastEdited: page.last_edited_time,
                   author: 'Notion',
                   tags: tags,
-                  url: p.url
+                  url: page.url
                 };
               });
 
-              // 写入文件
+              // 过滤空内容（标题和内容都为空）
+              const validPosts = posts.filter(p => p.title !== '无标题' || p.content);
+              
               const output = {
                 lastSync: new Date().toISOString(),
                 source: 'notion',
-                count: data.length,
-                posts: data
+                databaseId: process.env.NOTION_DATABASE_ID,
+                count: validPosts.length,
+                posts: validPosts
               };
 
               fs.writeFileSync('notion-data.json', JSON.stringify(output, null, 2));
-              console.log('✅ 同步完成:', data.length, '条数据已保存');
+              
+              console.log(`\n✅ 成功保存 ${validPosts.length} 条记录`);
+              console.log('\n📝 前3条预览:');
+              validPosts.slice(0, 3).forEach((p, i) => {
+                console.log(`  ${i+1}. ${p.title.substring(0, 40)}${p.title.length > 40 ? '...' : ''}`);
+                if (p.content) console.log(`     内容: ${p.content.substring(0, 50)}...`);
+              });
 
-            } catch (err) {
-              console.error('❌ 同步失败:', err.message);
-              
-              if (err.response) {
-                console.error('状态码:', err.response.status);
-                console.error('错误详情:', JSON.stringify(err.response.data, null, 2));
+            } catch (error) {
+              console.error('❌ 同步失败:', error.message);
+              if (error.code === 'object_not_found') {
+                console.error('💡 提示: 数据库ID可能错误，或Integration未授权访问该数据库');
               }
-              
               process.exit(1);
             }
-          })();
+          }
+
+          sync();
           EOF
 
           node sync.js
 
       - name: Commit and push
         run: |
-          git config --local user.email 'bot@github.com'
-          git config --local user.name 'Notion Sync Bot'
+          git config user.email 'bot@github.com'
+          git config user.name 'Notion Bot'
           
-          # 检查是否有变化
           if git diff --quiet && git diff --staged --quiet; then
-            echo "📭 无变化，跳过提交"
+            echo "📭 无变化"
             exit 0
           fi
           
           git add notion-data.json
-          git commit -m "sync: update from Notion [$(date +'%Y-%m-%d %H:%M:%S')]"
+          git commit -m "sync: ${date '+%Y-%m-%d %H:%M:%S'}"
           git push
