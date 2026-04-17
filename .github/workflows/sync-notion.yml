@@ -72,20 +72,31 @@ jobs:
               
               console.log(\`\\n✅ 总计获取 \${allResults.length} 条记录\`);
               
-              const data = allResults.map(page => ({
-                title: page.properties.Name?.title?.[0]?.plain_text || '',
-                content: page.properties.Content?.rich_text?.[0]?.plain_text || '',
-                tags: page.properties.Tags?.multi_select?.map(t => t.name) || [],
-                date: page.properties.Date?.date?.start || page.created_time,
-                pubDate: page.created_time,
-                author: page.properties.Author?.rich_text?.[0]?.plain_text || 'Notion',
-                url: page.url || ''
-              }));
+              // 调试：打印第一条数据的所有属性名（帮助你确认实际属性名称）
+              if (allResults.length > 0) {
+                console.log('📋 第一条数据的所有属性名：', Object.keys(allResults[0].properties).join(', '));
+                console.log('🔍 第一条数据属性详情（节选）：', JSON.stringify(allResults[0].properties, null, 2).substring(0, 500));
+              }
+              
+              const data = allResults.map(page => {
+                const props = page.properties;
+                return {
+                  // 根据截图调整的属性映射
+                  title: props.Name?.title?.[0]?.plain_text || props.标题?.title?.[0]?.plain_text || '',
+                  date: props.Created?.date?.start || page.created_time,
+                  author: props.CreatedBy?.rich_text?.[0]?.plain_text || props.CreatedBy?.title?.[0]?.plain_text || 'Notion',
+                  url: props.链接?.url || page.url || '',
+                  // 保留字段（若无对应属性则为空）
+                  content: props.Content?.rich_text?.[0]?.plain_text || '',
+                  tags: props.Tags?.multi_select?.map(t => t.name) || [],
+                  pubDate: page.created_time
+                };
+              });
               
               fs.writeFileSync('notion-data.json', JSON.stringify(data, null, 2));
               console.log(\`💾 已保存 \${data.length} 条数据到 notion-data.json\`);
               
-              data.slice(0,3).forEach((d,i) => console.log(\`\${i+1}. \${d.title.substring(0,40)}\`));
+              data.slice(0,3).forEach((d,i) => console.log(\`\${i+1}. \${d.title.substring(0,40)} | \${d.date} | \${d.author}\`));
               
             } catch (error) {
               console.error('❌ 错误:', error.message);
