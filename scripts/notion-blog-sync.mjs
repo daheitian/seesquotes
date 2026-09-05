@@ -3,8 +3,9 @@
 // which the writing page (writing.html) uses as its article store.
 //
 // - No Notion token needed (the notion.site is public).
-// - Images are downloaded and committed under notion-assets/ (Notion URLs expire).
-// - Dedup via hidden marker `<!-- notion-sync:<pageId> -->` in the issue body.
+// - Images are downloaded via Notion's /image/ proxy (S3 URLs are anonymous-denied
+//   and expire) and committed under notion-assets/ for stable hosting.
+// - Dedup/update via hidden marker `<!-- notion-sync:<pageId> -->` in the issue body.
 //
 // Env:
 //   GITHUB_TOKEN   token with repo/issues write access (Actions GITHUB_TOKEN or a PAT)
@@ -12,11 +13,13 @@
 //   IMAGE_BASE     default: https://raw.githubusercontent.com/<REPO>/main
 //
 // Modes:
-//   --dry-run           fetch & convert, write markdown+images to ./notion-staging-out, no GitHub writes
-//   (default)           create missing issues, download new images into notion-assets/
+//   --dry-run           fetch & convert, write markdown to ./notion-staging-out, no GitHub writes
+//   (default)           create missing issues, update changed ones, download images
 
 import fs from "node:fs";
 import path from "node:path";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
 import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -27,6 +30,8 @@ const VIEW_ID = "0447f516e8f34dabaafa920e5079a163";
 const COLLECTION_ID = "493fbf58-4ece-4082-872a-db925761e265";
 const SPACE_ID = "ca1c8dfb-7480-4f52-9503-0534e30c8f71";
 const NOTION_BASE = "https://buerc.notion.site/api/v3";
+const NOTION_SITE = "https://buerc.notion.site";
+const IMAGE_PROXY = `${NOTION_SITE}/image/`;
 const REPO = process.env.REPO ?? "daheitian/seesquotes";
 const IMAGE_BASE = process.env.IMAGE_BASE ?? `https://raw.githubusercontent.com/${REPO}/main`;
 const ASSETS_DIR = path.join(ROOT, "notion-assets");
@@ -38,6 +43,7 @@ const API = `https://api.github.com/repos/${REPO}`;
 
 const HEADERS = { "Content-Type": "application/json", "User-Agent": "notion-blog-sync/1.0" };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const pexec = promisify(execFile);
 
 async function notionPost(pathname, body, tries = 3) {
   for (let i = 0; i < tries; i++) {
@@ -87,24 +93,38 @@ function richText(prop, plain = false) {
 const propText = (b, key, plain = false) => richText(b?.properties?.[key], plain);
 
 // ---------- image handling ----------
-const downloadedImages = new Map(); // notionUrl -> repoRelativePath
-async function downloadImage(url, articleId, index) {
-  if (downloadedImages.has(url)) return downloadedImages.get(url);
+let imgSeq = 0;
+const downloadedImages = new Map(); // src -> repoRelativePath
+
+function guessExt(src) {
   try {
-    const res = await fetch(url, { headers: { "User-Agent": HEADERS["User-Agent"] } });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const buf = Buffer.from(await res.arrayBuffer());
-    const u = new URL(url);
-    const ext = (path.posix.extname(u.pathname) || ".png").split("?")[0].toLowerCase() || ".png";
-    const dir = path.join(ASSETS_DIR, articleId);
-    fs.mkdirSync(dir, { recursive: true });
-    const name = `${index}${ext}`;
-    fs.writeFileSync(path.join(dir, name), buf);
-    const rel = `notion-assets/${articleId}/${name}`;
-    downloadedImages.set(url, rel);
+    if (src.startsWith("attachment:")) {
+      const name = src.split(":").pop() || "";
+      const m = name.match(/\.(png|jpe?g|gif|webp|svg|bmp)$/i);
+      return m ? "." + m[1].toLowerCase() : ".png";
+    }
+    const u = new URL(src, NOTION_SITE);
+    const m = u.pathname.match(/\.(png|jpe?g|gif|webp|svg|bmp)$/i);
+    return m ? "." + m[1].toLowerCase() : ".png";
+  } catch { return ".png"; }
+}
+
+async function downloadImage(src, blockId, articleId) {
+  if (downloadedImages.has(src)) return downloadedImages.get(src);
+  const proxied = `${IMAGE_PROXY}${encodeURIComponent(src)}?table=block&id=${blockId}&cache=v2`;
+  const idx = ++imgSeq;
+  const rel = `notion-assets/${articleId}/${idx}${guessExt(src)}`;
+  const target = path.join(ROOT, rel);
+  fs.mkdirSync(path.dirname(target), { recursive: true });
+  try {
+    await pexec("curl", ["-sL", "-f", "--max-time", "60", "-o", target, proxied], { maxBuffer: 64 * 1024 * 1024 });
+    const buf = fs.readFileSync(target);
+    if (buf.length < 100 || buf[0] === 0x7b /* { */) throw new Error(`invalid image (${buf.length} bytes)`);
+    downloadedImages.set(src, rel);
     return rel;
   } catch (e) {
-    console.log(`  ! image download failed (${e.message}): ${url.slice(0, 90)}`);
+    console.log(`\n  ! image failed (${String(e.message).split("\n")[0].slice(0, 80)}): ${src.slice(0, 80)}`);
+    try { fs.unlinkSync(target); } catch {}
     return null;
   }
 }
@@ -157,16 +177,16 @@ async function blockToMarkdown(b, blocksById, depth = 0, counters = { num: 0 }, 
       return "```" + lang + "\n" + text + "\n```";
     }
     case "image": {
-      const src = b.format?.display_source?.startsWith("/") ? null : (b.format?.display_source ?? b.properties?.source?.[0]?.[0]);
-      if (!src) return null;
+      const src = b.format?.display_source ?? b.properties?.source?.[0]?.[0];
+      if (!src || src.startsWith("data:")) return null; // data: URIs are Notion UI icons, not content
       const caption = b.properties?.caption ? richText(b.properties.caption) : "";
       if (DRY_RUN) return `![${caption || "image"}](${src})${caption ? `\n\n*${caption}*` : ""}`;
-      const rel = await downloadImage(src, articleId, Object.keys(downloadedImages).length);
+      const rel = await downloadImage(src, b.id, articleId);
       return rel ? `![${caption || "image"}](${IMAGE_BASE}/${rel})${caption ? `\n\n*${caption}*` : ""}` : null;
     }
     case "bookmark": case "embed": case "video": case "file": case "pdf": {
       const link = b.properties?.source?.[0]?.[0] ?? b.format?.display_source ?? "";
-      if (!link) return null;
+      if (!link || link.startsWith("data:")) return null;
       const caption = b.properties?.caption ? richText(b.properties.caption) : (type === "bookmark" ? "书签" : type);
       return `[${caption || link}](${link})`;
     }
@@ -228,6 +248,8 @@ async function listSyncedIssues() {
   return found;
 }
 
+const cleanTag = (t) => String(t).split(/[，,]/).map((s) => s.trim()).filter(Boolean).slice(0, 40);
+
 async function ensureLabels(names) {
   for (const name of names) {
     try {
@@ -240,8 +262,6 @@ async function ensureLabels(names) {
 }
 
 // ---------- main ----------
-const args = process.argv.slice(2);
-
 // 1. rows
 const data = await notionPost("queryCollection", {
   source: { type: "collection", id: COLLECTION_ID, spaceId: SPACE_ID },
@@ -264,7 +284,7 @@ for (const id of rowIds) {
     id,
     title: propText(b, "title", true).replace(/\s*[｜|]\s*小信号\s*$/, "").replace(/\s+/g, " ").trim(),
     category: propText(b, sk("category"), true),
-    tags: (b.properties?.[sk("tags")] ?? []).map((s) => Array.isArray(s) ? (s[0] ?? "") : s).filter(Boolean),
+    tags: (b.properties?.[sk("tags")] ?? []).flatMap((s) => cleanTag(Array.isArray(s) ? (s[0] ?? "") : s)),
     summary: propText(b, sk("summary"), true),
     date: propText(b, sk("date"), true),
     slug: propText(b, sk("slug"), true),
@@ -274,7 +294,8 @@ articles.sort((a, b) => (a.date || "").localeCompare(b.date || ""));
 console.log(`published articles: ${articles.length}`);
 
 // 2. convert
-for (const a of articles) {
+for (let i = 0; i < articles.length; i++) {
+  const a = articles[i];
   const blocksById = {};
   let cursor = { stack: [] }, chunkNumber = 0;
   for (;;) {
@@ -299,9 +320,9 @@ for (const a of articles) {
     parts.push(await blockToMarkdown(blk, blocksById, 0, { num: n }, a.id));
   }
   a.markdown = parts.filter(Boolean).join("\n\n");
-  process.stdout.write(`\r[${articles.indexOf(a) + 1}/${articles.length}] converted`);
+  process.stdout.write(`\r[${i + 1}/${articles.length}] converted`);
 }
-console.log("");
+console.log(`\nimages downloaded: ${downloadedImages.size}`);
 
 if (DRY_RUN) {
   const out = path.join(ROOT, "notion-staging-out");
@@ -316,25 +337,14 @@ if (DRY_RUN) {
 
 if (!TOKEN) { console.error("GITHUB_TOKEN is required for issue creation"); process.exit(1); }
 
-// 3. dedup
-const existing = await listSyncedIssues();
-console.log(`already synced issues: ${existing.size}`);
-
-// 4. labels
-const labelNames = [...new Set(articles.flatMap((a) => [a.category, ...a.tags]).filter(Boolean))];
-await ensureLabels(labelNames);
-await ensureLabels([SYNC_LABEL]);
-
-// 5. create issues (oldest first so newer articles get lower issue numbers appended later)
-let created = 0, skipped = 0;
-for (const a of articles) {
-  if (existing.has(a.id)) { skipped++; continue; }
+// 3. build bodies/labels
+const buildBody = (a) => {
   const metaLine = [
     a.date && `📅 ${a.date}`,
     a.category && `🗂️ ${a.category}`,
     a.tags.length && `🏷️ ${a.tags.join(" / ")}`,
   ].filter(Boolean).join(" · ");
-  const body = [
+  return [
     metaLine && `> ${metaLine}`,
     "",
     a.markdown,
@@ -344,14 +354,37 @@ for (const a of articles) {
     `> 📡 本文同步自作者 Notion 博客「小信号」 · [阅读原文](${notionUrl(a.id)})`,
     MARKER(a.id),
   ].join("\n");
-  const labels = [SYNC_LABEL, ...new Set([a.category, ...a.tags].filter(Boolean))];
+};
+const buildLabels = (a) => [...new Set([SYNC_LABEL, a.category, ...a.tags].filter(Boolean))];
+
+// 4. dedup + sync (create missing, update changed)
+const existing = await listSyncedIssues();
+console.log(`already synced issues: ${existing.size}`);
+
+const labelNames = [...new Set(articles.flatMap((a) => buildLabels(a)))];
+await ensureLabels(labelNames);
+
+let created = 0, updated = 0, unchanged = 0;
+for (const a of articles) {
+  const body = buildBody(a);
+  const labels = buildLabels(a);
+  const ex = existing.get(a.id);
   try {
-    const issue = await gh("/issues", { method: "POST", body: JSON.stringify({ title: a.title, body, labels }) });
-    created++;
-    process.stdout.write(`\rcreated: ${created}, skipped: ${skipped}  (latest: ${issue.number})`);
-    await sleep(600); // be gentle with the API
+    if (ex) {
+      const clean = (s) => String(s ?? "").replace(/\r\n/g, "\n").trim();
+      const labelSet = (ex.labels ?? []).map((l) => l.name ?? l).sort().join(",");
+      if (clean(ex.body) !== clean(body) || clean(ex.title) !== a.title || labelSet !== labels.slice().sort().join(",")) {
+        await gh(`/issues/${ex.number}`, { method: "PATCH", body: JSON.stringify({ title: a.title, body, labels }) });
+        updated++;
+      } else unchanged++;
+    } else {
+      const issue = await gh("/issues", { method: "POST", body: JSON.stringify({ title: a.title, body, labels }) });
+      created++;
+      process.stdout.write(`\rcreated: ${created}, updated: ${updated}, unchanged: ${unchanged}  (latest: #${issue.number})`);
+    }
+    await sleep(500);
   } catch (e) {
     console.log(`\n! failed: ${a.title} -> ${e.message.slice(0, 150)}`);
   }
 }
-console.log(`\ndone. created=${created}, already-synced=${skipped}, images downloaded=${downloadedImages.size}`);
+console.log(`\ndone. created=${created}, updated=${updated}, unchanged=${unchanged}, images=${downloadedImages.size}`);
