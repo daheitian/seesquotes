@@ -58,12 +58,18 @@ function detect(pages) {
   return pages.map((page) => {
     const props = page.properties || {};
     let title = '', content = '', url = '', tags = [], tagName = '';
+    let featured = false;
 
     for (const [key, val] of Object.entries(props)) {
       if (!title && val.type === 'title') title = titleText(val);
       if (val.type === 'url' && val.url && !url) url = val.url;
       if (val.type === 'multi_select' && !tags.length) tags = val.multi_select.map((t) => t.name);
       if (val.type === 'select' && !tagName && val.select) tagName = val.select.name;
+      if (val.type === 'checkbox' && val.checkbox === true && /精选|featured/i.test(key)) featured = true;
+      if ((val.type === 'select' || val.type === 'multi_select') && /精选|featured/i.test(key)) {
+        const names = (val[val.type] || []).map((t) => t.name);
+        if (names.some((n) => /精选|featured|是|yes/i.test(n))) featured = true;
+      }
       if (val.type === 'rich_text') {
         const t = richText(val);
         if (t.startsWith('http') && !url) url = t;
@@ -74,6 +80,7 @@ function detect(pages) {
     // 中文常见字段名兜底
     if (props.链接?.url) url = props.链接.url;
     if (props.Tags?.multi_select) tags = props.Tags.multi_select.map((t) => t.name);
+    if (props.精选?.checkbox === true || props.Featured?.checkbox === true) featured = true;
 
     return {
       title: title || '无标题',
@@ -81,6 +88,7 @@ function detect(pages) {
       content,
       tags,
       tag: tagName,
+      featured,
       date: page.created_time,
       pubDate: page.created_time,
     };

@@ -1,0 +1,513 @@
+# 书架
+
+共 509 条
+
+- [雷蒙德·钱德勒典藏版全集（共十册）](https://weread.qq.com/book-detail?type=1&v=85332850717c533385393e9) — 雷蒙德·钱德勒
+- [早安，怪物](https://weread.qq.com/book-detail?type=1&v=5f9326e0813ab8c3dg010320) — [加]凯瑟琳·吉尔迪纳
+- [芥末简史：被呛到的文明（轻历史）](https://weread.qq.com/book-detail?type=1&v=d1b32380813abbb29g01784e) — 侯继江 ✅
+- [我在北京送快递](https://weread.qq.com/book-detail?type=1&v=51532c40813ab7c0ag019c84) — 胡安焉
+- [文化伟人代表作图释书系：资本论](https://weread.qq.com/book-detail?type=1&v=64e325b0724ff25c64eeff7) — [德]卡尔·马克思
+- [万事法则（听说能解决90%的问题）](https://weread.qq.com/book-detail?type=1&v=aee324f0813ab8eeag017889) — [英]理查德·泰普勒
+- [始于极限：女性主义往复书简](https://weread.qq.com/book-detail?type=1&v=aab32550813ab7368g013d4a) — [日]上野千鹤子 [日]铃木凉美
+- [所有的哲学都在人生里](https://weread.qq.com/book-detail?type=1&v=30c32200813ab79a8g01888f) — 伯特兰·罗素
+- [点燃理性的火焰](https://weread.qq.com/book-detail?type=1&v=311321f0813ab8ff9g01743e) — [瑞典]克里斯特·斯图马克
+- [存在主义心理学的邀请](https://weread.qq.com/book-detail?type=1&v=1e232d90813ab8226g0187b1) — 博·雅各布森
+- [我不是教你诈](https://weread.qq.com/book-detail?type=1&v=14232ed0813ab6d8fg019a70) — [美]刘墉
+- [月亮和六便士](https://weread.qq.com/book-detail?type=1&v=291326d0813ab6d11g01408c) — 毛姆
+- [哲学大师谈人生](https://weread.qq.com/book-detail?type=1&v=14f32e5054d44414f158c55) — 吴光远
+- [小家，越住越大](https://weread.qq.com/book-detail?type=1&v=73e32750719358cb73ef5f9) — 逯薇
+- [富爸爸的财富花园：普通人积累财富最值得收藏的传家之书](https://weread.qq.com/book-detail?type=1&v=688324b0813ab82ccg010989) — [美]约翰·索福里克
+- [是谁触碰了你的情绪按钮： 把好情绪留给最亲近的人](https://weread.qq.com/book-detail?type=1&v=fb5323a0724b1404fb528b4) — 卢熠翎
+- [山下英子：断舍离（全5册）](https://weread.qq.com/book-detail?type=1&v=1b4323d071e8af501b4c2ba) — 山下英子
+- [为什么不能多印点钱？](https://weread.qq.com/book-detail?type=1&v=df732000813aba0d5g018a42) — [英]英格兰银行  [英]鲁帕尔·帕特尔  [英]杰克·米宁
+- [苦论](https://weread.qq.com/book-detail?type=1&v=d2332d80813ab8fe7g019c72) — [法]E.M.齐奥朗
+- [控制](https://weread.qq.com/book-detail?type=1&v=20532060813ab8dcbg014912) — [美]约翰·兰多夫·桑顿
+- [瓦尔登湖](https://weread.qq.com/book-detail?type=1&v=0af32e00813ab77f7g0103c3) — [美]亨利·戴维·梭罗
+- [武志红心理学套装（共四册）](https://weread.qq.com/book-detail?type=1&v=4de3251071691c424de41d5) — 武志红
+- [书籍的世界](https://weread.qq.com/book-detail?type=1&v=a8132a70813aba4f4g017cc9) — [德]赫尔曼·黑塞
+- [A Way of Being](https://weread.qq.com/book-detail?type=1&v=30e42df3643425f303377477153476f45467749366b55366b66466f6547534f271) — Rick Rubin
+- [面纱THE PAINTED VEIL英文原版](https://weread.qq.com/book-detail?type=1&v=78132610813ab8bf1g016447) — [英]威廉·萨默赛特·毛姆
+- [人生算法：用概率思维做好决策](https://weread.qq.com/book-detail?type=1&v=fff427d3643425f366845324969324a49436157366a41366b6631625546414a951) — 老喻
+- [女生怎样活? ———上野老师，教教我！(这是一本满载宝贵建议的“女孩生存指南”。）](https://weread.qq.com/book-detail?type=1&v=da232e60813ab7519g015fbb) — [日]上野千鹤子
+- [这样装修不超支、不被宰、不返工](https://weread.qq.com/book-detail?type=1&v=e1e325f05dd691e1e057572) — 《快乐家装》编辑部
+- [Building a Second Brain](https://weread.qq.com/book-detail?type=1&v=c6b42a73643425f41593644776744773738773736666a366757426c59466844ce7) — 
+- [装修常用数据手册：空间布局和尺寸](https://weread.qq.com/book-detail?type=1&v=2c732380729ee2142c76657) — 尤呢呢
+- [你经历了什么？（脱口秀女王奥普拉&儿童精神科医生、神经科学家布鲁斯·D.佩里医生的十次深度对话+真实病患案例，用脑神经科学讲清心理问题的产生原因和疗愈方法）](https://weread.qq.com/book-detail?type=1&v=147429a3643425f324a7130656330646a454432366b61366b664338674647743b7) — 奥普拉·温弗瑞
+- [亚马逊逆向工作法](https://weread.qq.com/book-detail?type=1&v=403320a0813ab6b15g017d45) — 柯林·布里亚   比尔·卡尔
+- [第一财经YiMagazine（2021年第4期）](https://weread.qq.com/book-detail?type=1&v=ae332f10723b1b6aae3a4d4) — 第一财经YiMagazine
+- [幸福的要素](https://weread.qq.com/book-detail?type=1&v=14132580813ab726cg018864) — 泰勒·本·沙哈尔
+- [娱乐至死](https://weread.qq.com/book-detail?type=1&v=aef326f05d0f19aef085d2b) — 尼尔·波兹曼
+- [清晰思考：将平凡时刻转化为非凡成果](https://weread.qq.com/book-detail?type=1&v=f2f324c0813ab92f4g0107cd) — [加]沙恩·帕里什
+- ["Dance First. Think Later"](https://weread.qq.com/book-detail?type=1&v=98a421c3643425f354d7942454b424367427235366a39366b66413330344e5131b) — Kathryn Petras
+- [大脑的故事](https://weread.qq.com/book-detail?type=1&v=3f332830718032dd3f3156d) — 大卫·伊格曼
+- [畏惧与颤栗 恐惧的概念 致死的疾病](https://weread.qq.com/book-detail?type=1&v=4aa32150813ab8414g010569) — [丹]克尔凯郭尔
+- [How to Fail at Almost Everything and Still Win Big: Kind of the Story of My Life](https://weread.qq.com/book-detail?type=1&v=f6a42f23643425f31764d323363323234473035366731366757433351333862af7) — Scott Adams
+- [手机大脑：让人睡眠好、心情好、脑力好的戒手机指南](https://weread.qq.com/book-detail?type=1&v=73032d20813ab73aag0107dc) — [瑞典]安德斯·汉森
+- [读与被读](https://weread.qq.com/book-detail?type=1&v=3fb32ac0813ab81b8g014134) — 刘文飞
+- [塔勒布智慧箴言录](https://weread.qq.com/book-detail?type=1&v=d4532eb0813ab753bg0134f6) — 纳西姆·尼古拉斯·塔勒布
+- [科学的历程](https://weread.qq.com/book-detail?type=1&v=39332d60716516c8393abcb) — 吴国盛
+- [哲学家们都干了些什么？ （修订版）](https://weread.qq.com/book-detail?type=1&v=28932750813ab6bd1g010e25) — 林欣浩
+- [焦虑自救手册：克服焦虑一点也不难（樊登推荐，克服焦虑实用指南）](https://weread.qq.com/book-detail?type=1&v=07b32740813ab6ad4g014703) — 蒂姆·坎托弗
+- [小逻辑：让选择变简单的方法（奥巴马保持专注与高效的行为法则！秋叶、成甲、雷文涛推荐！）](https://weread.qq.com/book-detail?type=1&v=01c42f03643425f464f37344b68344e72306d55366879366757433765363836b69) — 罗里·加拉维尔
+- [思考的框架（被达利欧等投资大佬圈粉的作者作品，风靡华尔街的思维训练法）](https://weread.qq.com/book-detail?type=1&v=bc442bf3643425f457645456d79456e6f38773736666a366757474a4342464640e) — 沙恩·帕里什
+- [商业实战三部曲:你的顾客需要一个好故事 做个会讲故事的人 别卖给我,讲给我(套装共3册)（"讲故事 战商界"实战三部曲）](https://weread.qq.com/book-detail?type=1&v=dbe42623643425f395952325164325257386a6d36666d3667574651793065411d6) — 加布里埃尔·多兰
+- [从零开始的女性主义](https://weread.qq.com/book-detail?type=1&v=38e32600813ab6837g019009) — [日]上野千鹤子 [日]田房永子
+- [阅读是安静的自我觉醒（果麦经典）](https://weread.qq.com/book-detail?type=1&v=86e32d10813ab9d9bg0148b5) — [德]赫尔曼·黑塞
+- [创造力：跳出惯性思维去思考](https://weread.qq.com/book-detail?type=1&v=80132af0813ab8dfcg014878) — [美]吉姆·兰德尔
+- [It Doesn't Take a Genius to Think Like One](https://weread.qq.com/book-detail?type=1&v=c6942443643425f467648333046333270316d42366c72366b66436857463137160) — Erwin Raphael McManus
+- [雪球专刊·特别版：段永平投资问答录商业逻辑篇](https://weread.qq.com/book-detail?type=1&v=6a632b90720f5b316a67279) — 雪球专刊
+- [拒看新聞的生活藝術](https://weread.qq.com/book-detail?type=1&v=76d425e3643425f306646363368363275353770366976366757455579476a4d90f) — 魯爾夫．杜伯里(Rolf Dobelli)
+- [适时退出：以退为进的决策智慧](https://weread.qq.com/book-detail?type=1&v=63232be0813ab92adg0102f4) — [美]安妮·杜克
+- [The Book of Elon](https://weread.qq.com/book-detail?type=1&v=5a442043643425f305770396d6c39697537693237326b373146325a4545303594f) — 埃里克·乔根森
+- [史蒂芬·平克“语言与人性”五部曲](https://weread.qq.com/book-detail?type=1&v=4e332f50720f099c4e3758c) — [美]史蒂芬·平克
+- [How to Fail at Almost Everything and Still Win Big: Kind of the Story of My Life](https://weread.qq.com/book-detail?type=1&v=c8c42883643425f305770307662307542335975366c36366b66383943376e69183) — Adams, Scott
+- [一读就懂的心经](https://weread.qq.com/book-detail?type=1&v=b63329d0813ab8ddeg0188ac) — 王晨阳
+- [The Sovereign Child: How a Forgotten Philosophy Can Liberate Kids and Their Parents](https://weread.qq.com/book-detail?type=1&v=48742b83643425f42484a393076387a68414b6b36774136783636314e356a57cb5) — Aaron Stupple
+- [Good Inside](https://weread.qq.com/book-detail?type=1&v=e9442773643425f39487a476342476276396649366a63366b6631466c353437fbf) — Dr. Becky Kennedy
+- [如何找到想做的事](https://weread.qq.com/book-detail?type=1&v=71a32fb0813ab8de8g019cc9) — [日]八木仁平
+- [大设计](https://weread.qq.com/book-detail?type=1&v=64132f605b9076641f8f710) — 史蒂芬·霍金 列纳德·蒙洛迪诺
+- [The Curator’s Handbook](https://weread.qq.com/book-detail?type=1&v=96542833643425f30766844465a44437145387636675436675734344646374b620) — Adrian George
+- [幽玄·物哀·寂](https://weread.qq.com/book-detail?type=1&v=7ac32c40719230bf7ac587a) — 大西克礼
+- [社会性征服地球](https://weread.qq.com/book-detail?type=1&v=f0e32820813ab7ce4g01976b) — 爱德华·威尔逊
+- [文明及其不满（果麦经典）](https://weread.qq.com/book-detail?type=1&v=b7a32360719b4d3bb7abbf6) — 西格蒙德·弗洛伊德
+- [智慧妈妈的聊天魔法](https://weread.qq.com/book-detail?type=1&v=810322c07260a7538102999) — 粲然
+- [打造火爆音频](https://weread.qq.com/book-detail?type=1&v=87532ef0813ab81b4g0111e9) — 埃里克·纽祖姆
+- [随机生存的智慧：黑天鹅语录](https://weread.qq.com/book-detail?type=1&v=7d23282059b3ab7d2aed91b) — 纳西姆·尼古拉斯·塔勒布
+- [成为母亲的选择（“我爱孩子，但我后悔当妈妈。”以色列社会学家奥娜·多纳特话题之作，被翻译为近十种语言，在以色列、德国等地引发热议。初次聚焦“后悔生育”的话题，采访二十三位后悔生育的母亲，展现女性生育前后的情感历程。）](https://weread.qq.com/book-detail?type=1&v=85d42882a43425f395952336c44336d32364f32366151365945734) — 奥娜·多纳特
+- [走近费曼丛书：别逗了，费曼先生！](https://weread.qq.com/book-detail?type=1&v=cd732d70718db043cd73bb3) — 理查德·费曼 拉尔夫·莱顿
+- [剑来（1-54 完结精校版）](https://weread.qq.com/book-detail?type=1&v=dee32e1071db086fdeef491) — 烽火戏诸侯
+- [韩信：越强大的人，越懂得忍耐](https://weread.qq.com/book-detail?type=1&v=90e32cd071db086b90e2866) — 苏城育
+- [发现利润区](https://weread.qq.com/book-detail?type=1&v=8dd32f60715bd9ea8dd1ae6) — 亚德里安·斯莱沃斯基 大卫·莫里森 鲍勃·安德尔曼 ✅
+- [财富、贫穷与政治](https://weread.qq.com/book-detail?type=1&v=d6932ca0729845c1d691880) — 托马斯·索维尔
+- [给父母的建议（大教育书系）](https://weread.qq.com/book-detail?type=1&v=83d32910727ca06983debb0) — 苏霍姆林斯基
+- [如何让孩子自觉又主动](https://weread.qq.com/book-detail?type=1&v=698324e071f0765f698d856) — 丹尼尔·西格尔 蒂娜·佩恩·布赖森
+- [思考如何超越思考](https://weread.qq.com/book-detail?type=1&v=1ad42123643425f434c37476a64476b39315249366c63366b6642316437436aa0d) — 【美】安妮·墨菲·保罗
+- [参考月刊Vol.3隐形知识学习指南](https://weread.qq.com/book-detail?type=1&v=c08427d3643425f374d67326c6d326d4e345356366974366757385359324e59514) — 参考答案编辑部
+- [玻璃球游戏（读客三个圈经典文库）](https://weread.qq.com/book-detail?type=1&v=c4032da0813ab82feg015048) — [德]赫尔曼·黑塞
+- [奈飞文化手册：支撑 827 亿 IP 整合的底层逻辑](https://weread.qq.com/book-detail?type=1&v=4a632bf07166ca854a6182e) — 帕蒂·麦考德
+- [个体破局-2022](https://weread.qq.com/book-detail?type=1&v=ebc42483643425f32533035374135374b33454c366c42366b66376c453855587f3) — Unknown
+- [参考答案｜年度十佳文章](https://weread.qq.com/book-detail?type=1&v=4c542443643425f476964314768314962377955366d41366b66363479384b72588) — 参考答案编辑部
+- [悉达多：一首印度的诗](https://weread.qq.com/book-detail?type=1&v=866326d0813ab7a96g014274) — [德]赫尔曼·黑塞
+- [不纠结的哲学](https://weread.qq.com/book-detail?type=1&v=c3432df0813ab8e6bg01734e) — [古罗马]塞涅卡 [古罗马]爱比克泰德 [古罗马]奥勒留 ✅
+- [會走路的錢](https://weread.qq.com/book-detail?type=1&v=27a42f93643425f41735231396231414e454844367831367836304f753975447d2) — 貝版bayfamily
+- [写给父母的未来之书：抓住0—7岁关键期培养一生的优势](https://weread.qq.com/book-detail?type=1&v=a4e32e307166cd57a4ee518) — 郝景芳 王立铭 童行学院教研团队
+- [巴比伦最富有的人](https://weread.qq.com/book-detail?type=1&v=34f32f30813aba09eg013b63) — [美]乔治·S.克拉森
+- [中国茶图鉴](https://weread.qq.com/book-detail?type=1&v=b2a327d0727ccd5fb2a8e20) — 李韬
+- [不焦虑的亲密关系（独家首发）](https://weread.qq.com/book-detail?type=1&v=f5132820813ab8e17g01678f) — 吴易聪
+- [尼采的博客 对生活、宇宙以及万物的42个深度思考  (英)马克·弗农Mark Vernon著 , 江舒译](https://weread.qq.com/book-detail?type=1&v=706429d3643425f47696445335445344c35377036764a3673783952634337751aa) — 
+- [音乐是怎么变成免费午餐的 (斯蒂芬·维特, 蔡哲轩译) (Z-Library)](https://weread.qq.com/book-detail?type=1&v=d8a428f3643425f35707243745843734a394b7a366f35366f6f37757731537958c) — 
+- [每周工作4小时](https://weread.qq.com/book-detail?type=1&v=a0e42a73643425f446a57316f5131706c345356366974366757366555414b39343) — 蒂莫里.费里斯
+- [创始人心理模型手册](https://weread.qq.com/book-detail?type=1&v=59242503643425f334a56314e6c314d67356961366d65366b6631487934385ad66) — 帕拉斯·乔普拉 翻译整理：大黑天
+- [血酬定律：中国历史中的生存游戏](https://weread.qq.com/book-detail?type=1&v=8d4328f05c90ef8d48685a7) — 吴思
+- [牛马游戏：硅谷大厂如何驯服工程师](https://weread.qq.com/book-detail?type=1&v=40532c90813abb469g0182e6) — 吴桐雨
+- [精要主义：迷茫期如何改命？](https://weread.qq.com/book-detail?type=1&v=8f932fd05c7a448f917d2c4) — [美]格雷戈·麦吉沃恩
+- [The Pmarca Blog Archives](https://weread.qq.com/book-detail?type=1&v=06e423a3643425f30474e383762383754305266366c76366b66394149376e66119) — Unknown
+- [The Lion Tracker's Guide to Life](https://weread.qq.com/book-detail?type=1&v=51a42b03643425f474254433354433376326c6f366c59366b66446c6936697308e) — Boyd Varty
+- [双重时间：与世界对谈](https://weread.qq.com/book-detail?type=1&v=65e32e40813ab8b45g014ecb) — 柏琳
+- [王川宝典](https://weread.qq.com/book-detail?type=1&v=63642cd3643425f396f64435876435777307565366d30366b6646755a4553382a2) — 王川
+- [如何想到又做到](https://weread.qq.com/book-detail?type=1&v=b253292071697fe1b25cd24) — [美]肖恩·扬
+- [BEAMS AT HOME.4 理想之家](https://weread.qq.com/book-detail?type=1&v=e8d32f10813ab6e33g0155ce) — BEAMS
+- [小说的骨架：好提纲成就好故事](https://weread.qq.com/book-detail?type=1&v=56c32ba071600c0456ce088) — 凯蒂·维兰德
+- [走近费曼丛书·费曼讲演录：一个平民科学家的思想](https://weread.qq.com/book-detail?type=1&v=22e32d005ab0a422eafed43) — R·P·费曼
+- [像火箭科学家一样思考：将不可能变为可能](https://weread.qq.com/book-detail?type=1&v=fc032510720a3138fc06b99) — 奥赞·瓦罗尔
+- [抓住今天](https://weread.qq.com/book-detail?type=1&v=75332b60813ab8a0ag0182a5) — [美]索尔·贝娄
+- [为什么和你说话这么累](https://weread.qq.com/book-detail?type=1&v=f61325e0813ab70b1g012fbb) — 朴宰莲 
+- [IDEO，设计改变一切（10周年纪念版）](https://weread.qq.com/book-detail?type=1&v=fb8324a071a2569bfb88e33) — 蒂姆·布朗
+- [战后日本经济史](https://weread.qq.com/book-detail?type=1&v=eef328207158f213eeff9db) — 野口悠纪雄
+- [创新者的窘境（全新修订版）](https://weread.qq.com/book-detail?type=1&v=1a8422c3643425f35326c30465430456e31366a366c68366b66416a65366a55414) — [美]克莱顿·克里斯坦森
+- [最简单的方式：《零极限》之实践篇](https://weread.qq.com/book-detail?type=1&v=345329407213d417345affa) — 玛贝尔·卡茨
+- [稀缺：我们是如何陷入贫穷与忙碌的](https://weread.qq.com/book-detail?type=1&v=36b321405d05b236bb0ce7d) — 塞德希尔·穆来纳森
+- [Stolen Focus: Why You Can't Pay Attention](https://weread.qq.com/book-detail?type=1&v=100428e3643425f306a4f45466145435a47726f366b43366b6634374a3876354fe) — Johann Hari
+- [孩子：挑战（儿童心理学奠基之作！50万册纪念版！）](https://weread.qq.com/book-detail?type=1&v=c1d32ad0813ab6c3fg01097b) — 鲁道夫·德雷克斯 薇姬·索尔兹
+- [万物发明指南（万一穿越了你真能生存吗？时间旅行者生存手册，实操版“人类简史”，美国国家公共电台2018年度之书）](https://weread.qq.com/book-detail?type=1&v=aba427d3643425f39513943634c436235307565366d30366b663766524171588ff) — 瑞安·诺思
+- [The Price of Time](https://weread.qq.com/book-detail?type=1&v=e4242da3643425f33334a45366a45344c38666636666e366757443643324d495ae) — Edward Chancellor
+- [你的直觉会出错：反直觉商业现象解读](https://weread.qq.com/book-detail?type=1&v=3c832650813ab8c1fg012f67) — 声动早咖啡 著 声动活泼 编
+- [沉思录（大全集）](https://weread.qq.com/book-detail?type=1&v=4fc3234054c03e4fcba8024) — [古罗马]马可·奥勒留
+- [那些让你更聪明的科学新概念2](https://weread.qq.com/book-detail?type=1&v=690324e07237fc7c6909b76) — 约翰·布罗克曼编著
+- [将心注入](https://weread.qq.com/book-detail?type=1&v=1ee32e705935091ee780501) — 霍华德·舒尔茨 多莉·琼斯·扬
+- [把栏杆拍遍：梁衡散文中学生读本](https://weread.qq.com/book-detail?type=1&v=004328f05e44db00490cb3f) — 梁衡
+- [正常人（2020年同名英剧原著）](https://weread.qq.com/book-detail?type=1&v=5e732b9071fc15f65e73988) — 萨莉·鲁尼
+- [How to Unlock the Secret Language of Connection](https://weread.qq.com/book-detail?type=1&v=a8542283643425f303835444a6444477a364f32366d6f366b66424966457671b4b) — Charles Duhigg
+- [深度关系：从建立信任到彼此成就](https://weread.qq.com/book-detail?type=1&v=9a332f70813ab80efg0123b7) — 大卫·布拉德福德 卡罗尔·罗宾
+- [生意的三个本质：人性、产品和模式](https://weread.qq.com/book-detail?type=1&v=a2732b80813ab91a6g0139fa) — 风中的厂长
+- [斯坦福大学写作课](https://weread.qq.com/book-detail?type=1&v=18d32070813ab8315g011866) — 华莱士·斯泰格那
+- [The Sense of Style: The Thinking Person’s Guide to Writing in the 21st Century](https://weread.qq.com/book-detail?type=1&v=18c42463643425f38737a466b48466b5139766b366a59366b6636535446505254a) — Steven Pinker
+- [上瘾：让用户养成使用习惯的四大产品逻辑](https://weread.qq.com/book-detail?type=1&v=6c0426c3643425f44543443624f43623537424f366d63366b6636704c3332631ce) — [美]尼尔·埃亚尔,[美]瑞安·胡佛
+- [如何把产品做到最好:在项目最艰难、最关键之处找到出路](https://weread.qq.com/book-detail?type=1&v=ace42263643425f42484a464376464447377143366930366757334f4e326d66332) — 斯科特·贝尔斯基
+- [只要你想，你就可以变成有钱人（全4册）](https://weread.qq.com/book-detail?type=1&v=975325807214d68f97564f7) — 哈维·艾克 托马斯·科里 吉姆·罗杰斯 丹尼尔·佩科
+- [看你一眼就会笑（治愈漫画）](https://weread.qq.com/book-detail?type=1&v=4f4321f0813ab73d2g010f15) — 丘汉林
+- [写给分心者的生活指南](https://weread.qq.com/book-detail?type=1&v=58942ed3643425f456231434b64434b64326c6f366c59366b6646647a384b78822) — ［美］爱德华·哈洛韦尔（Edward M. Hallowell） 约翰·瑞迪（John J. Ratey）;丁凡译
+- [理性](https://weread.qq.com/book-detail?type=1&v=220322c0813ab7e63g01099b) — [美]史蒂芬·平克
+- [别怕，这世界终会爱你](https://weread.qq.com/book-detail?type=1&v=7c632aa0813ab8b59g017005) — 林遭遇
+- [远离那个牙医（一人读书，全家受益，德国知名牙医讲透口腔健康知识）](https://weread.qq.com/book-detail?type=1&v=31932bc0813ab8e15g0118e0) — [德]斯特凡·菲克尔
+- [有节制的生活](https://weread.qq.com/book-detail?type=1&v=3e23274071c9e1313e29761) — [古罗马]西塞罗
+- [纳瓦尔宝典](https://weread.qq.com/book-detail?type=1&v=e1e32b00729fc94fe1e824d) — 埃里克·乔根森 ✅
+- [每周工作4小时（新版）](https://weread.qq.com/book-detail?type=1&v=8f842ad3643425f453372413437413356424747366e63366f6f43415641434b9fb) — 【美】蒂莫西·费里斯, 鹤梅, ePUBw.COM
+- [系统之美（全新升级版）](https://weread.qq.com/book-detail?type=1&v=55b32da0813ab864cg017b6c) — 德内拉·梅多斯
+- [Thinking 101](https://weread.qq.com/book-detail?type=1&v=739421e3643425f37637331644731644f43777836677036675738747930684b9dc) — Woo-kyoung Ahn
+- [21招，让孩子独立](https://weread.qq.com/book-detail?type=1&v=47a32bf0717dd54747a40db) — 叶壮
+- [理解人性（专家伴读版）](https://weread.qq.com/book-detail?type=1&v=b1b32c40813ab85b3g012280) — 阿尔弗雷德·阿德勒
+- [象与骑象人](https://weread.qq.com/book-detail?type=1&v=34132b0071a256903410e86) — 乔纳森·海特 
+- [高效能人士的七个习惯（30周年纪念版）（全新增订版）](https://weread.qq.com/book-detail?type=1&v=56d325907203e8a856def7f) — 史蒂芬·柯维
+- [超级智能](https://weread.qq.com/book-detail?type=1&v=1f732d00813ab919dg012c9a) — 尼克•波斯特洛姆
+- [创意行为：存在即答案](https://weread.qq.com/book-detail?type=1&v=5a332100813ab9d83g018139) — [美]里克·鲁宾
+- [作家榜名著：毛姆文学课：如何阅读与写作](https://weread.qq.com/book-detail?type=1&v=ee532a3072673268ee507d1) — 威廉·萨默塞特·毛姆
+- [从提问到输出：上野千鹤子的知识生产术](https://weread.qq.com/book-detail?type=1&v=cf232050813ab96c7g0119d1) — [日]上野千鹤子
+- [巨人的方法（《巨人的工具》作者蒂姆·费里斯新作。11个精心设计的问题，132位巨人的解答，学习巨人们的思维和习惯。）](https://weread.qq.com/book-detail?type=1&v=d7c42ff3643425f354a44477058476f45467749366b55366b6641697845686c740) — 蒂姆·费里斯
+- [女性生存战争](https://weread.qq.com/book-detail?type=1&v=a0e32830813ab7f57g017a41) — [日]上野千鹤子
+- [优秀的绵羊](https://weread.qq.com/book-detail?type=1&v=68532c205ccc3d685319c9a) — 威廉·德雷谢维奇
+- [资本5000年：资本秩序如何塑造人类文明（典藏版）](https://weread.qq.com/book-detail?type=1&v=c0332d807221fcacc0362ac) — 彭兴庭
+- [李诞工作手册（万字全新增订）](https://weread.qq.com/book-detail?type=1&v=17e324b07268888017e4c11) — 李诞
+- [原子習慣：細微改變帶來巨大成就的實證法則](https://weread.qq.com/book-detail?type=1&v=5b942be3643425f383574326c5a326d4e386a6d36666d36675735456c314858897) — 譯者：蔡世偉
+- [The High 5 Habit](https://weread.qq.com/book-detail?type=1&v=69e42953643425f47374b38616b38623143696f366a43366b6646476d446e4f352) — Mel Robbins
+- [小池大鱼](https://weread.qq.com/book-detail?type=1&v=c1542533643425f476d65453755453851377143366930366757364553307a66036) — （日）小林一雅
+- [半小时漫画世界名著（全3册）](https://weread.qq.com/book-detail?type=1&v=59632c90813ab77ddg01374c) — 陈磊•半小时漫画团队
+- [工作、消费主义和新穷人](https://weread.qq.com/book-detail?type=1&v=c9d327e0727abffcc9d74ab) — 齐格蒙特·鲍曼
+- [认知觉醒：开启自我改变的原动力](https://weread.qq.com/book-detail?type=1&v=6a732ce07201202c6a7b30a) — 周岭
+- [如何用提问解决问题：提示工程实现人机协同闭环](https://weread.qq.com/book-detail?type=1&v=f6832900813ab72b8g0172cf) — 沃伦·贝格尔
+- [1000 小时](https://weread.qq.com/book-detail?type=1&v=a6b42d23643425f33526e45564445544837424f366d63366b66445678415465b4d) — 李笑来
+- [反脆弱：从不确定性中获益](https://weread.qq.com/book-detail?type=1&v=0633241059b4260632af2bf) — 纳西姆·尼古拉斯·塔勒布
+- [向編輯學思考：激發自我才能、學習用新角度看世界，精準企畫的10種武器](https://weread.qq.com/book-detail?type=1&v=882423f3643425f33464d435241434f69434265366a34366b66304858366e31243) — 安藤昭子（ANDO Akiko）
+- [噪声：《思考快与慢》作者全新力作](https://weread.qq.com/book-detail?type=1&v=d33327e0726c18a9d335459) — [美]丹尼尔·卡尼曼 [法]奥利维耶·西博尼 [美]卡斯·R.桑斯坦
+- [孩子：挑战](https://weread.qq.com/book-detail?type=1&v=8c9423b3643425f36497341414d413771346e34366d77366b66416141456262da8) — 【美】薇姬·索尔兹
+- [Too Soon Old, Too Late Smart](https://weread.qq.com/book-detail?type=1&v=ca942373643425f41394d466b43466b5139766b366a59366b66396d66464872f1e) — Gordon Livingston
+- [精准学习](https://weread.qq.com/book-detail?type=1&v=30c32ee0813ab7b70g0180ce) — [法]斯坦尼斯拉斯·迪昂
+- [参考日推｜关于学习，我们知道些什么](https://weread.qq.com/book-detail?type=1&v=c7f42653643425f336d57384e51384e76305266366c76366b6639796f36776638c) — 
+- [创业维艰：如何完成比难更难的事](https://weread.qq.com/book-detail?type=1&v=74132530599c68741363189) — 本·霍洛维茨
+- [梁永安：阅读、游历和爱情](https://weread.qq.com/book-detail?type=1&v=03e32f30729f659d03eedb7) — 梁永安
+- [成为雅诗兰黛（官方授权）](https://weread.qq.com/book-detail?type=1&v=655324c0813ab7e67g01180d) — 莱纳德·兰黛
+- [犬儒主义【每个人或许都有自己的“犬儒时刻”| 认清时代，直面自我！】](https://weread.qq.com/book-detail?type=1&v=44b32890813ab9229g01477b) — [英]安斯加尔·艾伦
+- [12 More Rules for Life](https://weread.qq.com/book-detail?type=1&v=52c42e33643425f427746466a62466b5139766b366a59366b66475244467647b8e) — Jordan B. Peterson;
+- [秘密如何改变了我们的生活](https://weread.qq.com/book-detail?type=1&v=194329005e25a9194b34d88) — 朗达·拜恩
+- [写作7堂课](https://weread.qq.com/book-detail?type=1&v=44f42ac3643425f474a64344b50344e72306d55366879366757304458385a69c5a) — 秋叶
+- [只管去做（潜心3年磨一剑，最新万字修订版）](https://weread.qq.com/book-detail?type=1&v=45f32420726172d145ff822) — 邹小强
+- [无薪主妇](https://weread.qq.com/book-detail?type=1&v=5c5323b0813ab8267g015f80) — [日]上野千鹤子
+- [我们为什么会受骗（把FBI耍得团团转的骗术天才都叫好的心理学科普书。让你读来叹为观止，抽丝剥茧揭示骗局设计原理，告诉你为什么聪明人也会栽！后浪出品）](https://weread.qq.com/book-detail?type=1&v=c9442c33643425f376831435952435777307565366d30366b6643456c43557ae27) — 玛丽亚·康妮科娃
+- [深度工作：如何有效使用每一点脑力](https://weread.qq.com/book-detail?type=1&v=0e5327005de2450e58c115d) — 卡尔·纽波特
+- [卡片笔记写作法：如何实现从阅读到写作（聪明人如何记笔记，高效记笔记）](https://weread.qq.com/book-detail?type=1&v=e9242973643425f45474142536b42543839503636666f3667573234793264369b2) — 申克·阿伦斯
+- [黑塞书信集](https://weread.qq.com/book-detail?type=1&v=2db32710813ab7e18g014d99) — [德]赫尔曼·黑塞
+- [食南之徒](https://weread.qq.com/book-detail?type=1&v=91f329c0813ab8ee0g011c9d) — 马伯庸
+- [别对企鹅发火](https://weread.qq.com/book-detail?type=1&v=622324d0813ab8b9fg013e0b) — [美]盖比·卡普
+- [福格行为模型：你会越来越有能量](https://weread.qq.com/book-detail?type=1&v=614325a07273de5c614b852) — B.J.福格
+- [四千周](https://weread.qq.com/book-detail?type=1&v=34642b63643425f414c6e476f4a476f45315249366c63366b6637684c47646c14a) — 奥利弗·伯克曼 ✅
+- [你好，生命  写给年轻人的生命教育课](https://weread.qq.com/book-detail?type=1&v=f4d32230813ab8b59g018c0c) — 姚玉红 吴双磊 王乐实 陆可心
+- [罗辑思维（全5册）：认知篇、历史篇、商业篇、人物篇、人文篇](https://weread.qq.com/book-detail?type=1&v=6d732c50721a57fc6d7edec) — 罗振宇
+- [能量与文明](https://weread.qq.com/book-detail?type=1&v=31632490813ab84a0g018aab) — 瓦茨拉夫·斯米尔
+- [悉达多（果麦经典）](https://weread.qq.com/book-detail?type=1&v=3a832f705d0d1f3a8ec72ff) — [德]赫尔曼·黑塞
+- [在轮下](https://weread.qq.com/book-detail?type=1&v=b48321c0813aba6d2g013a34) — [德]赫尔曼·黑塞
+- [见室小册](https://weread.qq.com/book-detail?type=1&v=4fe42eb224d505f5758535f32333938343937333332758) — 公众号
+- [Think Faster, Talk Smarter](https://weread.qq.com/book-detail?type=1&v=e5a42573643425f374d6734523034527741657a366a4e366b6630713136494a5d9) — Matt Abrahams
+- [商品帝国：一部消费主义全球史](https://weread.qq.com/book-detail?type=1&v=3b432180813ab71dag0143b3) — 弗兰克·特伦特曼
+- [今日简史（精华版）](https://weread.qq.com/book-detail?type=1&v=00632c607159110f0066a3e) — 尤瓦尔·赫拉利
+- [梳毛、八卦及语言的进化](https://weread.qq.com/book-detail?type=1&v=a2232a10813ab8ef1g01852e) — [英]罗宾·邓巴
+- [裸猿三部曲（套装共三册）](https://weread.qq.com/book-detail?type=1&v=8cf32ed0724631f68cfac99) — 德斯蒙德·莫利斯
+- [四季之歌：梭罗日记选（梭罗文集）](https://weread.qq.com/book-detail?type=1&v=3af32f107222a7d53af5c2c) — 亨利·戴维·梭罗
+- [Build](https://weread.qq.com/book-detail?type=1&v=efa42473643425f345a63343669343664464c31366746366757397942424268487) — Tony Fadell
+- [梁永安的爱情课（复旦大学文学教授、B站up主梁永安火遍全网恋爱课，百万年轻人热烈追听，在单身的黄金年代，重建对爱情的信仰 理想国出品）](https://weread.qq.com/book-detail?type=1&v=a8b42be2a43425f364161437055436f41426d7536617136634eb3c) — 梁永安
+- [重读经典的伟大冒险](https://weread.qq.com/book-detail?type=1&v=9dd323c0813ab6e2fg013ff3) — 大卫·丹比
+- [深度关系](https://weread.qq.com/book-detail?type=1&v=bb432f60813ab8444g014d61) — 武志红
+- [第一哲学沉思集（汉译世界学术名著丛书）](https://weread.qq.com/book-detail?type=1&v=75a326f072051b4775ab549) — [法]笛卡尔
+- [明朝文士的抛物线人生](https://weread.qq.com/book-detail?type=1&v=97c32200813ab8d99g019b8c) — 关丁
+- [微信背后的产品观](https://weread.qq.com/book-detail?type=1&v=aaa42dc3643425f455773354c34354e5733454c366c42366b66376c6a363261189) — 张小龙
+- [何谓教育：雅斯贝尔斯教育漫谈【真正的教育不是灌满一桶水，而是点燃内心的火。译自1992年德文全本。深刻影响周国平、朱永新、俞敏洪，老师、学生、家长一读再读的教育宝典。】](https://weread.qq.com/book-detail?type=1&v=d48421e3643425f354d79334979334a3138584e36666c366757396a43426937469) — 卡尔·雅斯贝尔斯
+- [The Cold Start Problem](https://weread.qq.com/book-detail?type=1&v=0fb42063643425f434368386672386636394370366b33366b66364573364339303) — Andrew Chen
+- [金钱的属性：一个富豪的财富私房课](https://weread.qq.com/book-detail?type=1&v=54332ea0726336ce543a219) — 金胜镐
+- [把自己作为方法](https://weread.qq.com/book-detail?type=1&v=d7532f80813ab680cg012708) — 项飙 吴琦
+- [断舍离（全3册）](https://weread.qq.com/book-detail?type=1&v=e7932e2071a6258fe79d013) — 山下英子 永田良一
+- [登天的感觉：我在哈佛大学做心理咨询（2023版）](https://weread.qq.com/book-detail?type=1&v=18a32510716987d718a524c) — 岳晓东
+- [执迷 : 新锐品牌创造之旅](https://weread.qq.com/book-detail?type=1&v=98b42673643425f37744b315a34315a33395448366a7a366b66446879454a43248) — (美) 艾米丽·海沃
+- [通向哲学的后楼梯：34位哲学家的思想和生平](https://weread.qq.com/book-detail?type=1&v=40232a00813ab9e43g019e64) — [德]威廉·魏施德
+- [我就是你啊：走进他人内心的7项修炼](https://weread.qq.com/book-detail?type=1&v=6e032890813ab6b7ag0171a5) — [法]皮埃尔·佩利西耶
+- [成为可怕的自律人](https://weread.qq.com/book-detail?type=1&v=26c32c507277f02026ccc7f) — 马歇尔·古德史密斯 马克·莱特尔
+- [All I Really Need to Know I Learned in Kindergarten](https://weread.qq.com/book-detail?type=1&v=056426a3643425f46376631666231685833454c366c42366b66415754386277b3f) — Robert Fulghum
+- [Feel-good Productivity : How to Do More of What Matters to You (9781250865052)](https://weread.qq.com/book-detail?type=1&v=c7f42dc3643425f435450396272396167344146366c48366b66423657333132948) — Abdaal, Ali
+- [系统之美(湛庐经典）](https://weread.qq.com/book-detail?type=1&v=73232d007165ecc9732b6ee) — 德内拉·梅多斯
+- [主权个人(中文版)[blockwander.com]_1757812485542](https://weread.qq.com/book-detail?type=1&v=07342c63643425f47374b315834315a33376932367963367836334a5645567047e) — admin
+- [幸福要练习](https://weread.qq.com/book-detail?type=1&v=cb432480813ab7fc4g018208) — [美]戴维·迈尔斯
+- [Non Obvious Megatrends](https://weread.qq.com/book-detail?type=1&v=aac42583643425f38515531644b31644f43777836677036675744707739717977a) — Rohit Bhargava
+- [Why Has Nobody Told Me This Before?](https://weread.qq.com/book-detail?type=1&v=8a9428d3643425f45663239726b397238356961366957366757436c6a32784aebb) — Dr Julie Smith
+- [岛上书店（修订版）](https://weread.qq.com/book-detail?type=1&v=c7032220813ab6d0fg015d45) — 加·泽文
+- [鞋狗：耐克创始人菲尔·奈特亲笔自传](https://weread.qq.com/book-detail?type=1&v=8c5328305cd3e18c5c5dfbb) — 菲尔·奈特
+- [活出生命的意义](https://weread.qq.com/book-detail?type=1&v=f9b32d30813ab82d5g015c99) — [奥]维克多·弗兰克尔
+- [戏很多的医学史](https://weread.qq.com/book-detail?type=1&v=41432a60813ab6ddcg01417f) — 吴京平
+- [刻意练习：如何从新手到大师](https://weread.qq.com/book-detail?type=1&v=2e932c005cdec82e9a0e3e8) — [美]安德斯·艾利克森 [英]罗伯特·普尔
+- [从0到1：开启商业与未来的秘密](https://weread.qq.com/book-detail?type=1&v=3973284058a49f39706f0c0) — 彼得·蒂尔 布莱克·马斯特斯 ✅
+- [领导力的5个层级：10周年纪念版](https://weread.qq.com/book-detail?type=1&v=63032330813ab7b26g010732) — 约翰·麦克斯韦尔
+- [是我的错吗？直击韩国12起恶性社会事件](https://weread.qq.com/book-detail?type=1&v=e7132600813ab930eg012842) — [韩]吴赞镐
+- [再忙也要用心生活](https://weread.qq.com/book-detail?type=1&v=7c73244071708ed87c796da) — 凯莉·威廉斯·布朗
+- [剑桥艺术史（共2册）](https://weread.qq.com/book-detail?type=1&v=7ad32bf0813ab79afg015024) — 苏珊·伍德福德 等
+- [重新思考](https://weread.qq.com/book-detail?type=1&v=b0432460813ab7400g019f86) — 亚当 · 格兰特
+- [尤利西斯（读客三个圈经典文库）](https://weread.qq.com/book-detail?type=1&v=a3f32540716b1be9a3fc474) — [爱尔兰]詹姆斯·乔伊斯
+- [没大没小的为什么](https://weread.qq.com/book-detail?type=1&v=c86321a0813ab8e3fg011eb6) — 王歌
+- [翦商：殷周之变与华夏新生](https://weread.qq.com/book-detail?type=1&v=7b032ae0813ab7b5fg0180c0) — 李硕
+- [给孩子的音乐](https://weread.qq.com/book-detail?type=1&v=6fd42413643425f45536a44536e44545938666636666e36675733556743696f5b9) — 刘雪枫著
+- [洞见：从科学到哲学，打开人类的认知真相](https://weread.qq.com/book-detail?type=1&v=b5d328f0720152ecb5d53f2) — 罗伯特·赖特
+- [参考月刊 Vol.4｜保罗格雷厄姆的写作课](https://weread.qq.com/book-detail?type=1&v=ffb42de3643425f35366d354175354254447761366b65366b66426d6f325061d27) — 参考答案编辑部
+- [阅读是一座随身携带的避难所：毛姆读书随笔](https://weread.qq.com/book-detail?type=1&v=27532ae05defa7275c63f9d) — 毛姆
+- [The Making of Prince of Persia: Journals 1985-1993](https://weread.qq.com/book-detail?type=1&v=0c2424c3643425f373235374d6a374f43413432366a61366b66366c3033586d30f) — Jordan Mechner
+- [思考如何超越思考：更棒的想法在大脑之外产生](https://weread.qq.com/book-detail?type=1&v=cce32bd0813ab862bg019594) — 安妮·墨菲·保罗
+- [40歲的住所改造術](https://weread.qq.com/book-detail?type=1&v=f3542243643425f37556130746f30754246774936674d36675733386342716ac27) — 水越美枝子
+- [10x Is Easier Than 2x](https://weread.qq.com/book-detail?type=1&v=abf420b3643425f416f49354861354a68374a59366d57366b66444d6b31554cbf9) — Benjamin Hardy
+- [发现利润区2：利润模式](https://weread.qq.com/book-detail?type=1&v=ff6321a071918adbff62282) — 亚德里安·斯莱沃斯基 大卫·莫里森等
+- [登天之梯：一个儿童心理咨询师的诊疗笔记](https://weread.qq.com/book-detail?type=1&v=21442033643425f32533030655730646a454432366b61366b6641656e46466b1d5) — 迈亚·塞拉维茨
+- [打造第二大脑](https://weread.qq.com/book-detail?type=1&v=6db42603643425f37414e395a31395772453473366b67366b66306f6f343158a3b) — 【美】蒂亚戈·福特
+- [重塑大脑，重塑人生](https://weread.qq.com/book-detail?type=1&v=7ee328505934eb7eef65558) — [美]诺曼·道伊奇
+- [游戏改变人生](https://weread.qq.com/book-detail?type=1&v=1dc32c20715608f81dc632a) — 简·麦戈尼格尔
+- [心灵的焦灼（读客三个圈经典文库）](https://weread.qq.com/book-detail?type=1&v=1f932dc071af63631f92282) — 斯蒂芬·茨威格
+- [随机漫步的傻瓜](https://weread.qq.com/book-detail?type=1&v=7d9327605e10bf7d9560267) — 纳西姆·尼古拉斯·塔勒布
+- [The Science of Achieving Greater Things](https://weread.qq.com/book-detail?type=1&v=7d242a53643425f304345477155476f45467749366b55366b6647666d354345dcd) — Adam Grant
+- [paul-graham-2006-2023_1753178945799](https://weread.qq.com/book-detail?type=1&v=9e142833643425f43385936627136656a44553736785436783637714b325241c12) — Paul Graham
+- [体验思维](https://weread.qq.com/book-detail?type=1&v=9b132a4071d07b1e9b16fcd) — 黄峰 赖祖杰
+- [学会提问（原书第12版）](https://weread.qq.com/book-detail?type=1&v=e6832d3072620d9be68aabf) — 尼尔·布朗 斯图尔特·基利
+- [种子：走出迷茫，找到人生和工作的意义](https://weread.qq.com/book-detail?type=1&v=c57321007268901fc57b827) — 乔恩·戈登
+- [社会性动物（第12版）](https://weread.qq.com/book-detail?type=1&v=fcb322c071f3f438fcb5e8c) — 艾略特·阿伦森 乔舒亚·阿伦森
+- [我只能這樣嗎？：讓你從谷底翻身的七大生活原則，預約自己的理想人生](https://weread.qq.com/book-detail?type=1&v=55042753643425f416730466a6f466b5139766b366a59366b66366334367773ed0) — 丹尼爾．奇迪亞克（Daniel Chidiac）
+- [无：生命的最佳状态](https://weread.qq.com/book-detail?type=1&v=38c32bd0813ab8eb4g01035c) — [日]铃木祐
+- [美的情绪：西洋画派十二讲](https://weread.qq.com/book-detail?type=1&v=ac532db0717c0d64ac5ff1c) — 丰子恺
+- [人生十年，不可辜负的20岁到30岁](https://weread.qq.com/book-detail?type=1&v=23132c00813ab7af8g015e43) — 梅格·杰伊
+- [投资中不简单的事](https://weread.qq.com/book-detail?type=1&v=d1a32f50715608f1d1ab413) — 邱国鹭 邓晓峰 卓利伟
+- [不合理的快乐：存在的喜悦](https://weread.qq.com/book-detail?type=1&v=181327507277868518187cf) — 杨定一
+- [教育的本质](https://weread.qq.com/book-detail?type=1&v=e9b32d00813ab6c69g016b4b) — 阿尔弗雷德·诺思·怀特海
+- [模型思维：数学模型解构大模型黑箱](https://weread.qq.com/book-detail?type=1&v=dc73272071a03c59dc77187) — [美]斯科特·佩奇
+- [批判性思维工具（原书第3版）](https://weread.qq.com/book-detail?type=1&v=55a325b071a2c84455a5efe) — [美]理查德·保罗 [美]琳达·埃尔德
+- [金钱心理学：财富、人性和幸福的永恒真相](https://weread.qq.com/book-detail?type=1&v=8bc42fa3643425f467238457a53463078354b4536697736675746483047494c9ca) — 【美】摩根·豪泽尔 ✅
+- [服美役：美是如何奴役和消费女性的](https://weread.qq.com/book-detail?type=1&v=f4c32eb0813ab89c0g016b8b) — [意]毛拉·甘奇塔诺
+- [为什么伟大不能被计划](https://weread.qq.com/book-detail?type=1&v=00942a93643425f315755344a75344a69306d55366879366757475533386e50e64) — Unknown
+- [笔记的方法 flomo](https://weread.qq.com/book-detail?type=1&v=37642283643425f466971304775304973483036366b45366b66303235426747e89) — 
+- [穷查理宝典（珍藏版）（1+2册）](https://weread.qq.com/book-detail?type=1&v=617420c3643425f35794841747041727438666636666e366757465850436b4c184) — [美]查理·芒格
+- [Why the Kids Aren't Growing Up](https://weread.qq.com/book-detail?type=1&v=2ba42083643425f456231436a50436a4a364f32366d6f366b66415334343237eeb) — Abigail Shrier
+- [哲学简史（读客三个圈经典文库）](https://weread.qq.com/book-detail?type=1&v=ac832f70813ab7b88g0193f5) — 伯特兰·罗素
+- [打造第二大脑](https://weread.qq.com/book-detail?type=1&v=f3032e10813ab88b1g011a36) — [美]蒂亚戈·福特
+- [养育男孩（典藏版）](https://weread.qq.com/book-detail?type=1&v=50d424a2a43425f34755447363947346c336c56365976365945559) — 史蒂夫·比达尔夫
+- [从行动开始：自我管理的科学](https://weread.qq.com/book-detail?type=1&v=84f32b405df8b284f51e1e3) — 石田淳
+- [宝贵的人生建议](https://weread.qq.com/book-detail?type=1&v=4d942d13643425f47425447716c47734e315249366c63366b6636415a4559457fd) — 凯文·凯利
+- [让你摆脱混乱的人生整理术](https://weread.qq.com/book-detail?type=1&v=da632f50813ab8c2ag0189e8) — [加]卡桑德拉·阿尔森
+- [我有点胆怯，但想和你好好说话](https://weread.qq.com/book-detail?type=1&v=83a32490813ab8227g018f0b) — 朴宰莲 张梦蕊 朴圣惠
+- [乐高传（乐高家族唯一授权官方传记）](https://weread.qq.com/book-detail?type=1&v=37d32150813ab8a0ag011c33) — [丹]詹斯·安德森
+- [A Memoir of Healing from Complex Trauma](https://weread.qq.com/book-detail?type=1&v=a8242203643425f457a4e37577637614a413432366a61366b66446d47435a472eb) — Stephanie Foo
+- [屁事也疯狂：肛肠科医生手记](https://weread.qq.com/book-detail?type=1&v=cf232020813ab9051g017394) — 糗事小菊花
+- [羊呆住了](https://weread.qq.com/book-detail?type=1&v=9ca32090727330799ca3d12) — 李盆
+- [如何解决复杂问题](https://weread.qq.com/book-detail?type=1&v=6f9321a07231c7dd6f9c4f6) — [奥]安德烈亚斯·瓦格纳
+- [赖声川的创意学](https://weread.qq.com/book-detail?type=1&v=ede329405d16b9edeacc284) — 赖声川
+- [在世界上找到你的位置](https://weread.qq.com/book-detail?type=1&v=e0732c30813ab7dbag0167d2) — 朱莉·利思科特-海姆斯
+- [中年之路：人格的第二次成型](https://weread.qq.com/book-detail?type=1&v=4a6323d0813ab763eg019c3e) — 詹姆斯·霍利斯
+- [2049：未来10000天的可能](https://weread.qq.com/book-detail?type=1&v=70d427b3643425f427336466e69466f5a447354367833367836387976474271131) — [美]凯文·凯利
+- [蒙台梭利家庭方案：3-6岁](https://weread.qq.com/book-detail?type=1&v=4ae42d23643425f43666946304546307838773736666a36675741755941764f2dc) — 尹亚楠 吴永和
+- [看见孩子](https://weread.qq.com/book-detail?type=1&v=55932970813ab8237g0121c3) — 贝姬·肯尼迪
+- [梵高手稿](https://weread.qq.com/book-detail?type=1&v=723328b071c41de17235845) — 文森特·梵高
+- [Wisdom I Wish I'd Known Earlier](https://weread.qq.com/book-detail?type=1&v=7b342533643425f376c32373973374274446f67366773366757427942314559f01) — Kevin Kelly
+- [行為：暴力、競爭、利他，人類行為背後的生物學](https://weread.qq.com/book-detail?type=1&v=e89428c3643425f345a6335565135566b473443366b38366b663562383347665d5) — 羅伯．薩波斯基（Robert M. Sapolsky）
+- [非暴力沟通（修订版）](https://weread.qq.com/book-detail?type=1&v=b7d32470813ab7e0eg015e3f) — 马歇尔·卢森堡
+- [刘擎](https://weread.qq.com/book-detail?type=1&v=e6c42822a43425f43625a316750316858354b453661673659453e8) — Administrator
+- [肥尾效应](https://weread.qq.com/book-detail?type=1&v=fd132ac0813ab70f8g016eb9) — 纳西姆·尼古拉斯·塔勒布
+- [埃隆·马斯克传](https://weread.qq.com/book-detail?type=1&v=35642153643425f37364543556743537242696e366a37366b6632625238784c021) — 沃尔特·艾萨克森
+- [杂食者的两难](https://weread.qq.com/book-detail?type=1&v=e0f32da05dd936e0f8c878b) — 迈克尔·波伦
+- [梵高手稿（典藏修订版）](https://weread.qq.com/book-detail?type=1&v=42342623643425f46426742657142665639503636666f366757306e76457274212) — 文森特·梵高
+- [为什么没人早点告诉我？](https://weread.qq.com/book-detail?type=1&v=89732a7072b44a0c8970477) — 朱莉·史密斯
+- [轻松主义：让关键的事情变得容易做](https://weread.qq.com/book-detail?type=1&v=56132d80729a951a561ae48) — [美]格雷戈·麦吉沃恩
+- [床は大事　第１巻　床を語る　――建築家の視点　「床」のない家はない](https://weread.qq.com/book-detail?type=1&v=f6842663643425f32425930717930713246774936674d366757457a76423454386) — 朝日ウッドテック株式会社
+- [巨人的工具](https://weread.qq.com/book-detail?type=1&v=80c428e3643425f456a42475358475452456f4e366f74366f6f425a41326476bf0) — ePUBw.COM
+- [写作是一把刀：与费雷德里克-伊夫·热奈对谈](https://weread.qq.com/book-detail?type=1&v=ee232d40813ab8739g01366a) — [法]安妮·埃尔诺
+- [曾医生让你早知道.2](https://weread.qq.com/book-detail?type=1&v=0c532df0813ab7126g019943) — 普外科曾医生
+- [蒙田随笔（做生命的旁观者）](https://weread.qq.com/book-detail?type=1&v=e9432fa05c6cd0e943eabf1) — [法]蒙田
+- [罗素论幸福](https://weread.qq.com/book-detail?type=1&v=b7832260726ab7d5b787cb2) — 伯特兰·罗素
+- [教学勇气：漫步教师心灵（10周年纪念版）](https://weread.qq.com/book-detail?type=1&v=4cf326d0813ab8babg010038) — [美]帕克·帕尔默
+- [汴京之围：北宋末年的外交、战争和人](https://weread.qq.com/book-detail?type=1&v=9d7423f2a43425f364161476c36476b3943534d36623036634ec7d) — ePUBw.COM
+- [柔软对话](https://weread.qq.com/book-detail?type=1&v=4f032f40813ab8db3g0188cb) — [美]汤普森   [美]詹金斯
+- [光启文库（全13册）](https://weread.qq.com/book-detail?type=1&v=2eb42e02a43425f41735237307837336641624336625336634e3c9) — 陈建华
+- [我们如何走到今天：重塑世界的6项创新](https://weread.qq.com/book-detail?type=1&v=217323b05d0550217df1b03) — 史蒂文·约翰逊
+- [数理化通俗演义](https://weread.qq.com/book-detail?type=1&v=45b328a0718ec6db45b086c) — 梁衡
+- [优势成长](https://weread.qq.com/book-detail?type=1&v=29232170721061f32924b22) — 帅健翔
+- [十三邀：我们时代的头脑与心灵 （全四辑）](https://weread.qq.com/book-detail?type=1&v=b7832700813ab7b6fg01283d) — 许知远
+- [供词与放逐](https://weread.qq.com/book-detail?type=1&v=30a32a20813ab8fdcg0140aa) — [法]E.M.齐奥朗
+- [闲暇与无聊](https://weread.qq.com/book-detail?type=1&v=c0a32e20813abb1ccg015656) — [日]国分功一郎
+- [地理的故事（英文版）](https://weread.qq.com/book-detail?type=1&v=a15323105caa36a15a04a0c) — （美)亨德里克·威廉·房龙
+- [万万没想到：《西游记》可以这样读（全集）](https://weread.qq.com/book-detail?type=1&v=7f532a105d186a7f57827e1) — 李天飞
+- [改变日本生活的男人：花森安治传](https://weread.qq.com/book-detail?type=1&v=63d32cf072203bcb63d237d) — 津野海太郎
+- [大道：段永平投资问答录芒格书院 2025](https://weread.qq.com/book-detail?type=1&v=7d842ee3643425f377042465939465937467342367774367836447064354e74c2e) — tang
+- [历史的教训](https://weread.qq.com/book-detail?type=1&v=82432980813aba0bag012d60) — [美]威尔·杜兰特  [美]阿里尔·杜兰特
+- [穷理查智慧书（中英对照）](https://weread.qq.com/book-detail?type=1&v=b3a3271071f8f0d7b3a2e25) — 本杰明·富兰克林
+- [什么是舆论](https://weread.qq.com/book-detail?type=1&v=38c32d80813abaf04g019e88) — [美]沃尔特·李普曼
+- [财富的起源：探讨关税对财富根源的作用](https://weread.qq.com/book-detail?type=1&v=d14328d07195f90bd148088) — 埃里克·拜因霍克
+- [Time Wise](https://weread.qq.com/book-detail?type=1&v=57642843643425f41486538446538466843696f366a43366b66385359326a723a9) — Amantha Imber
+- [Peak Mind](https://weread.qq.com/book-detail?type=1&v=99442533643425f444f76474754474834366948366948366757344c303442722a9) — Amishi P. Jha
+- [中年之路：解开前半生的束缚（独家首发）](https://weread.qq.com/book-detail?type=1&v=1cc32770813ab8da9g013a81) — [美]詹姆斯·霍利斯
+- [佛陀传：全世界影响力最大的佛陀传记](https://weread.qq.com/book-detail?type=1&v=67532750716e85116752328) — [法]一行禅师
+- [一如既往： 不变的人性与致富心态](https://weread.qq.com/book-detail?type=1&v=f8e322b0813ab8db0g01952e) — [美]摩根·豪泽尔
+- [创新DIY 利用日常生活中的创意解决身边的问题 ( etc.) (Z-Library)](https://weread.qq.com/book-detail?type=1&v=94442fd3643425f476d6538336b38375435717336716f366f6f32684444346a949) — 
+- [因为独特](https://weread.qq.com/book-detail?type=1&v=55e32900813ab9640g017ec0) — 李翔
+- [Elon Musk](https://weread.qq.com/book-detail?type=1&v=800422a3643425f343279324655324644427a46366a33366b66457375347943784) — Walter Isaacson
+- [上帝的残屑+对复杂世界的另类思索+(斯科特・亚当斯)+(Z-Library)7FFE9EE8FAC50447A2F2CE56B8FF0081](https://weread.qq.com/book-detail?type=1&v=46642043643425f32573943457a434339334953367049366f6f434832314251b0d) — Administrator
+- [生活艺术家的手作私宅](https://weread.qq.com/book-detail?type=1&v=b3a42312a43425f326d72347172347173304e55365a55365945a9d) — 中村好文
+- [未来简史：从智人到智神](https://weread.qq.com/book-detail?type=1&v=cf3326205d0142cf3606771) — 尤瓦尔·赫拉利
+- [如何养育男孩：男孩应该具备的8个关键能力](https://weread.qq.com/book-detail?type=1&v=8dd329705c907f8dd0b67ce) — 安东尼·饶 米歇尔·西顿
+- [爱与依恋的力量](https://weread.qq.com/book-detail?type=1&v=4af325e07237fc834af8b26) — 德博拉·布卢姆
+- [压力之下，择要事为之 图解指南](https://weread.qq.com/book-detail?type=1&v=0cc42be3643425f39487a435133434f69394b7a366f35366f6f324e59306d62449) — 
+- [人生的选择](https://weread.qq.com/book-detail?type=1&v=a4832fb0813ab77b5g0161ff) — [瑞典]汉斯·罗斯林 [瑞典]范妮·黑尔格斯坦
+- [理想国](https://weread.qq.com/book-detail?type=1&v=78832a0072795915788b394) — [古希腊]柏拉图
+- [我的阅读与写作](https://weread.qq.com/book-detail?type=1&v=ef1329c0813ab7ae6g011b64) — 梁衡
+- [搞定Ⅲ：平衡工作与生活的艺术](https://weread.qq.com/book-detail?type=1&v=09332eb05cf128093dfb238) — 戴维·艾伦
+- [专注的真相](https://weread.qq.com/book-detail?type=1&v=59b324d0813ababe6g010489) — 李笑来
+- [银河系开店指南](https://weread.qq.com/book-detail?type=1&v=aa132320813ab8a52g017310) — 突弥力
+- [大清为何轰然倒塌](https://weread.qq.com/book-detail?type=1&v=45e32a60813ab8dfag0107ed) — 佛要跳墙
+- [正念教养：如何不焦虑、不内耗地与孩子相处](https://weread.qq.com/book-detail?type=1&v=048327f0813ab6f97g015feb) — 徐莉 明淙
+- [社会契约论](https://weread.qq.com/book-detail?type=1&v=d0832ee0813ab89fcg01065d) — [法]卢梭
+- [狂人日记](https://weread.qq.com/book-detail?type=1&v=64432b40727ab1cb644f3c7) — 鲁迅
+- [走出人格陷阱](https://weread.qq.com/book-detail?type=1&v=15b32b5071c9be2e15b33da) — 武志红
+- [造一所不抗拒生活的房子](https://weread.qq.com/book-detail?type=1&v=72242853643425f475276306e6230713238584e36666c366757444234466d4e008) — 赵扬,乐府文化
+- [为什么我们相信阴谋论](https://weread.qq.com/book-detail?type=1&v=5da32ca0813ab8bc3g015a3c) — [西班牙]拉蒙·诺格拉斯
+- [优势谈判](https://weread.qq.com/book-detail?type=1&v=9ac322d0813ab6b15g016593) — 罗杰·道森
+- [A Guide to What Never Changes](https://weread.qq.com/book-detail?type=1&v=e8c42e13643425f36365a466c48466b51483036366b45366b6635363636305729e) — Morgan Housel ✅
+- [当代艺术的十九副面孔：大师与我们的时代（聚焦19个世界一流当代艺术家和组合，揭示当代艺术的隐秘知识 理想国出品）](https://weread.qq.com/book-detail?type=1&v=32342a82a43425f37637331684f31685833324736644536634efd9) — [瑞士]汉斯·乌尔里希·奥布里斯特
+- [财政密码](https://weread.qq.com/book-detail?type=1&v=1db32430813ab922bg013ee9) — 郭建龙
+- [小狗钱钱（套装全2册）](https://weread.qq.com/book-detail?type=1&v=78242e73643425f36746644396e44386c307565366d30366b66426f75423251964) — [德] 博多·舍费尔
+- [阅读不息](https://weread.qq.com/book-detail?type=1&v=51132a80813ab97a1g016881) — [日]坂本龙一
+- [经济学通识课](https://weread.qq.com/book-detail?type=1&v=f6b32dd05e22acf6b9e55c9) — 尼尔·基什特尼
+- [芒格之道：查理·芒格股东会讲话 1987—2022](https://weread.qq.com/book-detail?type=1&v=b1b42733643425f41673046436d464447377143366930366757384661373354b40) — [美]查理·芒格
+- [毫无意义的工作（真实得就像在你头顶装了一台“职场监控器”。40%的工作无意义，我们还能怎么做？梁永安、严飞作序，陈嘉映、项飙、刘擎、罗家德、冯仑联袂推荐。）](https://weread.qq.com/book-detail?type=1&v=4fb424e2a43425f463766435356435372356d6c36614a36594554e) — 大卫·格雷伯
+- [数字极简](https://weread.qq.com/book-detail?type=1&v=4b632840813ab924cg0167d4) — [美]卡尔·纽波特
+- [金钱心理学 （全新增订版）](https://weread.qq.com/book-detail?type=1&v=63132920813abb66eg010015) — [美]摩根·豪泽尔
+- [真希望我父母读过这本书](https://weread.qq.com/book-detail?type=1&v=975320b071f9ad25975dc75) — 菲利帕·佩里
+- [赞美闲散（独家首发）](https://weread.qq.com/book-detail?type=1&v=05a322e0813ab9ec0g01916d) — [英]伯特兰·罗素
+- [时间贫困：如何利用时间，决定了我们是谁](https://weread.qq.com/book-detail?type=1&v=ff042fd3643425f377042463546463532347655366e36366b6644574a324765941) — [英]凯茜·霍姆斯
+- [The Science and Art of Longevity](https://weread.qq.com/book-detail?type=1&v=80f42ae3643425f41506f316c32316c633934583666743667573347333158694f1) — Bill Gifford
+- [The Science and Art of Longevity](https://weread.qq.com/book-detail?type=1&v=5b442b83643425f437675425434425438325a48366c50366b66357670445a72671) — Bill Gifford
+- [闻一多唐诗十六讲](https://weread.qq.com/book-detail?type=1&v=a1a32890813ab7d50g011313) — 闻一多
+- [认知操纵：宣传如何影响我们的思想和行为（修订版）](https://weread.qq.com/book-detail?type=1&v=d4132050813ab7dadg019b16) — 安东尼·普拉卡尼斯  埃利奥特·阿伦森
+- [不被支配：为什么我们会被情感绑架？](https://weread.qq.com/book-detail?type=1&v=2c132990813ab8eb0g0100e3) — [美]沙希达·阿拉比
+- [亲密关系（第8版）](https://weread.qq.com/book-detail?type=1&v=16832420813ab90f3g019f92) — [美]罗兰·米勒
+- [成为自控者：建立幸福人生的正向循环](https://weread.qq.com/book-detail?type=1&v=a5e326b07219b34da5eaf7a) — Susan Kuang
+- [小而美：持续盈利的经营法则（何帆、香帅、周航推荐！打造企业持续盈利能力，更好地活下去）](https://weread.qq.com/book-detail?type=1&v=72142123643425f33756f466457466343347655366e36366b66424377394462fd1) — 萨希尔·拉文吉亚 ✅
+- [刀锋（金球奖、奥斯卡金像奖获奖影片《刀锋》原著小说）](https://weread.qq.com/book-detail?type=1&v=24a32490813ab6d3dg017dc2) — 毛姆
+- [奇怪的知识增加了](https://weread.qq.com/book-detail?type=1&v=51432e607224715b5144cf4) — 马库斯·乔恩
+- [Austin Kleon](https://weread.qq.com/book-detail?type=1&v=a38429f3643425f37596a324958324a49436157366a41366b66376f473872709ff) — Steal Like an Artist
+- [巴拉巴西成功定律](https://weread.qq.com/book-detail?type=1&v=e8932bc071db4ab7e899f0b) — 艾伯特-拉斯洛 · 巴拉巴西
+- [一个孤独漫步者的遐想](https://weread.qq.com/book-detail?type=1&v=34c32b50813ab74bfg019ed4) — [法]让-雅克·卢梭
+- [心态对了，事就成了](https://weread.qq.com/book-detail?type=1&v=82a32f805e087a82ad6f310) — 拿破仑·希尔
+- [8 Secrets for Leading the Good Life](https://weread.qq.com/book-detail?type=1&v=8ec42313643425f44664e476642476730326c6f366c59366b66374a3946456b1c9) — Gad Saad
+- [一间只属于自己的房间（果麦经典）](https://weread.qq.com/book-detail?type=1&v=fdd327a07198e688fdd47f6) — [英]弗吉尼亚·伍尔夫
+- [蒋勋说红楼梦修订本（套装共3册）](https://weread.qq.com/book-detail?type=1&v=e29325a07165bb09e29d602) — 蒋勋
+- [The Minimalist Entrepreneur: How Great Founders Do More With Less](https://weread.qq.com/book-detail?type=1&v=06b42f43643425f396343464432464447377143366930366757304a62384f5287f) — Sahil Lavingia
+- [毛姆的书单](https://weread.qq.com/book-detail?type=1&v=9b732d7072225d519b707cb) — 威廉·萨默塞特·毛姆
+- [开悟者眼中的生命真相](https://weread.qq.com/book-detail?type=1&v=ff5328b0813ab815ag018040) — 杰德·麦肯纳
+- [寄生虫星球](https://weread.qq.com/book-detail?type=1&v=2bf32f10813ab6a93g013b99) — 卡尔·齐默
+- [不上班咖啡馆](https://weread.qq.com/book-detail?type=1&v=e23322d0813ab944dg017b71) — 古典
+- [高敏感孩子的内心世界](https://weread.qq.com/book-detail?type=1&v=589325f0813ab8c41g0197d0) — [法]克莉司德·布提可南
+- [顶级投资家都是这样做的（套装8册）](https://weread.qq.com/book-detail?type=1&v=f3e32ec0723efed4f3eebf2) — 张磊 格里高利·祖克曼等
+- [了不起的知识：原来科普如此有趣（套装共14册）](https://weread.qq.com/book-detail?type=1&v=5b5323107292b3c55b55d52) — 我是不白吃等
+- [我们为什么要睡觉？](https://weread.qq.com/book-detail?type=1&v=121323f0729ac578121ce6f) — 马修·沃克
+- [冷启动](https://weread.qq.com/book-detail?type=1&v=70432970813ab88c0g018558) — [美]安德鲁·陈
+- [成功法则](https://weread.qq.com/book-detail?type=1&v=2a132c10813ab6aa6g013749) — 拿破仑·希尔协会  
+- [群体的疯狂](https://weread.qq.com/book-detail?type=1&v=c2732020813ab7539g01881f) — 威廉·伯恩斯坦
+- [总有好书店](https://weread.qq.com/book-detail?type=1&v=76f42993643425f366c4e47594c47586d41657a36766c3678363131353133611db) — 【美国】杰夫·多伊奇
+- [向上的奇迹](https://weread.qq.com/book-detail?type=1&v=e63421e3643425f395952463539463532347655366e36366b66444774386b343ce) — 【美】马歇尔·古德史密斯；马克·莱特尔
+- [掌控聊天：人际沟通中的关键策略](https://weread.qq.com/book-detail?type=1&v=72d32a3072197c2772d6dd8) — 张超
+- [文学大纲](https://weread.qq.com/book-detail?type=1&v=ab332c30813ab8977g013023) — 郑振铎
+- [观念的跃升](https://weread.qq.com/book-detail?type=1&v=14432f20813ab777dg01300b) — 菲利普·费尔南多·阿梅斯托
+- [折腾不止：西贝创始人贾国龙的成败与蓝图（详谈系列）-李翔](https://weread.qq.com/book-detail?type=1&v=f3a42093643425f41394d347032347173424b5236767636783635343831525112c) — 李翔
+- [把自己当回事儿【杨天真的沟通秘籍，一本所有人都需要的“沟通说明书”！蔡康永、樊登、罗永浩真挚推荐，李诞、马伊琍、脱不花诚意作序！】](https://weread.qq.com/book-detail?type=1&v=cf4427e2a43425f42733631674d316858354b45366167365945746) — 杨天真
+- [醉汉的脚步](https://weread.qq.com/book-detail?type=1&v=a4c321c0720ac80ca4c567c) — 列纳德·蒙洛迪诺
+- [Building the Next Era of the Internet](https://weread.qq.com/book-detail?type=1&v=f2142473643425f30383547796a477753313277366d32366b66374155395767b0c) — Chris Dixon
+- [「自由」究竟如何实现：关于社会构想的哲学思考（NHK 书籍）](https://weread.qq.com/book-detail?type=1&v=f7a42293643425f395952367850367a57346978367a4c367836413070366b37c9b) — 
+- [读，写，拥有](https://weread.qq.com/book-detail?type=1&v=77a32dc0813aba168g019c2f) — 克里斯·迪克森
+- [苏格拉底的方法：信息洪流的思辨利刃](https://weread.qq.com/book-detail?type=1&v=12432810813aba09ag0122f1) — [美]沃德·法恩斯沃斯
+- [个体破局-2022](https://weread.qq.com/book-detail?type=1&v=3df42243643425f37683131644831644f304a4e36686c36675738504f386671c65) — 硅谷王川
+- [思考，快与慢](https://weread.qq.com/book-detail?type=1&v=af83263058c217af81f8979) — 丹尼尔·卡尼曼
+- [内心强大，谁都伤不了你](https://weread.qq.com/book-detail?type=1&v=be332510718ea4ebbe313c0) — 文德编著
+- [鱼不存在](https://weread.qq.com/book-detail?type=1&v=0af32760813ab798cg01135c) — 露露·米勒
+- [The Lost Art of Accomplishment Without Burnout](https://weread.qq.com/book-detail?type=1&v=33f42813643425f354d79474d47474c44456f4e366f74366f6f35345642654c47b) — Cal Newport
+- [A Science of Life without Free Will](https://weread.qq.com/book-detail?type=1&v=3a042413643425f307a71354b45354a68473443366b38366b66327a47336449ddc) — Robert M. Sapolsky
+- [文化研究关键词](https://weread.qq.com/book-detail?type=1&v=bff321207200ec68bff8a31) — 汪民安
+- [社会契约论](https://weread.qq.com/book-detail?type=1&v=e3f320e05cafebe3f826776) — [法]卢梭
+- [Argue Less, Talk More](https://weread.qq.com/book-detail?type=1&v=4aa42703643425f454f61457255457278364a763676353673784366363131335dd) — Jefferson Fisher
+- [高效信息管理术：26天打造你的信息管理系统](https://weread.qq.com/book-detail?type=1&v=4fc32770813ab6d6eg0126b1) — 少数派
+- [清醒思考的艺术](https://weread.qq.com/book-detail?type=1&v=14132a10597c6a141edb5fb) — 罗尔夫·多贝里
+- [读一页就上瘾的中国史（全2册）](https://weread.qq.com/book-detail?type=1&v=424329a0813ab8b6bg013c71) — 郑连根
+- [深度关系](https://weread.qq.com/book-detail?type=1&v=12d42e33643425f38737a46347a463532347655366e36366b66365779314950a81) — 武志红
+- [必然](https://weread.qq.com/book-detail?type=1&v=73332cc0725a693a73358da) — 凯文·凯利
+- [刷新：重新发现商业与未来](https://weread.qq.com/book-detail?type=1&v=d82323a05e1bb8d823a0901) — 萨提亚·纳德拉
+- [我在底层的生活：当专栏作家化身女服务生](https://weread.qq.com/book-detail?type=1&v=71132d90813ab841eg012125) — 芭芭拉·艾伦瑞克 ✅
+- [纳瓦尔宝典（硅谷投资人纳瓦尔十年人生智慧，教你如何获得财富与幸福。新时代创业者的《穷查理宝典》）](https://weread.qq.com/book-detail?type=1&v=42442f52a43425f31376b415677415352336c56365976365945ac5) — 埃里克·乔根森
+- [奥兰多（伍尔夫文集）](https://weread.qq.com/book-detail?type=1&v=56c32320813ab7761g01216d) — [英]弗吉尼亚·伍尔夫
+- [超级产品的本质](https://weread.qq.com/book-detail?type=1&v=d053295058360cd05c952c1) — 亨利·福特
+- [不要相信你所想的一切：如何停止思考，克服焦虑、自我怀疑和自我破坏](https://weread.qq.com/book-detail?type=1&v=fd532890813ab8d34g011ae1) — [美]约瑟夫•阮 ✅
+- [Make Something Wonderful](https://weread.qq.com/book-detail?type=1&v=3f742fc3643425f345a6341747341727438666636666e36675741364735576d37b) — Steve Jobs
+- [中国哲学简史](https://weread.qq.com/book-detail?type=1&v=549325305e38395491a289f) — 冯友兰
+- [金刚经·心经·四十二章经·六祖坛经（国学网原版点注，杨增文等点校）](https://weread.qq.com/book-detail?type=1&v=60932bd05cee4d609facdc7) — [后秦]鸠摩罗什译等原著 杨增文等点校
+- [打造第二大腦](https://weread.qq.com/book-detail?type=1&v=f5f42ac3643425f41394d433945433830455064366766366757313372394b741c7) — 提亞戈．佛特 Tiago Forte
+- [经济学的思维方式](https://weread.qq.com/book-detail?type=1&v=a3d323e071648518a3d9f0c) — 托马斯·索维尔
+- [胡思乱想消除指南：用认知行为策略走出情绪困境](https://weread.qq.com/book-detail?type=1&v=991320b0813ab7d6eg01136e) — 萨拉·埃德尔曼
+- [格里格外](https://weread.qq.com/book-detail?type=1&v=e1f325e0813ab8ebag017cb1) — 天然绘著
+- [月亮和六便士（译文经典）](https://weread.qq.com/book-detail?type=1&v=6e332740813ab7908g0131ea) — 毛姆
+- [Fall in Love with the Problem, Not the Solution](https://weread.qq.com/book-detail?type=1&v=54f42603643425f32533039326d387a6834765536697936675739737039795ad36) — Uri Levine
+- [黑天鹅](https://weread.qq.com/book-detail?type=1&v=32e32c707186fbb332e15c0) — 纳西姆·尼古拉斯·塔勒布
+- [HBR's 10 Must Reads 2023](https://weread.qq.com/book-detail?type=1&v=51542bf3643425f44765a377270377571475377366679366757367855334b62b7a) — Harvard Business Review
+- [重来3部合集【更为简单有效的商业思维、更为简单高效的远程工作方式、跳出疯狂的忙碌】](https://weread.qq.com/book-detail?type=1&v=f9c427b3643425f35326c323735323644413432366a61366b66307263386b3776d) — 戴维·海涅迈尔·汉森
+- [从细菌到巴赫再回来](https://weread.qq.com/book-detail?type=1&v=58732a10813ab8898g010f96) — [美]丹尼尔·丹尼特
+- [The Fallacy Detective: Thirty-Eight Lessons on How to Recognize Bad Reasoning](https://weread.qq.com/book-detail?type=1&v=58942af3643425f324259384e59384e76306543367143366f6f303770435242d7e) — Tim Hodge
+- [给孩子的身体书](https://weread.qq.com/book-detail?type=1&v=e77326b07155597ae776f7f) — 霍华德·本内特
+- [从波波玩偶到棉花糖：改变儿童发展心理学的13项经典实验](https://weread.qq.com/book-detail?type=1&v=097423d3643425f34714b334a4d334a3138584e36666c366757456f53414775d55) — 马库斯·鲍罗斯
+- [装修，做好三件事就够了](https://weread.qq.com/book-detail?type=1&v=5bc329007256f8e25bcd6cd) — 王奕龙
+- [老爸评测：你的健康呵护指南【3000万+粉丝知名科普大V老爸评测首次出书，“后疫情”时代如何开启健康新生活】](https://weread.qq.com/book-detail?type=1&v=16d422d3643425f36497347785747775338326e366d4c366b6645735a43304de89) — 老爸评测
+- [巴黎评论（套装共7册，文坛秘辛，写作圣经，带你进入当代伟大作家们的文学生活）](https://weread.qq.com/book-detail?type=1&v=eec428b3643425f357538313269313250395448366a7a366b6641663934594af17) — 美国《巴黎评论》编辑部
+- [趣说汉朝407年（一）（微信读书出品）](https://weread.qq.com/book-detail?type=1&v=8c332580813ab8498g015f61) — 杨阳洋
+- [性格修正：如何突破你的原生性格](https://weread.qq.com/book-detail?type=1&v=f9d321b0813ab6c6cg011882) — 本杰明·哈迪
+- [生命进化的跃升](https://weread.qq.com/book-detail?type=1&v=26d32ff071f956d326d36a5) — 尼克·莱恩
+- [成瘾：在放纵中寻找平衡](https://weread.qq.com/book-detail?type=1&v=9e8321b0813ab7bf1g013230) — 安娜·伦布克
+- [控糖革命](https://weread.qq.com/book-detail?type=1&v=819321e0813ab880ag01960c) — [法]杰西·安佐斯佩
+- [The Art of Seeing Others Deeply and Being Deeply Seen](https://weread.qq.com/book-detail?type=1&v=26742643643425f31724c47714e476f45467749366b55366b66366137333773553) — David Brooks
+- [价值心法](https://weread.qq.com/book-detail?type=1&v=f7c32e20813ab94eeg0183de) — 姜胡说
+- [如何系统思考（第2版）（《第五项修炼》作者彼得·圣吉作品，系统思考入门指导书）](https://weread.qq.com/book-detail?type=1&v=41b42d33643425f464267453763453851377143366930366757455a784372688ef) — 邱昭良
+- [最后的访谈系列（套装共6册）（六位定义二十世纪的文学大师，对世界最后的深情告白，收录六位文坛巨匠生前最后的访谈））](https://weread.qq.com/book-detail?type=1&v=200420d3643425f474254306e6630713238584e36666c366757414457414244db0) — 大卫福斯特·华莱士
+- [巴黎评论·作家访谈7](https://weread.qq.com/book-detail?type=1&v=b5b42863643425f316164313362313250395448366a7a366b66386759394b50188) — 美国《巴黎评论》编辑部
+- [论心灵之安宁（果麦经典）](https://weread.qq.com/book-detail?type=1&v=56432630813ab8ba9g017e24) — [古罗马]塞涅卡
+- [道德书简（全译本）](https://weread.qq.com/book-detail?type=1&v=9f232320813ab8008g019935) — [古罗马]塞涅卡
+- [44个人性的残酷真相+纳瓦尔](https://weread.qq.com/book-detail?type=1&v=18842283643425f45663238435738466843334d367651367836305968324834250) — 
+- [冲浪板上的公司：巴塔哥尼亚的创业哲学](https://weread.qq.com/book-detail?type=1&v=b64323e0716aaf2fb645631) — 伊冯·乔伊纳德
+- [让成熟的大脑自由](https://weread.qq.com/book-detail?type=1&v=be0327e0725466f0be0a687) — [美]约翰·梅迪纳
+- [拉鲁斯儿童心理小百科：60个帮助儿童成长的人生大问题 (卡琳·西蒙妮) (Z-Library)](https://weread.qq.com/book-detail?type=1&v=68942cc3643425f34373730655030646a454432366b61366b66414d54456166c44) — 卡琳·西蒙妮
+- [噪声（诺贝尔经济学奖得主、行为经济学之父丹尼尔·卡尼曼继《思考，快与慢》后酝酿10年思考的全新力作，哪里有判断，哪里就有噪声，远离噪声，做聪明的决策者，国内外近百位大咖挚爱力荐）](https://weread.qq.com/book-detail?type=1&v=89a42f83643425f42546348304b48306236527036694c366757356f54417a61a2d) — 卡斯·R.桑斯坦
+- [当下的启蒙（新版）](https://weread.qq.com/book-detail?type=1&v=56b32790813ab7e63g011418) — [美]史蒂芬·平克
+- [沐猿而冠](https://weread.qq.com/book-detail?type=1&v=9f6326c0813ab6836g019086) — 辉格 ✅
+- [创造：用非传统方式做有价值的事](https://weread.qq.com/book-detail?type=1&v=13832ac0813ab725fg018645) — 托尼·法德尔
+- [巴黎评论·作家访谈6（弗罗斯特、塞利纳、布鲁姆、勒卡雷、拜厄特、弗兰岑等15位著名作家的《巴黎评论》访谈合辑，独家收录作家珍贵手稿图）](https://weread.qq.com/book-detail?type=1&v=38b424a3643425f304b4f315769315575395448366a7a366b66454f4a38506c598) — 美国《巴黎评论》编辑部
+- [人心的本质](https://weread.qq.com/book-detail?type=1&v=4d032140721a4ee74d067a1) — [美]丹尼尔·韦格纳 [加拿大]库尔特·格雷
+- [心理与力学](https://weread.qq.com/book-detail?type=1&v=a0432e40813ab8d08g012a03) — 李宗吾
+- [表象与本质：类比，思考之源和思维之火](https://weread.qq.com/book-detail?type=1&v=44332da07181ed92443ef71) — [美]侯世达 [法]桑德尔
+- [不原谅也没关系](https://weread.qq.com/book-detail?type=1&v=5a832b90813ab78dag016aaa) — [美]皮特·沃克
+- [斯坦福极简经济学](https://weread.qq.com/book-detail?type=1&v=f7f327705ae63ef7f54c98b) — 蒂莫西·泰勒
+- [好好告别](https://weread.qq.com/book-detail?type=1&v=b5d32170721fbe66b5dfe7b) — [英]凯瑟琳·曼尼克斯
+- [The Surprisingly Simple Way to Launch a 7-Figure Business in 48 Hours](https://weread.qq.com/book-detail?type=1&v=20b42953643425f346d33475164475049313277366d32366b6646366d454963023) — Tahl Raz ✅
+- [以日为鉴：衰退时代生存指南](https://weread.qq.com/book-detail?type=1&v=83a42423643425f37414e38495a384a6d38525836796836783631786847427af1f) — 分析师Boden
+- [经济学的思维方式：第13版 (保罗·海恩 彼得·勃特克 大卫·普雷契特科) ](https://weread.qq.com/book-detail?type=1&v=40c42e13643425f36365a38324a38334b345763367647367378466132446244e7d) — 保罗·海恩 彼得·勃特克 大卫·普雷契特科
+- [黑匣子思维（新版）](https://weread.qq.com/book-detail?type=1&v=c55322e07162c32ec55394d) — 马修·萨伊德
+- [影响商业的50本书](https://weread.qq.com/book-detail?type=1&v=14732f4071d8d604147696d) — 吴晓波
+- [韧性：不确定时代的精进法则](https://weread.qq.com/book-detail?type=1&v=18432020813ab735bg0189a2) — 张晓萌 曹理达
+- [思考致富：拿破仑·希尔成功圣经](https://weread.qq.com/book-detail?type=1&v=7d032b0059887a7d0bb9d2a) — 拿破仑·希尔
+- [成功](https://weread.qq.com/book-detail?type=1&v=be7326907266dee4be776c4) — 吉姆·兰德尔
+- [了不起的盖茨比（译文经典）](https://weread.qq.com/book-detail?type=1&v=8d432760813ab7908g016e80) — F.S.菲茨杰拉德
+- [查拉图斯特拉如是说（读客三个圈经典文库）](https://weread.qq.com/book-detail?type=1&v=af932400813ab8a38g0122df) — [德]尼采
+- [因为独特-李翔](https://weread.qq.com/book-detail?type=1&v=07042413643425f444b6d346f47347173424b5236767636783631483839643416a) — 李翔 ✅
+- [今天也要重新出发](https://weread.qq.com/book-detail?type=1&v=4d6320b0726172d84d67442) — 阿籽奶奶
+- [决策脑科学](https://weread.qq.com/book-detail?type=1&v=6d332e50813ab7c53g01928d) — Jill Bolte Taylor
+- [朗达·拜恩：身心灵实修指南系列（全7册）](https://weread.qq.com/book-detail?type=1&v=88332f70727fd1288831a8d) — 朗达·拜恩
+- [精益创业](https://weread.qq.com/book-detail?type=1&v=b2632d7058c218b269e80c0) — 埃里克·莱斯
+- [你变了，世界就变了](https://weread.qq.com/book-detail?type=1&v=7ec32f505cb1f07ec41af84) — 卡耐基
+- [幸福的方法](https://weread.qq.com/book-detail?type=1&v=e2e329a0813ab78d2g017d32) — 泰勒·本·沙哈尔
+- [Stolen Focus: Why You Can't Pay Attention](https://weread.qq.com/book-detail?type=1&v=54f42bb3643425f366444374d64374f43413432366a61366b6635593247655234d) — Johann Hari
+- [NLP：自我改变的惊人秘密](https://weread.qq.com/book-detail?type=1&v=3e6321f0813ab9559g011f78) — [美]理查德·班德勒
+- [向上一步（硅谷创投女王的精神和物质双独立法则）](https://weread.qq.com/book-detail?type=1&v=6ca32810813ab7f4ag01137a) — 玛格达琳娜·耶希尔
+- [我的人生样样稀松照样赢++“呆伯特”的逆袭人生+(（美）史考特·亚当斯著)+(Z-Library)2A0C7F3257A5844197D02C4065BB3110-1](https://weread.qq.com/book-detail?type=1&v=b1e42513643425f426733434435434339334953367049366f6f41587545685a870) — 
+- [经济学的思维方式（套装共2册）](https://weread.qq.com/book-detail?type=1&v=51642373643425f445434434363434339334953367049366f6f456e5a383450889) — 【美】托马斯·索维尔
+- [如何不靠运气致富 纳瓦尔](https://weread.qq.com/book-detail?type=1&v=fe742053643425f466167466167466343386a6d36774936783637514a454a3011a) — 
+- [生活艺术家的手作私宅](https://weread.qq.com/book-detail?type=1&v=dec329d0726f7146dec9e11) — 中村好文
+- [了凡四训详解](https://weread.qq.com/book-detail?type=1&v=b6832d40813ab92d2g015378) — [明]袁了凡著 费勇编著
+- [可可·香奈儿：活出自己](https://weread.qq.com/book-detail?type=1&v=1f7323a0813ab9210g011380) — 艾略
+- [设计大师的商业课](https://weread.qq.com/book-detail?type=1&v=8d732b70717dd5498d7a8e4) — 戴维·舍温
+- [当音乐停止之后](https://weread.qq.com/book-detail?type=1&v=e24323207265c461e24828a) — 艾伦·布林德
+- [从神经科学到心理学系列套装（13册）](https://weread.qq.com/book-detail?type=1&v=2e632510813ab70c5g012953) — ［加］迈克尔·加扎尼加 ［美］芭芭拉·特沃斯基 ［葡］安东尼奥·达马西奥 等
+- [雪球专刊·特别版：段永平投资问答录投资逻辑篇](https://weread.qq.com/book-detail?type=1&v=238324d072206eb4238d918) — 雪球专刊
+- [思想者](https://weread.qq.com/book-detail?type=1&v=41232ba0813ab8c0eg01457b) — 刘慈欣
+- [时间管理的奇迹](https://weread.qq.com/book-detail?type=1&v=73932520813ab6d9fg016f06) — [美]罗里·瓦登
+- [做研究是有趣的：给学术新人的科研入门笔记](https://weread.qq.com/book-detail?type=1&v=cd4326f0813ab7e5dg0196be) — 刀熊
+- [超越百岁：长寿的科学与艺术](https://weread.qq.com/book-detail?type=1&v=12f326c0813ab8d88g015fdf) — [美]彼得·阿提亚

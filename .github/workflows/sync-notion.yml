@@ -30,11 +30,17 @@ jobs:
       - name: Sync posts.im（想法）
         run: node scripts/sync-posts.mjs
 
+      - name: Export Markdown 备份
+        run: node scripts/export-markdown.mjs
+
+      - name: Generate RSS
+        run: node scripts/generate-rss.mjs
+
       - name: Commit and push
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add notion-data.json _data/ || true
+          git add notion-data.json rss.xml content/ _data/ || true
           if git diff --cached --quiet; then
             echo "No changes"
           else

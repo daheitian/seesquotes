@@ -6,6 +6,7 @@
   <title>见室引号 | 小信号</title>
   <meta name="description" content="一些金句 一些思考 一些优质信息源">
   <link rel="stylesheet" href="./assets/css/style.css">
+  <link rel="alternate" type="application/rss+xml" title="小信号" href="./rss.xml">
 </head>
 <body>
   <header>
@@ -78,7 +79,7 @@
   </main>
 
   <footer>
-    <p>小信号 · <a href="https://github.com/daheitian/seesquotes" target="_blank" rel="noopener">GitHub</a> · 由 Notion 与微信读书驱动</p>
+    <p>小信号 · <a href="https://github.com/daheitian/seesquotes" target="_blank" rel="noopener">GitHub</a> · 由 Notion 与微信读书驱动 · <a href="./rss.xml">RSS 订阅</a></p>
   </footer>
 
   <script src="./assets/js/main.js"></script>
@@ -94,23 +95,38 @@
         return;
       }
 
-      const limited = limit && posts.length > RECENT_LIMIT;
-      const shown = limited ? posts.slice(0, RECENT_LIMIT) : posts;
+      // 精选分离：勾选了「精选」的置顶展示（最多 5 条），不占时间线额度
+      const key = (p) => p.url || p.title || '';
+      const featuredAll = posts.filter((p) => p.featured === true);
+      const pinned = limit ? featuredAll.slice(0, 5) : featuredAll;
+      const pinnedIds = new Set(pinned.map(key));
+      const rest = posts.filter((p) => !pinnedIds.has(key(p)));
 
-      const items = shown.map(post => {
+      const limited = limit && rest.length > RECENT_LIMIT;
+      const shown = limited ? rest.slice(0, RECENT_LIMIT) : rest;
+
+      const badge = (p) => (p.featured ? '<span style="display:inline-block;padding:1px 8px;background:var(--accent-soft);color:var(--accent);border-radius:100px;font-size:11px;margin-bottom:6px;">★ 精选</span>' : '');
+
+      const card = (post) => {
         const text = post.content || post.title || '';
         const url = post.url || '';
         const clamp = needsClamp(text);
 
         return `<article class="post">
+          ${badge(post)}
           ${sourceLink(url, 'post-src')}
           <div class="post-content${clamp ? ' clamped' : ''}">${renderQuoteBody(text)}</div>
           ${clamp ? '<button class="show-more" type="button">展开全文</button>' : ''}
           <div class="post-date">${formatDate(post.date || post.pubDate)}</div>
         </article>`;
-      }).join('');
+      };
 
-      content.innerHTML = `<div class="posts">${items}</div>${limited ? `<a class="view-all" href="./archive.html#quotes">查看全部 ${posts.length} 条 →</a>` : ''}`;
+      const pinnedHtml = pinned.length
+        ? `<p style="font-size:13px;color:var(--text-muted);margin-bottom:10px;">★ 精选</p><div class="posts">${pinned.map(card).join('')}</div><p style="font-size:13px;color:var(--text-muted);margin:20px 0 10px;">最新</p>`
+        : '';
+
+      const items = shown.map(card).join('');
+      content.innerHTML = `${pinnedHtml}<div class="posts">${items}</div>${limited ? `<a class="view-all" href="./archive.html#quotes">查看全部 ${rest.length} 条 →</a>` : ''}`;
     }
 
     async function load(force = false) {
