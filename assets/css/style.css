@@ -475,165 +475,127 @@ main {
   cursor: pointer;
 }
 
-/* ===== 阅览页（微信读书） ===== */
-.book-item {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  overflow: hidden;
-  transition: border-color 0.2s ease;
+/* ===== 阅览页（Owen 风格书籍 feed） ===== */
+.book-feed { display: flex; flex-direction: column; }
+
+.book-entry {
+  padding: 26px 4px;
+  border-bottom: 1px solid var(--border);
 }
 
-.book-item + .book-item { margin-top: 12px; }
+.book-entry:hover { background: var(--bg-card-hover); }
 
-.book-item:hover { border-color: var(--border-strong); }
+.book-entry-head { margin-bottom: 12px; }
 
-.book-head {
-  display: flex;
-  gap: 16px;
-  padding: 18px;
-  cursor: pointer;
-  align-items: flex-start;
+.book-entry-title {
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: var(--text-primary);
 }
 
-.book-cover {
-  width: 72px;
-  height: 100px;
-  border-radius: 8px;
-  object-fit: cover;
-  flex-shrink: 0;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  box-shadow: 0 2px 10px var(--shadow);
-}
+a.book-entry-title { text-decoration: none; }
+a.book-entry-title:hover { color: var(--accent); }
 
-.book-cover-fallback {
-  width: 72px;
-  height: 100px;
-  border-radius: 8px;
-  flex-shrink: 0;
+.book-entry-meta {
   display: flex;
   align-items: center;
-  justify-content: center;
-  font-size: 30px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  box-shadow: 0 2px 10px var(--shadow);
-}
-
-.book-info { flex: 1; min-width: 0; }
-
-.book-title {
-  font-family: var(--serif);
-  font-size: 17px;
-  font-weight: 700;
-  color: var(--text-primary);
-  line-height: 1.45;
-}
-
-.book-author {
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  margin-top: 6px;
   font-size: 13px;
   color: var(--text-secondary);
-  margin-top: 2px;
 }
 
-.book-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 14px;
-  margin-top: 8px;
+.book-entry-meta .divider { color: var(--text-muted); }
+
+.book-rating {
+  color: #e8a33d;
+  letter-spacing: 2px;
+  font-size: 13px;
+}
+
+.book-progress {
   font-size: 12px;
   color: var(--text-muted);
 }
 
-.book-chevron {
-  color: var(--text-muted);
-  transition: transform 0.25s ease;
-  flex-shrink: 0;
-  margin-top: 6px;
-}
-
-.book-item.open .book-chevron { transform: rotate(180deg); }
-
-.book-notes {
-  display: none;
-  border-top: 1px solid var(--border);
-  padding: 6px 18px 18px;
-}
-
-.book-item.open .book-notes { display: block; }
-
-.note-tabs {
-  display: flex;
-  gap: 6px;
-  margin: 12px 0 4px;
-}
-
-.note-tab {
-  padding: 5px 12px;
-  border: none;
-  background: transparent;
-  border-radius: 100px;
-  color: var(--text-muted);
-  font-size: 12px;
-  cursor: pointer;
-}
-
-.note-tab.active {
-  background: var(--accent-soft);
-  color: var(--accent);
-}
-
-.note-list { display: flex; flex-direction: column; gap: 14px; margin-top: 8px; }
-
-.note-item { position: relative; }
-
-.note-chapter {
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-bottom: 4px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.note-chapter::before {
-  content: "";
-  width: 12px;
-  height: 1px;
-  background: var(--text-muted);
-  display: inline-block;
-}
-
-/* 划线：衬线引文 */
-.note-highlight {
-  font-family: var(--serif);
+/* 读后感（整本书评/章节点评）：正文段落 */
+.book-comment {
   font-size: 15px;
   line-height: 1.9;
   color: var(--text-primary);
   white-space: pre-wrap;
+  margin: 10px 0;
 }
 
-/* 想法：左侧竖线 */
-.note-review {
+.book-comment .note-chapter { margin-bottom: 2px; }
+
+/* 划线引用块 */
+.book-quotes { display: flex; flex-direction: column; gap: 16px; margin: 14px 0; }
+
+.quote-block { position: relative; }
+
+.quote-block blockquote {
+  font-family: var(--serif);
+  font-size: 15.5px;
+  line-height: 1.95;
+  color: var(--text-secondary);
+  border-left: 3px solid var(--border-strong);
+  padding: 2px 0 2px 16px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  margin: 0;
+}
+
+.quote-block:hover blockquote { border-left-color: var(--accent); }
+
+.quote-block .note-chapter {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+/* 挂在划线下的想法 */
+.quote-comment {
   font-size: 14px;
   line-height: 1.8;
   color: var(--text-primary);
-  border-left: 3px solid var(--accent);
-  padding-left: 12px;
-  white-space: pre-wrap;
+  margin-top: 8px;
+  padding-left: 19px;
+  position: relative;
 }
 
-.note-review .review-quote {
-  display: block;
-  font-family: var(--serif);
-  font-size: 14px;
-  color: var(--text-secondary);
-  margin-bottom: 6px;
-}
-
-.note-time {
-  font-size: 11px;
+.quote-comment::before {
+  content: "✎";
+  position: absolute;
+  left: 0;
   color: var(--text-muted);
-  margin-top: 4px;
+  font-size: 12px;
+  top: 3px;
+}
+
+/* 折叠多余的划线 */
+.quote-hidden { display: none; }
+.book-entry.expanded .quote-hidden { display: block; }
+
+.continue-btn {
+  background: none;
+  border: none;
+  padding: 10px 0 0;
+  color: var(--accent);
+  font-size: 14px;
+  cursor: pointer;
+  font-family: var(--sans);
+}
+
+.continue-btn:hover { text-decoration: underline; }
+
+.book-entry-date {
+  margin-top: 14px;
+  font-size: 13px;
+  color: var(--text-muted);
 }
 
 /* 书架视图 */
@@ -956,8 +918,6 @@ footer a:hover { color: var(--accent); }
   .post, .issue-item { padding: 16px; }
   .about-section { padding: 20px; }
 
-  .book-head { padding: 14px; gap: 12px; }
-  .book-notes { padding: 4px 14px 14px; }
-  .book-cover, .book-cover-fallback { width: 58px; height: 82px; }
-  .book-cover-fallback { font-size: 22px; }
+  .book-entry { padding: 20px 2px; }
+  .book-entry-title { font-size: 18px; }
 }

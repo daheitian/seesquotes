@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>阅览 | 小信号</title>
-  <meta name="description" content="微信读书书架与划线笔记">
+  <meta name="description" content="读过的书、划过的线——同步自微信读书">
   <link rel="stylesheet" href="./assets/css/style.css">
 </head>
 <body>
@@ -83,86 +83,141 @@
   <script src="./assets/js/main.js"></script>
   <script>
     const { escapeHtml, formatTs, loadJSON } = window.siteUtils;
-    let data = null;          // { lastSync, books, shelf }
+    let data = null;
     let view = 'notes';
     let query = '';
+    let renderedCount = 0;
+    const PAGE_SIZE = 10;
 
     const content = document.getElementById('content');
 
-    /* ---------- 渲染 ---------- */
+    /* ---------- 单本书的渲染 ---------- */
 
-    function coverHtml(cover, title) {
-      if (cover) {
-        return `<img class="book-cover" src="${escapeHtml(cover)}" alt="${escapeHtml(title)}"
-                  onerror="this.outerHTML='<div class=&quot;book-cover-fallback&quot;>📖</div>'">`;
+    function ratingStars(star) {
+      if (!star || star < 1) return '';
+      return '★'.repeat(star) + '☆'.repeat(5 - star);
+    }
+
+    // 划线位置排序用："2959-3007" -> 2959
+    const rangeStart = (r) => {
+      const m = String(r || '').split('-')[0];
+      const n = parseInt(m, 10);
+      return isNaN(n) ? 0 : n;
+    };
+
+    // 把想法挂到对应划线（按 range 匹配），返回 {quotes:[{hl, comment}], standalone:[review]}
+    function assembleNotes(book) {
+      const highlights = [...(book.highlights || [])].sort((a, b) =>
+        rangeStart(a.range) - rangeStart(b.range)
+      );
+      const commentByRange = new Map();
+      const standalone = [];
+
+      for (const r of book.reviews || []) {
+        if (r.abstract && r.range) {
+          commentByRange.set(r.range, r);
+        } else {
+          standalone.push(r);
+        }
       }
-      return `<div class="book-cover-fallback">📖</div>`;
+
+      const quotes = highlights.map((hl) => ({
+        hl,
+        comment: commentByRange.get(hl.range) || null,
+      }));
+
+      // 有 abstract 但没匹配到划线的想法，也作为独立引用块
+      for (const [range, r] of commentByRange) {
+        if (!highlights.some((h) => h.range === range)) {
+          quotes.push({ hl: { text: r.abstract, chapter: r.chapter, range, time: r.time }, comment: r });
+        }
+      }
+      quotes.sort((a, b) => rangeStart(a.hl.range) - rangeStart(b.hl.range));
+
+      return { quotes, standalone };
     }
 
-    function highlightHtml(h) {
-      return `<div class="note-item">
-        <div class="note-chapter">${escapeHtml(h.chapter || '')}</div>
-        <div class="note-highlight">${escapeHtml(h.text)}</div>
-        <div class="note-time">${formatTs(h.time)}</div>
+    function quoteHtml(q) {
+      const comment = q.comment
+        ? `<div class="quote-comment">${escapeHtml(q.comment.content)}</div>`
+        : '';
+      return `<div class="quote-block">
+        <div class="note-chapter">${escapeHtml(q.hl.chapter || '')}</div>
+        <blockquote>${escapeHtml(q.hl.text)}</blockquote>
+        ${comment}
       </div>`;
     }
 
-    function reviewHtml(r) {
-      return `<div class="note-item">
-        <div class="note-chapter">${escapeHtml(r.chapter || '')}</div>
-        <div class="note-review">
-          ${r.abstract ? `<span class="review-quote">「${escapeHtml(r.abstract)}」</span>` : ''}
-          ${escapeHtml(r.content)}
+    function bookEntryHtml(book) {
+      const { quotes, standalone } = assembleNotes(book);
+      const bookReviews = standalone.filter((r) => !r.chapter);        // 整本书评
+      const chapterReviews = standalone.filter((r) => r.chapter);      // 章节点评
+
+      const lastTime = Math.max(
+        0,
+        ...(book.highlights || []).map((h) => h.time || 0),
+        ...(book.reviews || []).map((r) => r.time || 0)
+      );
+
+      const rating = (book.reviews || []).find((r) => r.star >= 1)?.star;
+      const status = book.markedStatus === 1 ? '读完' : '在读';
+
+      // 清理微信读书书名里的营销副标题括号
+      const title = escapeHtml((book.title || '未命名')
+        .replace(/[（(][^）)]{15,}[）)]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim() || book.title || '未命名');
+
+      const metaBits = [];
+      if (book.author) metaBits.push(`<span>${escapeHtml(book.author)}</span>`);
+      metaBits.push('<span class="divider">·</span>');
+      metaBits.push(`<span>${status}</span>`);
+      if (book.readingProgress > 0 && book.markedStatus !== 1) {
+        metaBits.push(`<span class="book-progress">${Math.round(book.readingProgress)}%</span>`);
+      }
+      if (rating) metaBits.push(`<span class="book-rating">${ratingStars(rating)}</span>`);
+
+      // 划线较多时折叠后面的
+      const QUOTE_LIMIT = 6;
+      const quotesHtml = quotes.map((q, i) =>
+        `<div class="${i >= QUOTE_LIMIT ? 'quote-hidden' : ''}">${quoteHtml(q)}</div>`
+      ).join('');
+
+      const chapterReviewsHtml = chapterReviews.map((r) =>
+        `<div class="book-comment"><div class="note-chapter">${escapeHtml(r.chapter)}</div>${escapeHtml(r.content)}</div>`
+      ).join('');
+
+      // title 已在上方定义
+
+      return `<article class="book-entry">
+        <div class="book-entry-head">
+          ${book.deepLink
+            ? `<a class="book-entry-title" href="${escapeHtml(book.deepLink)}" target="_blank" rel="noopener">《${title}》</a>`
+            : `<h2 class="book-entry-title">《${title}》</h2>`}
+          <div class="book-entry-meta">${metaBits.join('')}</div>
         </div>
-        <div class="note-time">${formatTs(r.time)}</div>
-      </div>`;
+        ${bookReviews.map((r) => {
+          const stars = ratingStars(r.star);
+          return `<div class="book-comment">${escapeHtml(r.content)}</div>${stars ? `<div class="book-rating">${stars}</div>` : ''}`;
+        }).join('')}
+        ${chapterReviewsHtml}
+        ${quotes.length ? `<div class="book-quotes">${quotesHtml}</div>` : ''}
+        ${quotes.length > QUOTE_LIMIT ? '<button class="continue-btn" type="button">继续阅读 →</button>' : ''}
+        <div class="book-entry-date">${lastTime ? formatTs(lastTime) : ''}</div>
+      </article>`;
     }
 
-    function bookHtml(book) {
-      const open = book._open ? ' open' : '';
-      const hCount = (book.highlights || []).length;
-      const rCount = (book.reviews || []).length;
-      const defaultTab = hCount > 0 ? 'highlights' : 'reviews';
-      const notes = view => view === 'highlights'
-        ? (book.highlights || []).map(highlightHtml).join('') || '<div class="empty" style="padding:24px;">暂无划线</div>'
-        : (book.reviews || []).map(reviewHtml).join('') || '<div class="empty" style="padding:24px;">暂无想法</div>';
+    /* ---------- 视图渲染 ---------- */
 
-      const meta = [];
-      if (hCount) meta.push(`${hCount} 条划线`);
-      if (rCount) meta.push(`${rCount} 条想法`);
-      if (book.readingTime) meta.push(`累计 ${Math.round(book.readingTime / 3600 * 10) / 10} 小时`);
-
-      return `<div class="book-item${open}" data-bookid="${escapeHtml(book.bookId)}" data-tab="${defaultTab}">
-        <div class="book-head">
-          ${coverHtml(book.cover, book.title)}
-          <div class="book-info">
-            <div class="book-title">${escapeHtml(book.title)}</div>
-            <div class="book-author">${escapeHtml(book.author || '')}</div>
-            <div class="book-meta">${meta.map(m => `<span>${m}</span>`).join('')}</div>
-          </div>
-          <svg class="book-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="m6 9 6 6 6-6"/>
-          </svg>
-        </div>
-        <div class="book-notes">
-          <div class="note-tabs">
-            <button class="note-tab${defaultTab === 'highlights' ? ' active' : ''}" data-note="highlights">划线 ${hCount || ''}</button>
-            <button class="note-tab${defaultTab === 'reviews' ? ' active' : ''}" data-note="reviews">想法 ${rCount || ''}</button>
-          </div>
-          <div class="note-list" data-view="${defaultTab}">${notes(defaultTab)}</div>
-        </div>
-      </div>`;
-    }
-
-    function renderNotes() {
-      let books = (data.books || []).filter(b => (b.highlights || []).length || (b.reviews || []).length);
+    function renderNotes(append = false) {
+      let books = data.books || [];
       if (query) {
         const q = query.toLowerCase();
-        books = books.filter(b =>
+        books = books.filter((b) =>
           (b.title || '').toLowerCase().includes(q) ||
           (b.author || '').toLowerCase().includes(q) ||
-          (b.highlights || []).some(h => (h.text || '').toLowerCase().includes(q)) ||
-          (b.reviews || []).some(r => (r.content || '').toLowerCase().includes(q))
+          (b.highlights || []).some((h) => (h.text || '').toLowerCase().includes(q)) ||
+          (b.reviews || []).some((r) => (r.content || '').toLowerCase().includes(q))
         );
       }
 
@@ -171,14 +226,27 @@
         return;
       }
 
-      content.innerHTML = books.map(bookHtml).join('');
+      const slice = append ? books.slice(renderedCount, renderedCount + PAGE_SIZE) : books.slice(0, PAGE_SIZE);
+      renderedCount = append ? renderedCount + PAGE_SIZE : Math.min(PAGE_SIZE, books.length);
+
+      const html = slice.map(bookEntryHtml).join('');
+      if (append) {
+        document.getElementById('moreBtn')?.closest('.load-more')?.remove();
+        document.getElementById('bookFeed').insertAdjacentHTML('beforeend', html);
+      } else {
+        content.innerHTML = `<div class="book-feed" id="bookFeed">${html}</div>
+          <div class="load-more" style="text-align:center;padding:24px 0 0;">
+            ${renderedCount < books.length ? `<button class="btn-primary" id="moreBtn" style="background:var(--bg-card);color:var(--text-primary);border:1px solid var(--border);">加载更多（已显示 ${renderedCount} / ${books.length} 本）</button>` : `<p style="font-size:13px;color:var(--text-muted);">已显示全部 ${books.length} 本</p>`}
+          </div>`;
+        document.getElementById('moreBtn')?.addEventListener('click', () => renderNotes(true));
+      }
     }
 
     function renderShelf() {
       let shelf = data.shelf || [];
       if (query) {
         const q = query.toLowerCase();
-        shelf = shelf.filter(b =>
+        shelf = shelf.filter((b) =>
           (b.title || '').toLowerCase().includes(q) ||
           (b.author || '').toLowerCase().includes(q)
         );
@@ -188,89 +256,51 @@
         return;
       }
 
-      content.innerHTML = `<div class="shelf-grid">${shelf.map(b => {
-        const hours = b.readingTime ? Math.round(b.readingTime / 3600 * 10) / 10 : 0;
-        return `<a class="shelf-item" href="https://weread.qq.com/web/bookDetail/${escapeHtml(b.bookId)}" target="_blank" rel="noopener" title="${hours ? `累计阅读 ${hours} 小时` : ''}">
+      content.innerHTML = `<div class="shelf-grid">${shelf.map((b) => {
+        const label = escapeHtml(b.title || '');
+        const open = b.deepLink
+          ? `<a class="shelf-item" href="${escapeHtml(b.deepLink)}" target="_blank" rel="noopener">`
+          : '<span class="shelf-item">';
+        const close = b.deepLink ? '</a>' : '</span>';
+        return `${open}
           ${b.cover
-            ? `<img src="${escapeHtml(b.cover)}" alt="${escapeHtml(b.title)}" loading="lazy" onerror="this.outerHTML='<div class=&quot;cover-fallback&quot;>📖</div>'">`
+            ? `<img src="${escapeHtml(b.cover)}" alt="${label}" loading="lazy" onerror="this.outerHTML='<div class=&quot;cover-fallback&quot;>📖</div>'">`
             : `<div class="cover-fallback">📖</div>`}
-          <div class="shelf-title">${escapeHtml(b.title)}</div>
-        </a>`;
+          <div class="shelf-title">${label}${b.finished ? ' ✅' : ''}</div>
+        ${close}`;
       }).join('')}</div>`;
     }
 
-    function render() {
-      if (view === 'notes') renderNotes(); else renderShelf();
+    function render(append = false) {
+      if (view === 'notes') renderNotes(append); else renderShelf();
     }
 
     function updateStats() {
       const books = data.books || [];
-      document.getElementById('bookCount').textContent =
-        new Set([...books.map(b => b.bookId), ...(data.shelf || []).map(b => b.bookId)]).size;
+      document.getElementById('bookCount').textContent = (data.shelf || []).length || books.length;
       document.getElementById('highlightCount').textContent =
         books.reduce((n, b) => n + (b.highlights || []).length, 0);
       document.getElementById('reviewCount').textContent =
         books.reduce((n, b) => n + (b.reviews || []).length, 0);
     }
 
-    /* ---------- 状态：未配置 / 加载失败 ---------- */
-
-    function showSetup() {
-      content.innerHTML = `
-        <div class="setup-guide">
-          <h3>📖 阅览页还没有数据</h3>
-          <p style="font-size:14px;color:var(--text-secondary);margin-bottom:14px;">同步微信读书需要配置一次 GitHub 仓库的 Cookie，之后每天自动更新：</p>
-          <ol>
-            <li>在浏览器打开 <code>weread.qq.com</code> 并扫码登录</li>
-            <li>按 <code>F12</code> → Network → 找到 <code>weread.qq.com</code> 请求，复制完整的 <code>Cookie</code> 值</li>
-            <li>仓库 <code>Settings → Secrets and variables → Actions</code> 新建 Secret：<code>WEREAD_COOKIE</code></li>
-            <li>在 Actions 页手动运行 <code>Sync WeRead Notes</code>，之后每天自动同步</li>
-          </ol>
-          <p style="font-size:13px;color:var(--text-muted);">Cookie 失效后（约 30 天）同步会失败，按上面步骤重新获取即可。</p>
-        </div>`;
-    }
-
     /* ---------- 交互 ---------- */
 
-    document.querySelectorAll('.filter-tab').forEach(tab => {
+    document.querySelectorAll('.filter-tab').forEach((tab) => {
       tab.addEventListener('click', () => {
-        document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.filter-tab').forEach((t) => t.classList.remove('active'));
         tab.classList.add('active');
         view = tab.dataset.view;
+        renderedCount = 0;
         render();
       });
     });
 
-    // 展开/收起书籍 + 划线/想法切换（事件委托）
+    // 继续阅读（展开划线）
     content.addEventListener('click', (e) => {
-      const noteTab = e.target.closest('.note-tab');
-      if (noteTab) {
-        e.stopPropagation();
-        const item = noteTab.closest('.book-item');
-        item.querySelectorAll('.note-tab').forEach(t => t.classList.remove('active'));
-        noteTab.classList.add('active');
-        const book = findBook(item.dataset.bookid);
-        const which = noteTab.dataset.note;
-        item.querySelector('.note-list').innerHTML = which === 'highlights'
-          ? (book.highlights || []).map(highlightHtml).join('') || '<div class="empty" style="padding:24px;">暂无划线</div>'
-          : (book.reviews || []).map(reviewHtml).join('') || '<div class="empty" style="padding:24px;">暂无想法</div>';
-        return;
-      }
-      if (e.target.closest('.note-list, a')) return;
-      const head = e.target.closest('.book-head');
-      if (head) head.closest('.book-item').classList.toggle('open');
-    });
-
-    function findBook(id) {
-      return (data.books || []).find(b => b.bookId === id) || {};
-    }
-
-    // 全站搜索框（顶栏搜索图标进搜索页；这里提供本地过滤）
-    document.addEventListener('keydown', (e) => {
-      if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
-        e.preventDefault();
-        window.location.href = './search.html';
-      }
+      if (!e.target.classList.contains('continue-btn')) return;
+      e.target.closest('.book-entry').classList.add('expanded');
+      e.target.remove();
     });
 
     /* ---------- 加载 ---------- */
@@ -281,7 +311,17 @@
         updateStats();
         render();
       } catch (err) {
-        showSetup();
+        content.innerHTML = `
+          <div class="setup-guide">
+            <h3>📖 阅览页还没有数据</h3>
+            <p style="font-size:14px;color:var(--text-secondary);margin-bottom:14px;">同步微信读书只需一次配置，之后每天自动更新：</p>
+            <ol>
+              <li>前往 <code>https://weread.qq.com/r/weread-skills</code> 获取你的 API Key（<code>wrk-</code> 开头）</li>
+              <li>仓库 <code>Settings → Secrets and variables → Actions</code> 新建 Secret：<code>WEREAD_API_KEY</code></li>
+              <li>在 Actions 页手动运行 <code>Sync WeRead Notes</code>，之后每天自动同步</li>
+            </ol>
+            <p style="font-size:13px;color:var(--text-muted);">使用微信读书官方 Agent API，无需 Cookie，不会过期。</p>
+          </div>`;
       }
     })();
   </script>

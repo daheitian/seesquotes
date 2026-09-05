@@ -24,7 +24,7 @@ jobs:
 
       - name: Fetch WeRead notes
         env:
-          WEREAD_COOKIE: ${{ secrets.WEREAD_COOKIE }}
+          WEREAD_API_KEY: ${{ secrets.WEREAD_API_KEY }}
         run: node scripts/weread-sync.mjs
 
       - name: Commit and push
