@@ -15,6 +15,7 @@
         <a href="./" class="active">见室引号</a>
         <a href="./archive.html">归档</a>
         <a href="./reading.html">阅览</a>
+        <a href="./thoughts.html">想法</a>
         <a href="./writing.html">写作</a>
         <a href="./about.html">关于</a>
       </nav>
@@ -47,6 +48,7 @@
     <a href="./" class="active">见室引号</a>
     <a href="./archive.html">归档</a>
     <a href="./reading.html">阅览</a>
+        <a href="./thoughts.html">想法</a>
     <a href="./writing.html">写作</a>
     <a href="./about.html">关于</a>
   </div>
@@ -108,7 +110,7 @@
         </article>`;
       }).join('');
 
-      content.innerHTML = `<div class="posts">${items}</div>${limited ? `<a class="view-all" href="./archive.html">查看全部 ${posts.length} 条 →</a>` : ''}`;
+      content.innerHTML = `<div class="posts">${items}</div>${limited ? `<a class="view-all" href="./archive.html#quotes">查看全部 ${posts.length} 条 →</a>` : ''}`;
     }
 
     async function load(force = false) {

@@ -15,6 +15,7 @@
         <a href="./">见室引号</a>
         <a href="./archive.html">归档</a>
         <a href="./reading.html" class="active">阅览</a>
+        <a href="./thoughts.html">想法</a>
         <a href="./writing.html">写作</a>
         <a href="./about.html">关于</a>
       </nav>
@@ -47,6 +48,7 @@
     <a href="./">见室引号</a>
     <a href="./archive.html">归档</a>
     <a href="./reading.html" class="active">阅览</a>
+        <a href="./thoughts.html">想法</a>
     <a href="./writing.html">写作</a>
     <a href="./about.html">关于</a>
   </div>
@@ -68,6 +70,13 @@
       <button class="filter-tab" data-view="shelf">书架</button>
     </div>
 
+    <div class="toolbar" id="catToolbar" style="display:none;">
+      <select id="categoryFilter">
+        <option value="">全部分类</option>
+      </select>
+      <span style="font-size:12px;color:var(--text-muted);" id="catHint"></span>
+    </div>
+
     <div id="content">
       <div class="loading">
         <div class="loading-spinner"></div>
@@ -86,6 +95,7 @@
     let data = null;
     let view = 'notes';
     let query = '';
+    let category = '';
     let renderedCount = 0;
     const PAGE_SIZE = 10;
 
@@ -95,7 +105,8 @@
 
     function ratingStars(star) {
       if (!star || star < 1) return '';
-      return '★'.repeat(star) + '☆'.repeat(5 - star);
+      const s = Math.min(5, Math.max(1, Math.round(star)));
+      return '★'.repeat(s) + '☆'.repeat(5 - s);
     }
 
     // 划线位置排序用："2959-3007" -> 2959
@@ -189,10 +200,10 @@
 
       // title 已在上方定义
 
-      return `<article class="book-entry">
+      return `<article class="book-entry" id="book-${escapeHtml(book.bookId)}" data-bookid="${escapeHtml(book.bookId)}">
         <div class="book-entry-head">
           ${book.deepLink
-            ? `<a class="book-entry-title" href="${escapeHtml(book.deepLink)}" target="_blank" rel="noopener">《${title}》</a>`
+            ? `<a class="book-entry-title" href="${escapeHtml(book.deepLink)}" target="_blank" rel="noopener" title="在微信读书打开">《${title}》</a>`
             : `<h2 class="book-entry-title">《${title}》</h2>`}
           <div class="book-entry-meta">${metaBits.join('')}</div>
         </div>
@@ -211,6 +222,11 @@
 
     function renderNotes(append = false) {
       let books = data.books || [];
+      if (category) {
+        books = category === '__none__'
+          ? books.filter((b) => !b.category)
+          : books.filter((b) => b.category === category);
+      }
       if (query) {
         const q = query.toLowerCase();
         books = books.filter((b) =>
@@ -226,24 +242,28 @@
         return;
       }
 
-      const slice = append ? books.slice(renderedCount, renderedCount + PAGE_SIZE) : books.slice(0, PAGE_SIZE);
-      renderedCount = append ? renderedCount + PAGE_SIZE : Math.min(PAGE_SIZE, books.length);
+      if (append) renderedCount = Math.min(renderedCount + PAGE_SIZE, books.length);
+      else renderedCount = Math.min(PAGE_SIZE, books.length);
 
-      const html = slice.map(bookEntryHtml).join('');
-      if (append) {
-        document.getElementById('moreBtn')?.closest('.load-more')?.remove();
-        document.getElementById('bookFeed').insertAdjacentHTML('beforeend', html);
-      } else {
-        content.innerHTML = `<div class="book-feed" id="bookFeed">${html}</div>
-          <div class="load-more" style="text-align:center;padding:24px 0 0;">
-            ${renderedCount < books.length ? `<button class="btn-primary" id="moreBtn" style="background:var(--bg-card);color:var(--text-primary);border:1px solid var(--border);">加载更多（已显示 ${renderedCount} / ${books.length} 本）</button>` : `<p style="font-size:13px;color:var(--text-muted);">已显示全部 ${books.length} 本</p>`}
-          </div>`;
-        document.getElementById('moreBtn')?.addEventListener('click', () => renderNotes(true));
-      }
+      // 每次整体重渲染已展示部分，避免增量插入的状态不同步
+      const shown = books.slice(0, renderedCount);
+      const html = shown.map(bookEntryHtml).join('');
+      const moreHtml = renderedCount < books.length
+        ? `<button class="btn-primary" id="moreBtn" style="background:var(--bg-card);color:var(--text-primary);border:1px solid var(--border);">加载更多（已显示 ${renderedCount} / ${books.length} 本）</button>`
+        : `<p style="font-size:13px;color:var(--text-muted);">已显示全部 ${books.length} 本</p>`;
+
+      content.innerHTML = `<div class="book-feed" id="bookFeed">${html}</div>
+        <div class="load-more" style="text-align:center;padding:24px 0 0;">${moreHtml}</div>`;
+      document.getElementById('moreBtn')?.addEventListener('click', () => renderNotes(true));
     }
 
     function renderShelf() {
       let shelf = data.shelf || [];
+      if (category) {
+        shelf = category === '__none__'
+          ? shelf.filter((b) => !b.category)
+          : shelf.filter((b) => b.category === category);
+      }
       if (query) {
         const q = query.toLowerCase();
         shelf = shelf.filter((b) =>
@@ -252,16 +272,21 @@
         );
       }
       if (shelf.length === 0) {
-        content.innerHTML = `<div class="empty"><div class="empty-icon">📚</div><p>${query ? '没有匹配的书' : '书架还是空的'}</p></div>`;
+        content.innerHTML = `<div class="empty"><div class="empty-icon">📚</div><p>${query || category ? '没有匹配的书' : '书架还是空的'}</p></div>`;
         return;
       }
 
+      const notesIds = new Set((data.books || []).map((b) => b.bookId));
       content.innerHTML = `<div class="shelf-grid">${shelf.map((b) => {
         const label = escapeHtml(b.title || '');
-        const open = b.deepLink
-          ? `<a class="shelf-item" href="${escapeHtml(b.deepLink)}" target="_blank" rel="noopener">`
-          : '<span class="shelf-item">';
-        const close = b.deepLink ? '</a>' : '</span>';
+        const hasNotes = notesIds.has(b.bookId);
+        // 有笔记的书：点击进入站内笔记；没有的：跳微信读书
+        const open = hasNotes
+          ? `<span class="shelf-item" data-jump="${escapeHtml(b.bookId)}" title="查看我的笔记" style="cursor:pointer;">`
+          : b.deepLink
+            ? `<a class="shelf-item" href="${escapeHtml(b.deepLink)}" target="_blank" rel="noopener" title="在微信读书打开">`
+            : '<span class="shelf-item">';
+        const close = (hasNotes || !b.deepLink) ? '</span>' : '</a>';
         return `${open}
           ${b.cover
             ? `<img src="${escapeHtml(b.cover)}" alt="${label}" loading="lazy" onerror="this.outerHTML='<div class=&quot;cover-fallback&quot;>📖</div>'">`
@@ -296,11 +321,64 @@
       });
     });
 
-    // 继续阅读（展开划线）
+    // 分类筛选
+    function populateCategories() {
+      const cats = [...new Set([
+        ...(data.books || []).map((b) => b.category),
+        ...(data.shelf || []).map((b) => b.category),
+      ].filter(Boolean))].sort((a, b) => a.localeCompare(b, 'zh'));
+      const select = document.getElementById('categoryFilter');
+      cats.forEach((c) => {
+        const opt = document.createElement('option');
+        opt.value = c;
+        opt.textContent = c;
+        select.appendChild(opt);
+      });
+      if (cats.length) {
+        const none = document.createElement('option');
+        none.value = '__none__';
+        none.textContent = '未分类';
+        select.appendChild(none);
+        document.getElementById('catToolbar').style.display = 'flex';
+        document.getElementById('catHint').textContent = `${cats.length} 个分类`;
+      }
+    }
+
+    document.getElementById('categoryFilter').addEventListener('change', (e) => {
+      category = e.target.value;
+      renderedCount = 0;
+      render();
+    });
+
+    // 书架 → 站内笔记跳转
+    function jumpToNotes(bookId, tries = 0) {
+      // 注意：getElementById 按字面匹配，不要用 CSS.escape（数字开头 id 会被转义坏）
+      const entry = document.getElementById(`book-${bookId}`);
+      if (entry) {
+        entry.classList.add('expanded');
+        entry.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        return;
+      }
+      // 目标还在未渲染的分页里，继续加载直到找到
+      const moreBtn = document.getElementById('moreBtn');
+      if (moreBtn && tries < 200) {
+        moreBtn.click();
+        setTimeout(() => jumpToNotes(bookId, tries + 1), 60);
+      }
+    }
+
     content.addEventListener('click', (e) => {
-      if (!e.target.classList.contains('continue-btn')) return;
-      e.target.closest('.book-entry').classList.add('expanded');
-      e.target.remove();
+      const jump = e.target.closest('[data-jump]');
+      if (jump) {
+        const bookId = jump.dataset.jump;
+        document.querySelector(".filter-tab[data-view='notes']")?.click();
+        setTimeout(() => jumpToNotes(bookId), 50);
+        return;
+      }
+      if (e.target.classList.contains('continue-btn')) {
+        e.target.closest('.book-entry').classList.add('expanded');
+        e.target.remove();
+      }
     });
 
     /* ---------- 加载 ---------- */
@@ -309,6 +387,7 @@
       try {
         data = await loadJSON('./_data/weread.json');
         updateStats();
+        populateCategories();
         render();
       } catch (err) {
         content.innerHTML = `

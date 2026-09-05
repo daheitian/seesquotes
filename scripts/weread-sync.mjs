@@ -187,6 +187,20 @@ async function main() {
   // 按最近笔记时间倒序
   books.sort((a, b) => (b._sort || 0) - (a._sort || 0));
 
+  // 3.5 补全缺失分类（书架没有的书，调 /book/info；只对没试过的书调一次）
+  const noCat = books.filter((b) => !b.category && !(prevDetails.get(b.bookId)?._catTried));
+  if (noCat.length) {
+    console.log(`🏷️ 补全 ${noCat.length} 本书的分类…`);
+    for (const b of noCat) {
+      try {
+        const info = await api('/book/info', { bookId: b.bookId });
+        b.category = info.category || '';
+      } catch { /* 单本失败忽略 */ }
+      b._catTried = true;
+      await sleep(300);
+    }
+  }
+
   // 4. 书架（展示用）
   let shelf = [];
   try {
@@ -206,6 +220,12 @@ async function main() {
       })),
     ];
     console.log(`📚 书架 ${shelf.length} 条`);
+
+    // 把书架分类回填到笔记书（用于前端分类筛选）
+    const catMap = new Map(shelf.map((s2) => [s2.bookId, s2.category]));
+    for (const b of books) {
+      b.category = catMap.get(b.bookId) || b.category || '';
+    }
   } catch (e) {
     console.warn('书架获取失败（不影响笔记）:', e.message);
     shelf = prev.shelf || [];
