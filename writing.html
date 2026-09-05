@@ -6,6 +6,168 @@
   <title>写作 | 小信号</title>
   <meta name="description" content="更长形式的思考与文章，基于 GitHub Issues">
   <link rel="stylesheet" href="./assets/css/style.css">
+  <style>
+    /* ===== 站内文章阅读视图 ===== */
+    .article-view { display: none; }
+    .article-view.active { display: block; }
+    .list-view.hidden { display: none; }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      margin-bottom: 20px;
+      background: none;
+      border: none;
+      padding: 0;
+      font-family: var(--sans);
+    }
+    .back-link:hover { color: var(--accent); }
+
+    .article {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+    }
+
+    .article-title {
+      font-family: var(--serif);
+      font-size: 24px;
+      font-weight: 700;
+      line-height: 1.5;
+      color: var(--text-primary);
+      margin-bottom: 10px;
+    }
+
+    .article-meta {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--text-muted);
+      padding-bottom: 18px;
+      margin-bottom: 22px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* Markdown 正文排版 */
+    .article-body {
+      font-size: 16px;
+      line-height: 1.9;
+      color: var(--text-primary);
+      word-wrap: break-word;
+    }
+    .article-body h1, .article-body h2, .article-body h3,
+    .article-body h4, .article-body h5, .article-body h6 {
+      font-family: var(--serif);
+      margin: 28px 0 12px;
+      line-height: 1.5;
+      color: var(--text-primary);
+    }
+    .article-body h1 { font-size: 22px; }
+    .article-body h2 { font-size: 20px; }
+    .article-body h3 { font-size: 18px; }
+    .article-body h4, .article-body h5, .article-body h6 { font-size: 16px; }
+    .article-body p { margin-bottom: 14px; }
+    .article-body a { color: var(--accent); }
+    .article-body a:hover { text-decoration: underline; }
+    .article-body img {
+      max-width: 100%;
+      border-radius: var(--radius-sm);
+      margin: 10px 0;
+    }
+    .article-body blockquote {
+      border-left: 3px solid var(--accent);
+      padding: 4px 0 4px 16px;
+      margin: 16px 0;
+      color: var(--text-secondary);
+    }
+    .article-body blockquote p { margin: 6px 0; }
+    .article-body ul, .article-body ol {
+      margin: 12px 0;
+      padding-left: 24px;
+    }
+    .article-body li { margin-bottom: 6px; }
+    .article-body code {
+      background: var(--bg-card-hover);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 2px 7px;
+      font-size: 13.5px;
+      font-family: ui-monospace, Consolas, monospace;
+      color: var(--accent);
+    }
+    .article-body pre {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      overflow-x: auto;
+      margin: 16px 0;
+    }
+    .article-body pre code {
+      background: none;
+      border: none;
+      padding: 0;
+      color: var(--text-primary);
+      font-size: 13.5px;
+      line-height: 1.7;
+    }
+    .article-body hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 24px 0;
+    }
+    .article-body strong { color: var(--text-primary); }
+
+    /* 评论 */
+    .comments-section {
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+    .comments-title {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+    .comment-item {
+      display: flex;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .comment-item:last-child { border-bottom: none; }
+    .comment-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .comment-body { flex: 1; min-width: 0; }
+    .comment-author {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .comment-time { font-size: 12px; color: var(--text-muted); margin-left: 8px; }
+    .comment-content {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-top: 4px;
+    }
+
+    @media (max-width: 640px) {
+      .article { padding: 20px; }
+      .article-title { font-size: 20px; }
+    }
+  </style>
 </head>
 <body>
   <header>
@@ -52,27 +214,40 @@
   </div>
 
   <main>
-    <div class="page-header">
+    <div class="page-header" id="pageHeader">
       <h1>写作</h1>
       <p>更长形式的思考与文章</p>
     </div>
 
-    <div class="toolbar">
-      <select id="labelFilter">
-        <option value="">全部标签</option>
-      </select>
-      <select id="sortFilter">
-        <option value="newest">最新优先</option>
-        <option value="oldest">最早优先</option>
-        <option value="updated">最近更新</option>
-      </select>
-      <a href="https://github.com/daheitian/seesquotes/issues/new" target="_blank" rel="noopener" class="btn-primary" style="margin-left:auto;padding:8px 18px;">✍️ 写一篇</a>
+    <!-- 列表视图 -->
+    <div class="list-view" id="listView">
+      <div class="toolbar">
+        <select id="labelFilter">
+          <option value="">全部标签</option>
+        </select>
+        <select id="sortFilter">
+          <option value="newest">最新优先</option>
+          <option value="oldest">最早优先</option>
+          <option value="updated">最近更新</option>
+        </select>
+        <a href="https://github.com/daheitian/seesquotes/issues/new" target="_blank" rel="noopener" class="btn-primary" style="margin-left:auto;padding:8px 18px;">✍️ 写一篇</a>
+      </div>
+      <div id="content">
+        <div class="loading">
+          <div class="loading-spinner"></div>
+          <p>加载文章…</p>
+        </div>
+      </div>
     </div>
 
-    <div id="content">
-      <div class="loading">
-        <div class="loading-spinner"></div>
-        <p>加载文章…</p>
+    <!-- 文章阅读视图 -->
+    <div class="article-view" id="articleView">
+      <button class="back-link" id="backBtn">← 返回文章列表</button>
+      <div id="articleContent">
+        <div class="loading">
+          <div class="loading-spinner"></div>
+          <p>加载文章…</p>
+        </div>
       </div>
     </div>
   </main>
@@ -83,16 +258,116 @@
 
   <script src="./assets/js/main.js"></script>
   <script>
-    const { escapeHtml } = window.siteUtils;
+    const { escapeHtml, formatDate } = window.siteUtils;
     const REPO = 'daheitian/seesquotes';
-    const GITHUB_API = `https://api.github.com/repos/${REPO}/issues?state=all&per_page=100`;
+    const API = `https://api.github.com/repos/${REPO}`;
 
     let allIssues = [];
     let currentLabel = '';
     let currentSort = 'newest';
     const content = document.getElementById('content');
+    const listView = document.getElementById('listView');
+    const articleView = document.getElementById('articleView');
+    const pageHeader = document.getElementById('pageHeader');
 
-    // Markdown → 纯文本摘要
+    /* ================= Markdown 渲染（轻量实现） ================= */
+
+    function renderMarkdown(src) {
+      if (!src) return '';
+      const codeBlocks = [];
+
+      // 1. 抽出代码块，避免内部内容被当作 markdown 处理
+      let text = src.replace(/```([\w-]*)\n?([\s\S]*?)```/g, (_, lang, code) => {
+        const i = codeBlocks.length;
+        codeBlocks.push({ lang, code });
+        return `\u0000CODEBLOCK${i}\u0000`;
+      });
+
+      // 2. 整体转义 HTML
+      text = escapeHtml(text);
+
+      // 3. 按行解析块级结构
+      const lines = text.split('\n');
+      const out = [];
+      let para = [], listType = null, listItems = [], inQuote = false;
+
+      const flushPara = () => {
+        if (para.length) { out.push(`<p>${inline(para.join('<br>'))}</p>`); para = []; }
+      };
+      const flushList = () => {
+        if (listItems.length) {
+          out.push(`<${listType}>${listItems.map(li => `<li>${inline(li)}</li>`).join('')}</${listType}>`);
+          listItems = []; listType = null;
+        }
+      };
+      const flushQuote = () => {
+        if (inQuote) { out.push('</blockquote>'); inQuote = false; }
+      };
+
+      for (const raw of lines) {
+        const line = raw.trimEnd();
+
+        if (/^\u0000CODEBLOCK\d+\u0000$/.test(line.trim())) {
+          flushPara(); flushList(); flushQuote();
+          out.push(line.trim());
+          continue;
+        }
+        if (!line.trim()) { flushPara(); flushList(); flushQuote(); continue; }
+
+        const h = line.match(/^(#{1,6})\s+(.*)/);
+        if (h) { flushPara(); flushList(); flushQuote(); out.push(`<h${h[1].length}>${inline(h[2])}</h${h[1].length}>`); continue; }
+
+        if (/^(-{3,}|\*{3,}|_{3,})$/.test(line.trim())) { flushPara(); flushList(); flushQuote(); out.push('<hr>'); continue; }
+
+        const q = line.match(/^&gt;\s?(.*)/);
+        if (q) {
+          flushPara(); flushList();
+          if (!inQuote) { out.push('<blockquote>'); inQuote = true; }
+          out.push(`<p>${inline(q[1])}</p>`);
+          continue;
+        }
+        flushQuote();
+
+        const ul = line.match(/^[-*+]\s+(.*)/);
+        const ol = line.match(/^\d+[.)]\s+(.*)/);
+        if (ul) {
+          flushPara();
+          if (listType !== 'ul') flushList();
+          listType = 'ul'; listItems.push(ul[1]);
+          continue;
+        }
+        if (ol) {
+          flushPara();
+          if (listType !== 'ol') flushList();
+          listType = 'ol'; listItems.push(ol[1]);
+          continue;
+        }
+        flushList();
+        para.push(line);
+      }
+      flushPara(); flushList(); flushQuote();
+
+      // 4. 填回代码块
+      return out.join('\n').replace(/\u0000CODEBLOCK(\d+)\u0000/g, (_, i) => {
+        const { lang, code } = codeBlocks[+i];
+        return `<pre><code${lang ? ` class="lang-${escapeHtml(lang)}"` : ''}>${escapeHtml(code)}</code></pre>`;
+      });
+
+      // 行内元素
+      function inline(s) {
+        return s
+          .replace(/!\[([^\]]*)\]\(([^)\s]+)[^)]*\)/g, '<img src="$2" alt="$1" loading="lazy">')
+          .replace(/\[([^\]]+)\]\(([^)\s]+)[^)]*\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\*\*\*([^*]+)\*\*\*/g, '<strong><em>$1</em></strong>')
+          .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+          .replace(/(^|[^*])\*([^*]+)\*/g, '$1<em>$2</em>')
+          .replace(/~~([^~]+)~~/g, '<del>$1</del>');
+      }
+    }
+
+    /* ================= 列表视图 ================= */
+
     function excerpt(body) {
       if (!body) return '';
       return body
@@ -109,7 +384,7 @@
       try {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000);
-        const response = await fetch(GITHUB_API, {
+        const response = await fetch(`${API}/issues?state=all&per_page=100`, {
           signal: controller.signal,
           headers: { 'Accept': 'application/vnd.github.v3+json' }
         });
@@ -173,7 +448,7 @@
         ).join('');
         const ex = excerpt(issue.body);
 
-        return `<a class="issue-item" href="${escapeHtml(issue.html_url)}" target="_blank" rel="noopener">
+        return `<a class="issue-item" href="#post-${issue.number}">
           <div class="issue-title">${escapeHtml(issue.title)}</div>
           ${ex ? `<div class="issue-excerpt">${escapeHtml(ex)}…</div>` : ''}
           <div class="issue-meta">
@@ -185,6 +460,90 @@
       }).join('')}</div>`;
     }
 
+    /* ================= 文章视图（站内阅读） ================= */
+
+    async function openArticle(number) {
+      listView.classList.add('hidden');
+      articleView.classList.add('active');
+      pageHeader.style.display = 'none';
+      window.scrollTo(0, 0);
+
+      const box = document.getElementById('articleContent');
+      box.innerHTML = '<div class="loading"><div class="loading-spinner"></div><p>加载文章…</p></div>';
+
+      try {
+        const [issueRes, commentsRes] = await Promise.all([
+          fetch(`${API}/issues/${number}`, { headers: { 'Accept': 'application/vnd.github.v3+json' } }),
+          fetch(`${API}/issues/${number}/comments?per_page=100`, { headers: { 'Accept': 'application/vnd.github.v3+json' } })
+        ]);
+        if (!issueRes.ok) throw new Error(`HTTP ${issueRes.status}`);
+        const issue = await issueRes.json();
+        const comments = commentsRes.ok ? await commentsRes.json() : [];
+
+        const date = new Date(issue.created_at);
+        const labels = (issue.labels || []).map(l =>
+          `<span class="issue-label" style="${l.color ? `background:#${l.color}22;color:#${l.color};` : ''}">${escapeHtml(l.name)}</span>`
+        ).join('');
+
+        const commentsHtml = comments.length ? `
+          <div class="comments-section">
+            <div class="comments-title">留言 · ${comments.length}</div>
+            ${comments.map(c => `
+              <div class="comment-item">
+                <img class="comment-avatar" src="${escapeHtml(c.user.avatar_url)}" alt="" loading="lazy">
+                <div class="comment-body">
+                  <span class="comment-author">${escapeHtml(c.user.login)}</span>
+                  <span class="comment-time">${formatDate(c.created_at)}</span>
+                  <div class="comment-content">${renderMarkdown(c.body)}</div>
+                </div>
+              </div>`).join('')}
+          </div>` : '';
+
+        box.innerHTML = `
+          <article class="article">
+            <h1 class="article-title">${escapeHtml(issue.title)}</h1>
+            <div class="article-meta">
+              <span>${formatDate(issue.created_at)}</span>
+              ${issue.comments ? `<span>💬 ${issue.comments}</span>` : ''}
+              ${labels}
+              <a href="${escapeHtml(issue.html_url)}" target="_blank" rel="noopener" style="margin-left:auto;font-size:12px;">在 GitHub 编辑 →</a>
+            </div>
+            <div class="article-body">${renderMarkdown(issue.body) || '<p style="color:var(--text-muted);">（正文为空）</p>'}</div>
+            ${commentsHtml}
+          </article>`;
+        window.scrollTo(0, 0);
+      } catch (error) {
+        box.innerHTML = `
+          <div class="error">
+            <div class="error-icon">⚠️</div>
+            <h3>加载失败</h3>
+            <p>${escapeHtml(error.message)}</p>
+          </div>`;
+      }
+    }
+
+    function showList() {
+      articleView.classList.remove('active');
+      listView.classList.remove('hidden');
+      pageHeader.style.display = '';
+    }
+
+    /* ================= 路由 ================= */
+
+    function route() {
+      const m = location.hash.match(/^#post-(\d+)$/);
+      if (m) openArticle(+m[1]);
+      else showList();
+    }
+
+    document.getElementById('backBtn').addEventListener('click', () => {
+      // 清掉 hash 但不触发 hashchange（部分浏览器清空 hash 不派发事件），直接切回列表
+      if (location.hash) history.replaceState(null, '', location.pathname + location.search);
+      showList();
+    });
+
+    window.addEventListener('hashchange', route);
+
     document.getElementById('labelFilter').addEventListener('change', (e) => {
       currentLabel = e.target.value;
       renderIssues();
@@ -195,7 +554,7 @@
       renderIssues();
     });
 
-    loadIssues();
+    loadIssues().then(route);
   </script>
 </body>
 </html>
