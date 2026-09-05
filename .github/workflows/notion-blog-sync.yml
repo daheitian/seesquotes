@@ -1,0 +1,39 @@
+name: Sync Notion Blog Articles
+
+# 每天从公开的 Notion 博客（小信号）同步已发布文章到 GitHub Issues（写作页数据源）
+on:
+  schedule:
+    - cron: "30 0 * * *" # 每天 00:30 UTC（北京时间 08:30）
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Sync Notion articles to Issues
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: node scripts/notion-blog-sync.mjs
+
+      - name: Commit downloaded article images
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add notion-assets/
+          if git diff --cached --quiet; then
+            echo "No new images"
+          else
+            git commit -m "sync: article images from Notion [skip ci]"
+            git push
+          fi
