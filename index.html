@@ -112,21 +112,21 @@
         const url = post.url || '';
         const clamp = needsClamp(text);
 
-        return `<article class="post">
+        return `<article class="entry">
           ${badge(post)}
-          ${sourceLink(url, 'post-src')}
-          <div class="post-content${clamp ? ' clamped' : ''}">${renderQuoteBody(text)}</div>
+          ${sourceLink(url, 'entry-src')}
+          <div class="entry-body${clamp ? ' clamped' : ''}">${renderQuoteBody(text)}</div>
           ${clamp ? '<button class="show-more" type="button">展开全文</button>' : ''}
-          <div class="post-date">${formatDate(post.date || post.pubDate)}</div>
+          <div class="entry-meta">${formatDate(post.date || post.pubDate)}</div>
         </article>`;
       };
 
       const pinnedHtml = pinned.length
-        ? `<p style="font-size:13px;color:var(--text-muted);margin-bottom:10px;">★ 精选</p><div class="posts">${pinned.map(card).join('')}</div><p style="font-size:13px;color:var(--text-muted);margin:20px 0 10px;">最新</p>`
+        ? `<p style="font-size:13px;color:var(--text-muted);margin-bottom:2px;">★ 精选</p><div class="timeline">${pinned.map(card).join('')}</div><p style="font-size:13px;color:var(--text-muted);margin:20px 0 2px;">最新</p>`
         : '';
 
       const items = shown.map(card).join('');
-      content.innerHTML = `${pinnedHtml}<div class="posts">${items}</div>${limited ? `<a class="view-all" href="./archive.html#quotes">查看全部 ${rest.length} 条 →</a>` : ''}`;
+      content.innerHTML = `${pinnedHtml}<div class="timeline">${items}</div>${limited ? `<a class="view-all" href="./archive.html#quotes">查看全部 ${rest.length} 条 →</a>` : ''}`;
     }
 
     async function load(force = false) {

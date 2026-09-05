@@ -137,28 +137,28 @@
 
       let html = '';
       if (quoteHits.length) {
-        html += `<p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">金句 · ${quoteHits.length} 条</p>
-          <div class="posts">${quoteHits.map(p => {
+        html += `<p style="font-size:13px;color:var(--text-muted);margin-bottom:2px;">金句 · ${quoteHits.length} 条</p>
+          <div class="timeline">${quoteHits.map(p => {
             const text = p.content || p.title || '';
             const clamp = text.length > 160;
-            return `<article class="post">
-              ${sourceLink(p.url, 'post-src')}
-              <div class="post-content${clamp ? ' clamped' : ''}">${hl(text, query)}</div>
+            return `<article class="entry">
+              ${sourceLink(p.url, 'entry-src')}
+              <div class="entry-body${clamp ? ' clamped' : ''}">${hl(text, query)}</div>
               ${clamp ? '<button class="show-more" type="button">展开全文</button>' : ''}
-              <div class="post-date">${formatDate(p.date || p.pubDate)}</div>
+              <div class="entry-meta">${formatDate(p.date || p.pubDate)}</div>
             </article>`;
           }).join('')}</div>`;
       }
       if (bookHits.length) {
-        html += `<p style="font-size:13px;color:var(--text-muted);margin:24px 0 12px;">读书笔记 · ${bookHits.length} 本</p>
-          <div class="posts">${bookHits.map(hit => {
+        html += `<p style="font-size:13px;color:var(--text-muted);margin:24px 0 2px;">读书笔记 · ${bookHits.length} 本</p>
+          <div class="timeline">${bookHits.map(hit => {
             const b = hit.book;
             const notes = [
               ...hit.highlights.map(h => `<div class="note-item"><div class="note-chapter">${escapeHtml(h.chapter || '划线')}</div><div class="note-highlight">${hl(h.text, query)}</div></div>`),
               ...hit.reviews.map(r => `<div class="note-item"><div class="note-chapter">${escapeHtml(r.chapter || '想法')}</div><div class="note-review">${hl(r.content, query)}</div></div>`)
             ].join('');
-            return `<article class="post">
-              <div style="font-size:15px;font-weight:600;margin-bottom:10px;">📖 ${hl(b.title || '', query)} <span style="font-weight:400;font-size:13px;color:var(--text-muted);">${escapeHtml(b.author || '')}</span></div>
+            return `<article class="entry">
+              <div style="font-family:var(--serif);font-size:18px;font-weight:700;margin-bottom:10px;">📖 ${hl(b.title || '', query)} <span style="font-weight:400;font-size:13px;color:var(--text-muted);font-family:var(--sans);">${escapeHtml(b.author || '')}</span></div>
               <div class="note-list">${notes}</div>
             </article>`;
           }).join('')}</div>`;
