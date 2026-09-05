@@ -58,12 +58,13 @@
     <div class="page-header">
       <h1>见室引号</h1>
       <p>一些金句 一些思考 一些优质信息源</p>
-      <div style="margin-top:18px;"><button class="btn-primary" id="randomBtn" style="background:var(--bg-card);color:var(--text-primary);border:1px solid var(--border);">🎲 随机一条</button></div>
-    </div>
-
-    <div class="stats">
-      <div class="stat-item"><div class="stat-value" id="postCount">-</div><div class="stat-label">金句</div></div>
-      <div class="stat-item"><div class="stat-value" id="lastUpdate">-</div><div class="stat-label">最近更新</div></div>
+      <div class="hero-meta">
+        <button class="hero-meta-btn" id="randomBtn">🎲 随机一条</button>
+        <span class="hero-meta-sep">·</span>
+        <span>金句 <b id="postCount">-</b></span>
+        <span class="hero-meta-sep">·</span>
+        <span>最近更新 <b id="lastUpdate">-</b></span>
+      </div>
     </div>
 
     <div class="search-box">
@@ -126,7 +127,8 @@
         : '';
 
       const items = shown.map(card).join('');
-      content.innerHTML = `${pinnedHtml}<div class="timeline">${items}</div>${limited ? `<a class="view-all" href="./archive.html#quotes">查看全部 ${rest.length} 条 →</a>` : ''}`;
+      content.innerHTML = `${pinnedHtml}<div class="timeline">${items}</div>${limited ? `<button class="view-all" id="viewAllBtn" type="button">查看全部 ${rest.length} 条 ↓</button>` : ''}`;
+      document.getElementById('viewAllBtn')?.addEventListener('click', () => renderPosts(allPosts));
     }
 
     async function load(force = false) {

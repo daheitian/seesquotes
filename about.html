@@ -60,98 +60,16 @@
       <p>关于这个空间的说明</p>
     </div>
 
-    <div class="about-section">
-      <h2>💡 这是什么？</h2>
-      <p><strong>小信号</strong>是一个个人数字花园，用于收集、整理和分享那些容易被忽视但价值巨大的「小信号」——可能是灵光一闪的想法、读到的好书、或是值得记录的观点。</p>
-      <p>这个名字源于对信息过载时代的反思：我们每天都在接收海量信息，但真正有价值的往往是那些微弱但持续的信号。</p>
-      <div class="quote-box">
-        <p>"在噪声中寻找信号，在信号中发现意义。"</p>
-        <cite>— 小信号的设计理念</cite>
+    <div class="about-content" id="aboutContent">
+      <div class="loading">
+        <div class="loading-spinner"></div>
+        <p>加载中…</p>
       </div>
     </div>
 
-    <div class="about-section">
-      <h2>🗂️ 四个板块</h2>
-      <div class="feature-item">
-        <div class="feature-icon">💭</div>
-        <div class="feature-content">
-          <h3>见室引号</h3>
-          <p>收集金句、想法和优质信息源。同步自 Notion 数据库，每 6 小时更新一次。</p>
-        </div>
-      </div>
-      <div class="feature-item">
-        <div class="feature-icon">📜</div>
-        <div class="feature-content">
-          <h3>归档</h3>
-          <p>全部金句的时间线归档，支持按关键词筛选。</p>
-        </div>
-      </div>
-      <div class="feature-item">
-        <div class="feature-icon">📚</div>
-        <div class="feature-content">
-          <h3>阅览</h3>
-          <p>微信读书书架、划线与想法，每天自动同步。</p>
-        </div>
-      </div>
-      <div class="feature-item">
-        <div class="feature-icon">✍️</div>
-        <div class="feature-content">
-          <h3>写作</h3>
-          <p>更长形式的思考与文章，基于 GitHub Issues 管理。</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="about-section">
-      <h2>⚙️ 技术架构</h2>
-      <p>极简技术栈，追求速度与可靠性：</p>
-      <div style="margin-bottom:10px;">
-        <span class="tech-tag">静态 HTML</span>
-        <span class="tech-tag">Vanilla JS</span>
-        <span class="tech-tag">CSS Variables</span>
-        <span class="tech-tag">GitHub Pages</span>
-        <span class="tech-tag">GitHub Actions</span>
-        <span class="tech-tag">Notion API</span>
-        <span class="tech-tag">微信读书</span>
-      </div>
-      <p>数据流：Notion / 微信读书 → GitHub Actions 定时同步 → GitHub Pages 自动部署。无需数据库，无需后端服务器。</p>
-    </div>
-
-    <div class="about-section">
-      <h2>🔗 相关链接</h2>
-      <a href="https://github.com/daheitian/seesquotes" class="link-item" target="_blank" rel="noopener">
-        <div class="link-icon">💻</div>
-        <div class="link-content">
-          <h4>GitHub 仓库</h4>
-          <span>查看源代码和更新日志</span>
-        </div>
-        <span class="link-arrow">→</span>
-      </a>
-      <a href="https://weread.qq.com/" class="link-item" target="_blank" rel="noopener">
-        <div class="link-icon">📖</div>
-        <div class="link-content">
-          <h4>微信读书</h4>
-          <span>阅览页的数据来源</span>
-        </div>
-        <span class="link-arrow">→</span>
-      </a>
-      <a href="https://notion.so" class="link-item" target="_blank" rel="noopener">
-        <div class="link-icon">📝</div>
-        <div class="link-content">
-          <h4>Notion 工作区</h4>
-          <span>金句数据的存储和管理后台</span>
-        </div>
-        <span class="link-arrow">→</span>
-      </a>
-    </div>
-
-    <div class="about-section">
-      <h2>📜 更新日志</h2>
-      <p><strong>2026.09</strong> — 全站视觉统一重构；新增 Jant 风格归档页；阅览页接入微信读书划线与想法自动同步。</p>
-      <p><strong>2024.03</strong> — 重构为纯静态站点，移除 Jekyll 依赖，修复 GitHub Actions 构建问题。</p>
-      <p><strong>2024.02</strong> — 集成 Notion API，实现数据自动同步。</p>
-      <p><strong>2024.01</strong> — 项目启动，确定「小信号」概念和核心板块。</p>
-    </div>
+    <p style="text-align:center;margin-top:24px;font-size:13px;color:var(--text-muted);">
+      <a href="https://github.com/daheitian/seesquotes/edit/main/content/about.md" target="_blank" rel="noopener">✏️ 在 GitHub 编辑本页</a>
+    </p>
   </main>
 
   <footer>
@@ -159,5 +77,24 @@
   </footer>
 
   <script src="./assets/js/main.js"></script>
+  <script src="./assets/js/markdown.js"></script>
+  <script>
+    (async () => {
+      const box = document.getElementById('aboutContent');
+      try {
+        const res = await fetch('./content/about.md');
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const md = await res.text();
+        box.innerHTML = '<div class="md-body">' + window.renderMarkdown(md) + '</div>';
+      } catch (err) {
+        box.innerHTML = `
+          <div class="error">
+            <div class="error-icon">⚠️</div>
+            <h3>加载失败</h3>
+            <p>${err.message}</p>
+          </div>`;
+      }
+    })();
+  </script>
 </body>
 </html>

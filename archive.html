@@ -57,12 +57,7 @@
   <main>
     <div class="page-header">
       <h1>归档</h1>
-      <p>稍后读清单与全部金句，按时间倒序</p>
-    </div>
-
-    <div class="filter-tabs">
-      <button class="filter-tab active" data-tab="readlater">稍后读</button>
-      <button class="filter-tab" data-tab="quotes">金句归档</button>
+      <p>想读还没读的清单，按时间倒序</p>
     </div>
 
     <div class="toolbar" style="justify-content:space-between;">
@@ -86,25 +81,21 @@
 
   <script src="./assets/js/main.js"></script>
   <script>
-    const { escapeHtml, formatDate, renderQuoteBody, needsClamp, sourceLink, loadJSON, hostname } = window.siteUtils;
-    let readlater = null;  // {items:[...]} 或 null（未配置）
-    let quotes = [];       // 金句
-    let tab = location.hash === '#quotes' ? 'quotes' : 'readlater';
+    const { escapeHtml, formatDate, renderQuoteBody, needsClamp, loadJSON, hostname } = window.siteUtils;
+    let readlater = null;
     let query = '';
 
     const timeline = document.getElementById('timeline');
     const countEl = document.getElementById('archiveCount');
 
-    /* ---------- 稍后读 ---------- */
-
-    function readlaterEntryHtml(item) {
+    function entryHtml(item) {
       const text = item.title || '';
       const url = item.url || '';
       const tags = [...(item.tags || []), ...(item.tag ? [item.tag] : [])];
       const clamp = needsClamp(text);
       const tagHtml = tags.length
         ? `<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">${tags.map((t) =>
-            `<span style="padding:2px 8px;background:var(--accent-soft);border-radius:100px;font-size:11px;color:var(--accent);">${escapeHtml(t)}</span>`
+            `<span style="padding:2px 8px;background:var(--accent-soft);border-radius:2px;font-size:11px;color:var(--accent);">${escapeHtml(t)}</span>`
           ).join('')}</div>`
         : '';
       return `<article class="entry">
@@ -116,90 +107,43 @@
       </article>`;
     }
 
-    function readlaterSetup() {
-      timeline.innerHTML = `
-        <div class="setup-guide">
-          <h3>🔖 稍后读还没有数据</h3>
-          <p style="font-size:14px;color:var(--text-secondary);margin-bottom:14px;">需要把你的稍后读 Notion 数据库接入同步：</p>
-          <ol>
-            <li>确保稍后读数据库已<strong>连接你的 Notion Integration</strong>（数据库右上角 ··· → Connections）</li>
-            <li>仓库 <code>Settings → Secrets and variables → Actions</code> 新建 Secret：<code>READLATER_DATABASE_ID</code>（数据库 ID 从链接中获取）</li>
-            <li>Actions 手动运行 <code>Sync Notion Data</code></li>
-          </ol>
-        </div>`;
-    }
-
-    /* ---------- 金句归档 ---------- */
-
-    function quoteEntryHtml(post) {
-      const text = post.content || post.title || '';
-      const clamp = needsClamp(text);
-      return `<article class="entry">
-        ${sourceLink(post.url, 'entry-src')}
-        <div class="entry-body${clamp ? ' clamped' : ''}">${renderQuoteBody(text)}</div>
-        ${clamp ? '<button class="show-more" type="button">展开全文</button>' : ''}
-        <div class="entry-meta">${formatDate(post.date || post.pubDate)}</div>
-      </article>`;
-    }
-
-    /* ---------- 渲染 ---------- */
-
-    function currentList() {
-      const q = query.trim().toLowerCase();
-      const filter = (list, text) =>
-        q ? list.filter((x) => (text(x) || '').toLowerCase().includes(q)) : list;
-
-      if (tab === 'readlater') {
-        const items = (readlater?.items || []).map((i) => ({ ...i, _text: i.title }));
-        return { list: filter(items, (i) => i._text), render: readlaterEntryHtml };
-      }
-      const list = quotes.map((p) => ({ ...p, _text: p.content || p.title }));
-      return { list: filter(list, (i) => i._text), render: quoteEntryHtml };
-    }
-
     function render() {
-      const { list, render: entryRender } = currentList();
-      const total = tab === 'readlater' ? (readlater?.items?.length || 0) : quotes.length;
-      countEl.textContent = list.length === total ? `共 ${total} 条` : `${list.length} / ${total} 条`;
+      const items = (readlater?.items || []).filter((i) => {
+        if (!query.trim()) return true;
+        return (i.title || '').toLowerCase().includes(query.trim().toLowerCase());
+      });
+      const total = readlater?.items?.length || 0;
+      countEl.textContent = items.length === total ? `共 ${total} 条` : `${items.length} / ${total} 条`;
 
-      if (list.length === 0) {
+      if (items.length === 0) {
         timeline.innerHTML = `<div class="empty">${query ? '没有匹配的内容' : '还没有内容'}</div>`;
         return;
       }
-      timeline.innerHTML = `<div class="timeline">${list.map(entryRender).join('')}</div>`;
+      timeline.innerHTML = `<div class="timeline">${items.map(entryHtml).join('')}</div>`;
     }
-
-    function switchTab(newTab) {
-      tab = newTab;
-      document.querySelectorAll('.filter-tab').forEach((t) =>
-        t.classList.toggle('active', t.dataset.tab === newTab)
-      );
-      if (tab === 'readlater' && !readlater) readlaterSetup();
-      else render();
-    }
-
-    document.querySelectorAll('.filter-tab').forEach((t) => {
-      t.addEventListener('click', () => switchTab(t.dataset.tab));
-    });
 
     document.getElementById('archiveSearch').addEventListener('input', (e) => {
       query = e.target.value;
-      if (tab === 'readlater' && !readlater) return;
       render();
     });
 
-    /* ---------- 加载 ---------- */
-
     (async () => {
-      const results = await Promise.allSettled([
-        loadJSON('./_data/readlater.json'),
-        loadJSON('./notion-data.json'),
-      ]);
-      if (results[0].status === 'fulfilled') readlater = results[0].value;
-      if (results[1].status === 'fulfilled') quotes = results[1].value.posts || results[1].value;
-
-      switchTab(tab);
+      try {
+        readlater = await loadJSON('./_data/readlater.json');
+        render();
+      } catch (err) {
+        timeline.innerHTML = `
+          <div class="setup-guide">
+            <h3>🔖 稍后读还没有数据</h3>
+            <p style="font-size:14px;color:var(--text-secondary);margin-bottom:14px;">需要把你的稍后读 Notion 数据库接入同步：</p>
+            <ol>
+              <li>确保稍后读数据库已<strong>连接你的 Notion Integration</strong>（数据库右上角 ··· → Connections）</li>
+              <li>仓库 <code>Settings → Secrets and variables → Actions</code> 新建 Secret：<code>READLATER_DATABASE_ID</code></li>
+              <li>Actions 手动运行 <code>Sync Notion Data</code></li>
+            </ol>
+          </div>`;
+      }
     })();
-  </script>
+</script>
 </body>
 </html>

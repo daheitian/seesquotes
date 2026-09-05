@@ -168,6 +168,22 @@
       .article { padding: 20px; }
       .article-title { font-size: 20px; }
     }
+
+    /* ===== 全直角覆盖（写作页统一去弧角） ===== */
+    .list-view .toolbar select,
+    .list-view .btn-primary,
+    .list-view .issue-label,
+    .article-view .toolbar select,
+    .article-view .btn-primary,
+    .article-view .issue-label { border-radius: 2px; }
+
+    .article-view .article,
+    .article-view .article-body pre,
+    .article-view .article-body code,
+    .article-view .article-body pre code,
+    .article-view .comment-avatar,
+    .article-view .comment-content code,
+    .article-view .comment-content pre { border-radius: 2px; }
   </style>
 </head>
 <body>
@@ -260,6 +276,7 @@
   </footer>
 
   <script src="./assets/js/main.js"></script>
+  <script src="./assets/js/markdown.js"></script>
   <script>
     const { escapeHtml, formatDate } = window.siteUtils;
     const REPO = 'daheitian/seesquotes';
@@ -272,102 +289,6 @@
     const listView = document.getElementById('listView');
     const articleView = document.getElementById('articleView');
     const pageHeader = document.getElementById('pageHeader');
-
-    /* ================= Markdown 渲染（轻量实现） ================= */
-
-    function renderMarkdown(src) {
-      if (!src) return '';
-      const codeBlocks = [];
-
-      // 1. 抽出代码块，避免内部内容被当作 markdown 处理
-      let text = src.replace(/```([\w-]*)\n?([\s\S]*?)```/g, (_, lang, code) => {
-        const i = codeBlocks.length;
-        codeBlocks.push({ lang, code });
-        return `\u0000CODEBLOCK${i}\u0000`;
-      });
-
-      // 2. 整体转义 HTML
-      text = escapeHtml(text);
-
-      // 3. 按行解析块级结构
-      const lines = text.split('\n');
-      const out = [];
-      let para = [], listType = null, listItems = [], inQuote = false;
-
-      const flushPara = () => {
-        if (para.length) { out.push(`<p>${inline(para.join('<br>'))}</p>`); para = []; }
-      };
-      const flushList = () => {
-        if (listItems.length) {
-          out.push(`<${listType}>${listItems.map(li => `<li>${inline(li)}</li>`).join('')}</${listType}>`);
-          listItems = []; listType = null;
-        }
-      };
-      const flushQuote = () => {
-        if (inQuote) { out.push('</blockquote>'); inQuote = false; }
-      };
-
-      for (const raw of lines) {
-        const line = raw.trimEnd();
-
-        if (/^\u0000CODEBLOCK\d+\u0000$/.test(line.trim())) {
-          flushPara(); flushList(); flushQuote();
-          out.push(line.trim());
-          continue;
-        }
-        if (!line.trim()) { flushPara(); flushList(); flushQuote(); continue; }
-
-        const h = line.match(/^(#{1,6})\s+(.*)/);
-        if (h) { flushPara(); flushList(); flushQuote(); out.push(`<h${h[1].length}>${inline(h[2])}</h${h[1].length}>`); continue; }
-
-        if (/^(-{3,}|\*{3,}|_{3,})$/.test(line.trim())) { flushPara(); flushList(); flushQuote(); out.push('<hr>'); continue; }
-
-        const q = line.match(/^&gt;\s?(.*)/);
-        if (q) {
-          flushPara(); flushList();
-          if (!inQuote) { out.push('<blockquote>'); inQuote = true; }
-          out.push(`<p>${inline(q[1])}</p>`);
-          continue;
-        }
-        flushQuote();
-
-        const ul = line.match(/^[-*+]\s+(.*)/);
-        const ol = line.match(/^\d+[.)]\s+(.*)/);
-        if (ul) {
-          flushPara();
-          if (listType !== 'ul') flushList();
-          listType = 'ul'; listItems.push(ul[1]);
-          continue;
-        }
-        if (ol) {
-          flushPara();
-          if (listType !== 'ol') flushList();
-          listType = 'ol'; listItems.push(ol[1]);
-          continue;
-        }
-        flushList();
-        para.push(line);
-      }
-      flushPara(); flushList(); flushQuote();
-
-      // 4. 填回代码块
-      return out.join('\n').replace(/\u0000CODEBLOCK(\d+)\u0000/g, (_, i) => {
-        const { lang, code } = codeBlocks[+i];
-        return `<pre><code${lang ? ` class="lang-${escapeHtml(lang)}"` : ''}>${escapeHtml(code)}</code></pre>`;
-      });
-
-      // 行内元素
-      function inline(s) {
-        return s
-          .replace(/!\[([^\]]*)\]\(([^)\s]+)[^)]*\)/g, '<img src="$2" alt="$1" loading="lazy">')
-          .replace(/\[([^\]]+)\]\(([^)\s]+)[^)]*\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
-          .replace(/`([^`]+)`/g, '<code>$1</code>')
-          .replace(/\*\*\*([^*]+)\*\*\*/g, '<strong><em>$1</em></strong>')
-          .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-          .replace(/(^|[^*])\*([^*]+)\*/g, '$1<em>$2</em>')
-          .replace(/~~([^~]+)~~/g, '<del>$1</del>');
-      }
-    }
 
     /* ================= 列表视图 ================= */
 
