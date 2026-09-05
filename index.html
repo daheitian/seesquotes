@@ -30,6 +30,63 @@
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     .post-content { font-size: 15px; line-height: 1.75; color: var(--text-primary); white-space: pre-wrap; word-wrap: break-word; }
     .post-date { font-size: 12px; color: var(--text-muted); margin-top: 12px; }
+
+    /* 金句排版：衬线 + 出处弱化 + 域名前置 + 折叠 */
+    .post-content.quote {
+      font-family: Georgia, "Songti SC", "STSong", "SimSun", serif;
+      font-size: 16px;
+      line-height: 1.9;
+    }
+    .post-content .attr {
+      display: block;
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-top: 8px;
+    }
+    .post-src {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      margin-bottom: 6px;
+      display: inline-block;
+      transition: color 0.2s;
+    }
+    .post-src:hover { color: var(--accent); }
+    .post-content.clamped {
+      overflow: hidden;
+      max-height: 11.4em;
+      position: relative;
+    }
+    .post-content.clamped::after {
+      content: "";
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 4.5em;
+      background: linear-gradient(transparent, var(--bg-card) 90%);
+      pointer-events: none;
+    }
+    .show-more {
+      background: none;
+      border: none;
+      padding: 8px 0 0;
+      color: var(--accent);
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .show-more:hover { text-decoration: underline; }
+    .view-all {
+      display: block;
+      text-align: center;
+      padding: 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--accent);
+      font-size: 14px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    .view-all:hover { background: var(--bg-card-hover); transform: translateY(-2px); }
     .random-btn { display: inline-flex; align-items: center; gap: 8px; margin-top: 24px; padding: 12px 24px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 100px; color: var(--text-primary); font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s ease; }
     .random-btn:hover { background: var(--bg-card-hover); transform: translateY(-2px); }
     .error { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 40px 20px; text-align: center; }
@@ -91,6 +148,7 @@
         <a href="./" class="active">见室引号</a>
         <a href="./writing.html">写作</a>
         <a href="./reading.html">阅览</a>
+        <a href="./archive.html">归档</a>
         <a href="./about.html">关于</a>
       </nav>
       <div class="controls">
@@ -149,7 +207,7 @@
   </main>
   
   <footer>
-    <p>由 Notion 驱动 · 每 10 分钟自动同步</p>
+    <p>由 Notion 驱动 · 每 6 小时自动同步 · <a href="./archive.html" style="color:var(--text-secondary);">全部归档</a></p>
   </footer>
   
   <script src="./assets/js/main.js"></script>
@@ -192,8 +250,8 @@
         
         // 更新同步状态文本
         updateSyncStatus();
-        
-        renderPosts(allPosts);
+
+        renderPosts(allPosts, true);
         
       } catch (error) {
         console.error('加载失败:', error);
@@ -220,31 +278,78 @@
       }
     }
     
-    function renderPosts(posts) {
+    const RECENT_LIMIT = 30;
+
+    function hostname(url) {
+      try { return new URL(url).hostname.replace(/^www\./, ''); }
+      catch (e) { return ''; }
+    }
+
+    function isNotion(url) {
+      return /notion\.(so|com)/.test(url || '');
+    }
+
+    function formatDate(iso) {
+      const d = new Date(iso);
+      if (isNaN(d)) return '';
+      return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
+    }
+
+    // 「——」开头的行视为出处，用小字弱化
+    function renderBody(text) {
+      return escapeHtml(text).split('\n').map(line => {
+        const t = line.trim();
+        if (/^——|^—|^──/.test(t)) return `<span class="attr">${line}</span>`;
+        return line;
+      }).join('\n');
+    }
+
+    function needsClamp(text) {
+      return (text || '').length > 160 || (text || '').split('\n').length > 6;
+    }
+
+    function renderPosts(posts, limit = false) {
       const content = document.getElementById('content');
       if (posts.length === 0) {
         content.innerHTML = `<div class="empty"><div class="empty-icon">📭</div><p>暂无内容</p><p style="font-size:13px;color:var(--text-muted);margin-top:8px;">在 Notion 中添加数据后将自动同步</p></div>`;
         return;
       }
-      
-      content.innerHTML = `<div class="posts">${posts.map(post => {
+
+      const limited = limit && posts.length > RECENT_LIMIT;
+      const shown = limited ? posts.slice(0, RECENT_LIMIT) : posts;
+
+      const items = shown.map(post => {
         const text = post.content || post.title || '';
-        const date = new Date(post.date || post.pubDate || Date.now());
-        
-        // 标签（如果有）
-        const tagsHtml = (post.tags || []).length > 0 
-          ? `<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">${post.tags.map(t => 
+        const url = post.url || '';
+        const external = url && !isNotion(url);
+        const host = external ? hostname(url) : '';
+        const clamp = needsClamp(text);
+
+        const tagsHtml = (post.tags || []).length > 0
+          ? `<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">${post.tags.map(t =>
               `<span style="padding:2px 8px;background:var(--bg-primary);border-radius:100px;font-size:11px;color:var(--text-muted);">${escapeHtml(t)}</span>`
-            ).join('')}</div>` 
+            ).join('')}</div>`
           : '';
-        
+
         return `<article class="post">
-          <div class="post-content">${escapeHtml(text)}</div>
+          ${external ? `<a class="post-src" href="${escapeHtml(url)}" target="_blank" rel="noopener">${escapeHtml(host)}</a>` : ''}
+          <div class="post-content quote${clamp ? ' clamped' : ''}">${renderBody(text)}</div>
+          ${clamp ? '<button class="show-more" type="button">展开全文</button>' : ''}
           ${tagsHtml}
-          <div class="post-date">📅 ${date.toLocaleDateString('zh-CN')}</div>
+          <div class="post-date">${formatDate(post.date || post.pubDate)}</div>
         </article>`;
-      }).join('')}</div>`;
+      }).join('');
+
+      content.innerHTML = `<div class="posts">${items}</div>${limited ? `<a class="view-all" href="./archive.html">查看全部 ${posts.length} 条 →</a>` : ''}`;
     }
+
+    // 展开 / 收起（事件委托）
+    document.getElementById('content').addEventListener('click', (e) => {
+      if (!e.target.classList.contains('show-more')) return;
+      const body = e.target.closest('.post').querySelector('.post-content');
+      const clamped = body.classList.toggle('clamped');
+      e.target.textContent = clamped ? '展开全文' : '收起';
+    });
     
     function escapeHtml(text) {
       if (!text) return '';
