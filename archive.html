@@ -6,153 +6,6 @@
   <title>归档 | 小信号</title>
   <meta name="description" content="全部金句与思考的时间线归档">
   <link rel="stylesheet" href="./assets/css/style.css">
-  <style>
-    /* ===== 归档页（Jant 风格扁平时间线）===== */
-    .archive-header {
-      text-align: center;
-      padding: 40px 0 8px;
-    }
-    .archive-header h1 {
-      font-size: 24px;
-      font-weight: 700;
-      letter-spacing: 2px;
-      color: var(--text-primary);
-    }
-    .archive-header p {
-      font-size: 14px;
-      color: var(--text-secondary);
-      margin-top: 8px;
-    }
-    .archive-toolbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin: 24px 0 8px;
-    }
-    .archive-count {
-      font-size: 13px;
-      color: var(--text-muted);
-      white-space: nowrap;
-    }
-    .archive-search {
-      position: relative;
-      flex: 1;
-      max-width: 320px;
-    }
-    .archive-search input {
-      width: 100%;
-      padding: 9px 16px;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 100px;
-      color: var(--text-primary);
-      font-size: 13px;
-      outline: none;
-      transition: all 0.2s;
-    }
-    .archive-search input:focus {
-      border-color: var(--accent);
-      background: var(--bg-card-hover);
-    }
-    .archive-search input::placeholder { color: var(--text-muted); }
-
-    /* 时间线：条目之间用细分隔线，不用重卡片 */
-    .timeline {
-      display: flex;
-      flex-direction: column;
-    }
-    .entry {
-      padding: 22px 4px;
-      border-bottom: 1px solid var(--border);
-      animation: fadeIn 0.3s ease-out;
-    }
-    .entry:last-child { border-bottom: none; }
-    .entry:hover { background: var(--bg-card-hover); }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* 外链帖：域名小字前置 */
-    .entry-src {
-      font-size: 12px;
-      color: var(--text-muted);
-      text-decoration: none;
-      margin-bottom: 6px;
-      display: inline-block;
-      transition: color 0.2s;
-    }
-    .entry-src:hover { color: var(--accent); }
-
-    /* 金句正文 */
-    .entry-body {
-      font-family: Georgia, "Songti SC", "STSong", "SimSun", serif;
-      font-size: 16px;
-      line-height: 1.9;
-      color: var(--text-primary);
-      white-space: pre-wrap;
-      word-wrap: break-word;
-    }
-    .entry-body .attr {
-      display: block;
-      font-size: 14px;
-      color: var(--text-secondary);
-      margin-top: 8px;
-    }
-
-    /* 长内容折叠 */
-    .entry-body.clamped {
-      overflow: hidden;
-      max-height: 11.4em; /* 约 6 行 */
-      position: relative;
-    }
-    .entry-body.clamped::after {
-      content: "";
-      position: absolute;
-      left: 0; right: 0; bottom: 0;
-      height: 4.5em;
-      background: linear-gradient(transparent, var(--bg-primary) 90%);
-      pointer-events: none;
-    }
-    .entry:hover .entry-body.clamped::after {
-      background: linear-gradient(transparent, var(--bg-secondary) 90%);
-    }
-    [data-theme="light"] .entry-body.clamped::after {
-      background: linear-gradient(transparent, #f5f5f5 90%);
-    }
-    [data-theme="light"] .entry:hover .entry-body.clamped::after {
-      background: linear-gradient(transparent, #ffffff 90%);
-    }
-    .show-more {
-      background: none;
-      border: none;
-      padding: 6px 0 0;
-      color: var(--accent);
-      font-size: 13px;
-      cursor: pointer;
-    }
-    .show-more:hover { text-decoration: underline; }
-
-    /* 日期放条目末尾 */
-    .entry-meta {
-      margin-top: 10px;
-      font-size: 13px;
-      color: var(--text-muted);
-    }
-
-    .archive-empty {
-      text-align: center;
-      padding: 60px 20px;
-      color: var(--text-secondary);
-    }
-    @media (max-width: 640px) {
-      .archive-header { padding: 28px 0 4px; }
-      .archive-toolbar { flex-direction: column; align-items: stretch; }
-      .archive-search { max-width: none; }
-      .entry { padding: 18px 2px; }
-    }
-  </style>
 </head>
 <body>
   <header>
@@ -160,39 +13,53 @@
       <a href="./" class="logo">小信号<span>.</span></a>
       <nav>
         <a href="./">见室引号</a>
-        <a href="./writing.html">写作</a>
-        <a href="./reading.html">阅览</a>
         <a href="./archive.html" class="active">归档</a>
+        <a href="./reading.html">阅览</a>
+        <a href="./writing.html">写作</a>
         <a href="./about.html">关于</a>
       </nav>
       <div class="controls">
         <a href="./search.html" class="btn-icon" title="搜索">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="11" cy="11" r="8"></circle>
             <path d="m21 21-4.35-4.35"></path>
           </svg>
         </a>
         <button class="btn-icon" id="themeBtn" title="切换主题">
-          <svg id="sunIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg id="sunIcon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
           </svg>
-          <svg id="moonIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none">
+          <svg id="moonIcon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none">
             <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+          </svg>
+        </button>
+        <button class="menu-btn" id="menuBtn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 12h18M3 6h18M3 18h18"/>
           </svg>
         </button>
       </div>
     </div>
   </header>
 
+  <div class="mobile-nav" id="mobileNav">
+    <button class="mobile-nav-close" id="mobileNavClose">&times;</button>
+    <a href="./">见室引号</a>
+    <a href="./archive.html" class="active">归档</a>
+    <a href="./reading.html">阅览</a>
+    <a href="./writing.html">写作</a>
+    <a href="./about.html">关于</a>
+  </div>
+
   <main>
-    <div class="archive-header">
+    <div class="page-header">
       <h1>归档</h1>
       <p>全部金句与思考，按时间倒序</p>
     </div>
 
-    <div class="archive-toolbar">
-      <span class="archive-count" id="archiveCount"></span>
-      <div class="archive-search">
+    <div class="toolbar" style="justify-content:space-between;">
+      <span style="font-size:13px;color:var(--text-muted);" id="archiveCount"></span>
+      <div class="search-box" style="flex:1;max-width:320px;margin-bottom:0;">
         <input type="text" id="archiveSearch" placeholder="筛选金句…" autocomplete="off">
       </div>
     </div>
@@ -200,66 +67,26 @@
     <div id="timeline">
       <div class="loading">
         <div class="loading-spinner"></div>
-        <p>加载中...</p>
+        <p>加载中…</p>
       </div>
     </div>
   </main>
 
   <footer>
-    <p>由 Notion 驱动 · 每 6 小时自动同步</p>
+    <p>小信号 · <a href="https://github.com/daheitian/seesquotes" target="_blank" rel="noopener">GitHub</a> · 由 Notion 与微信读书驱动</p>
   </footer>
 
   <script src="./assets/js/main.js"></script>
   <script>
+    const { escapeHtml, formatDate, renderQuoteBody, needsClamp, sourceLink, loadJSON } = window.siteUtils;
     let allPosts = [];
-
-    function escapeHtml(text) {
-      if (!text) return '';
-      const div = document.createElement('div');
-      div.textContent = text;
-      return div.innerHTML;
-    }
-
-    function hostname(url) {
-      try { return new URL(url).hostname.replace(/^www\./, ''); }
-      catch (e) { return ''; }
-    }
-
-    function isNotion(url) {
-      return /notion\.(so|com)/.test(url || '');
-    }
-
-    // 中文日期：2026年6月3日
-    function formatDate(iso) {
-      const d = new Date(iso);
-      if (isNaN(d)) return '';
-      return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
-    }
-
-    // 「——」开头的行视为出处，用小字弱化
-    function renderBody(text) {
-      return escapeHtml(text).split('\n').map(line => {
-        const t = line.trim();
-        if (/^——|^—|^──/.test(t)) return `<span class="attr">${line}</span>`;
-        return line;
-      }).join('\n');
-    }
-
-    // 超过 160 字或 6 行的内容折叠，提供 展开全文
-    function needsClamp(text) {
-      return (text || '').length > 160 || (text || '').split('\n').length > 6;
-    }
 
     function entryHtml(post) {
       const text = post.content || post.title || '';
-      const url = post.url || '';
-      const external = url && !isNotion(url);
-      const host = external ? hostname(url) : '';
       const clamp = needsClamp(text);
-
       return `<article class="entry" data-text="${escapeHtml(text.toLowerCase())}">
-        ${external ? `<a class="entry-src" href="${escapeHtml(url)}" target="_blank" rel="noopener">${escapeHtml(host)}</a>` : ''}
-        <div class="entry-body${clamp ? ' clamped' : ''}">${renderBody(text)}</div>
+        ${sourceLink(post.url, 'entry-src')}
+        <div class="entry-body${clamp ? ' clamped' : ''}">${renderQuoteBody(text)}</div>
         ${clamp ? '<button class="show-more" type="button">展开全文</button>' : ''}
         <div class="entry-meta">${formatDate(post.date || post.pubDate)}</div>
       </article>`;
@@ -270,17 +97,15 @@
       document.getElementById('archiveCount').textContent =
         posts.length === allPosts.length ? `共 ${allPosts.length} 条` : `${posts.length} / ${allPosts.length} 条`;
       if (posts.length === 0) {
-        timeline.innerHTML = '<div class="archive-empty">没有匹配的内容</div>';
+        timeline.innerHTML = '<div class="empty">没有匹配的内容</div>';
         return;
       }
       timeline.innerHTML = `<div class="timeline">${posts.map(entryHtml).join('')}</div>`;
     }
 
-    async function load() {
+    (async () => {
       try {
-        const res = await fetch('./notion-data.json');
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
+        const data = await loadJSON('./notion-data.json');
         allPosts = data.posts || data;
         render(allPosts);
       } catch (err) {
@@ -288,26 +113,16 @@
           <div class="error">
             <div class="error-icon">⚠️</div>
             <h3>加载失败</h3>
-            <p>${err.message}</p>
+            <p>${escapeHtml(err.message)}</p>
           </div>`;
       }
-    }
+    })();
 
     document.getElementById('archiveSearch').addEventListener('input', (e) => {
       const q = e.target.value.trim().toLowerCase();
       if (!q) return render(allPosts);
       render(allPosts.filter(p => (p.title || p.content || '').toLowerCase().includes(q)));
     });
-
-    // 展开 / 收起（事件委托）
-    document.getElementById('timeline').addEventListener('click', (e) => {
-      if (!e.target.classList.contains('show-more')) return;
-      const body = e.target.closest('.entry').querySelector('.entry-body');
-      const clamped = body.classList.toggle('clamped');
-      e.target.textContent = clamped ? '展开全文' : '收起';
-    });
-
-    load();
   </script>
 </body>
 </html>

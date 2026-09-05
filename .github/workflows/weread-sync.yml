@@ -1,0 +1,41 @@
+name: Sync WeRead Notes
+
+on:
+  schedule:
+    - cron: '0 1 * * *' # 每天北京时间 09:00
+  workflow_dispatch:
+
+concurrency:
+  group: weread-sync
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Fetch WeRead notes
+        env:
+          WEREAD_COOKIE: ${{ secrets.WEREAD_COOKIE }}
+        run: node scripts/weread-sync.mjs
+
+      - name: Commit and push
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+          if git diff --quiet _data/weread.json; then
+            echo "No changes"
+          else
+            git add _data/weread.json
+            git commit -m "weread sync: $(date '+%Y-%m-%d %H:%M:%S')"
+            git push
+          fi

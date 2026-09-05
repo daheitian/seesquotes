@@ -4,180 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>写作 | 小信号</title>
-  <meta name="description" content="基于 GitHub Issues 的写作空间">
+  <meta name="description" content="更长形式的思考与文章，基于 GitHub Issues">
   <link rel="stylesheet" href="./assets/css/style.css">
-  <style>
-    .issues-list { display: flex; flex-direction: column; gap: 20px; }
-    
-    .issue-item {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-      transition: all 0.2s ease;
-    }
-    
-    .issue-item:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 32px var(--shadow);
-    }
-    
-    .issue-header {
-      padding: 20px;
-      border-bottom: 1px solid var(--border);
-      cursor: pointer;
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-    }
-    
-    .issue-number {
-      font-size: 13px;
-      color: var(--text-muted);
-      font-family: monospace;
-    }
-    
-    .issue-title {
-      flex: 1;
-      font-size: 17px;
-      font-weight: 600;
-      color: var(--text-primary);
-      line-height: 1.4;
-    }
-    
-    .issue-meta {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 13px;
-      color: var(--text-secondary);
-    }
-    
-    .issue-labels {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-    
-    .issue-label {
-      padding: 2px 8px;
-      border-radius: 100px;
-      font-size: 11px;
-      font-weight: 500;
-    }
-    
-    .issue-body {
-      padding: 20px;
-      font-size: 15px;
-      line-height: 1.8;
-      color: var(--text-secondary);
-      display: none;
-    }
-    
-    .issue-item.expanded .issue-body {
-      display: block;
-    }
-    
-    .issue-item.expanded .issue-header {
-      background: var(--bg-card-hover);
-    }
-    
-    .issue-body img { max-width: 100%; border-radius: 8px; }
-    .issue-body pre {
-      background: var(--bg-primary);
-      padding: 16px;
-      border-radius: 8px;
-      overflow-x: auto;
-      font-size: 13px;
-    }
-    .issue-body code {
-      font-family: 'SF Mono', Monaco, monospace;
-      background: var(--bg-primary);
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-size: 13px;
-    }
-    .issue-body blockquote {
-      border-left: 3px solid var(--accent);
-      padding-left: 16px;
-      margin: 16px 0;
-      color: var(--text-secondary);
-    }
-    
-    .new-issue-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 24px;
-      padding: 12px 20px;
-      background: var(--accent);
-      color: white;
-      text-decoration: none;
-      border-radius: 100px;
-      font-size: 14px;
-      font-weight: 500;
-      transition: opacity 0.2s;
-    }
-    
-    .new-issue-btn:hover { opacity: 0.9; }
-    
-    .filter-bar {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 24px;
-      flex-wrap: wrap;
-    }
-    
-    .filter-select {
-      padding: 8px 16px;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 100px;
-      color: var(--text-primary);
-      font-size: 14px;
-      outline: none;
-    }
-
-    .error-box {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 40px 20px;
-      text-align: center;
-    }
-    
-    .error-box .error-icon { 
-      font-size: 48px; 
-      margin-bottom: 16px; 
-    }
-    
-    .error-box h3 {
-      color: var(--text-primary);
-      margin-bottom: 8px;
-    }
-    
-    .error-box p {
-      color: var(--text-secondary);
-      font-size: 14px;
-      margin-bottom: 16px;
-    }
-    
-    .error-box .btn-retry {
-      padding: 8px 20px;
-      background: var(--accent);
-      color: white;
-      border: none;
-      border-radius: 100px;
-      cursor: pointer;
-      font-size: 14px;
-      margin-right: 8px;
-    }
-    
-    .error-box a {
-      color: var(--accent);
-      text-decoration: none;
-    }
-  </style>
 </head>
 <body>
   <header>
@@ -185,159 +13,130 @@
       <a href="./" class="logo">小信号<span>.</span></a>
       <nav>
         <a href="./">见室引号</a>
-        <a href="./writing.html" class="active">写作</a>
-        <a href="./reading.html">阅览</a>
         <a href="./archive.html">归档</a>
+        <a href="./reading.html">阅览</a>
+        <a href="./writing.html" class="active">写作</a>
         <a href="./about.html">关于</a>
       </nav>
       <div class="controls">
         <a href="./search.html" class="btn-icon" title="搜索">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="11" cy="11" r="8"></circle>
             <path d="m21 21-4.35-4.35"></path>
           </svg>
         </a>
         <button class="btn-icon" id="themeBtn" title="切换主题">
-          <svg id="sunIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="5"/>
-            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+          <svg id="sunIcon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
           </svg>
-          <svg id="moonIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none">
+          <svg id="moonIcon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none">
             <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+          </svg>
+        </button>
+        <button class="menu-btn" id="menuBtn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 12h18M3 6h18M3 18h18"/>
           </svg>
         </button>
       </div>
     </div>
   </header>
 
+  <div class="mobile-nav" id="mobileNav">
+    <button class="mobile-nav-close" id="mobileNavClose">&times;</button>
+    <a href="./">见室引号</a>
+    <a href="./archive.html">归档</a>
+    <a href="./reading.html">阅览</a>
+    <a href="./writing.html" class="active">写作</a>
+    <a href="./about.html">关于</a>
+  </div>
+
   <main>
     <div class="page-header">
-      <div class="hero-icon">✍️</div>
-      <h1>WRITING</h1>
-      <p>基于 GitHub Issues 的写作空间</p>
+      <h1>写作</h1>
+      <p>更长形式的思考与文章</p>
     </div>
 
-    <a href="https://github.com/daheitian/seesquotes/issues/new" target="_blank" class="new-issue-btn" id="newIssueBtn">
-      <span>+</span>
-      <span>新建文章</span>
-    </a>
-
-    <div class="filter-bar">
-      <select class="filter-select" id="labelFilter">
-        <option value="">所有标签</option>
+    <div class="toolbar">
+      <select id="labelFilter">
+        <option value="">全部标签</option>
       </select>
-      <select class="filter-select" id="sortSelect">
-        <option value="newest">最新发布</option>
-        <option value="oldest">最早发布</option>
+      <select id="sortFilter">
+        <option value="newest">最新优先</option>
+        <option value="oldest">最早优先</option>
         <option value="updated">最近更新</option>
       </select>
+      <a href="https://github.com/daheitian/seesquotes/issues/new" target="_blank" rel="noopener" class="btn-primary" style="margin-left:auto;padding:8px 18px;">✍️ 写一篇</a>
     </div>
 
     <div id="content">
       <div class="loading">
         <div class="loading-spinner"></div>
-        <p>加载文章...</p>
+        <p>加载文章…</p>
       </div>
     </div>
   </main>
 
   <footer>
-    <p>基于 GitHub Issues · 自动同步</p>
+    <p>小信号 · <a href="https://github.com/daheitian/seesquotes" target="_blank" rel="noopener">GitHub</a> · 由 Notion 与微信读书驱动</p>
   </footer>
 
   <script src="./assets/js/main.js"></script>
   <script>
-    // 配置
+    const { escapeHtml } = window.siteUtils;
     const REPO = 'daheitian/seesquotes';
     const GITHUB_API = `https://api.github.com/repos/${REPO}/issues?state=all&per_page=100`;
-    
+
     let allIssues = [];
     let currentLabel = '';
     let currentSort = 'newest';
-    
+    const content = document.getElementById('content');
+
+    // Markdown → 纯文本摘要
+    function excerpt(body) {
+      if (!body) return '';
+      return body
+        .replace(/```[\s\S]*?```/g, '')
+        .replace(/!\[[^\]]*\]\([^)]*\)/g, '')
+        .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+        .replace(/[#>*`~_\-\[\]]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .slice(0, 120);
+    }
+
     async function loadIssues() {
-      const content = document.getElementById('content');
-      content.innerHTML = `
-        <div class="loading">
-          <div class="loading-spinner"></div>
-          <p>加载文章...</p>
-        </div>
-      `;
-      
       try {
-        // 直接调用 GitHub API，添加超时和错误处理
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10秒超时
-        
+        const timeoutId = setTimeout(() => controller.abort(), 10000);
         const response = await fetch(GITHUB_API, {
           signal: controller.signal,
-          headers: {
-            'Accept': 'application/vnd.github.v3+json'
-          }
+          headers: { 'Accept': 'application/vnd.github.v3+json' }
         });
-        
         clearTimeout(timeoutId);
-        
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-        
-        allIssues = await response.json();
-        
-        // 过滤掉 Pull Requests（GitHub API 会混进来）
-        allIssues = allIssues.filter(issue => !issue.pull_request);
-        
-        if (allIssues.length === 0) {
-          content.innerHTML = `
-            <div class="empty">
-              <div class="empty-icon">📝</div>
-              <p>暂无文章</p>
-              <p style="font-size: 13px; margin-top: 8px;">
-                <a href="https://github.com/${REPO}/issues/new" target="_blank" style="color: var(--accent);">创建第一篇 →</a>
-              </p>
-            </div>
-          `;
-          return;
-        }
-        
+        if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        allIssues = (await response.json()).filter(issue => !issue.pull_request);
         populateLabelFilter();
         renderIssues();
       } catch (error) {
-        console.error('加载失败:', error);
-        
         let errorMsg = error.message;
-        let isCorsError = error.name === 'TypeError' && error.message.includes('Failed to fetch');
-        
-        if (isCorsError) {
-          errorMsg = '跨域请求被阻止 (CORS)';
-        } else if (error.name === 'AbortError') {
-          errorMsg = '请求超时';
-        }
-        
+        if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) errorMsg = '跨域请求被阻止（CORS）';
+        else if (error.name === 'AbortError') errorMsg = '请求超时';
         content.innerHTML = `
-          <div class="error-box">
+          <div class="error">
             <div class="error-icon">⚠️</div>
             <h3>加载失败</h3>
-            <p>${errorMsg}</p>
-            <button class="btn-retry" onclick="loadIssues()">重试</button>
-            <a href="https://github.com/${REPO}/issues" target="_blank">直接访问 Issues →</a>
-          </div>
-        `;
+            <p>${escapeHtml(errorMsg)}</p>
+            <button class="btn-primary" onclick="loadIssues()">重试</button>
+          </div>`;
       }
     }
-    
+
     function populateLabelFilter() {
       const labels = new Set();
-      allIssues.forEach(issue => {
-        (issue.labels || []).forEach(label => labels.add(label.name));
-      });
-      
+      allIssues.forEach(issue => (issue.labels || []).forEach(label => labels.add(label.name)));
       const select = document.getElementById('labelFilter');
-      // 保留第一个选项
-      while (select.options.length > 1) {
-        select.remove(1);
-      }
-      
+      while (select.options.length > 1) select.remove(1);
       Array.from(labels).sort().forEach(label => {
         const option = document.createElement('option');
         option.value = label;
@@ -345,108 +144,58 @@
         select.appendChild(option);
       });
     }
-    
+
     function renderIssues() {
-      const content = document.getElementById('content');
-      
       let issues = allIssues;
-      
-      // 筛选
-      if (currentLabel) {
-        issues = issues.filter(i => i.labels.some(l => l.name === currentLabel));
-      }
-      
-      // 排序
+      if (currentLabel) issues = issues.filter(i => (i.labels || []).some(l => l.name === currentLabel));
+
       issues.sort((a, b) => {
         if (currentSort === 'newest') return new Date(b.created_at) - new Date(a.created_at);
         if (currentSort === 'oldest') return new Date(a.created_at) - new Date(b.created_at);
         if (currentSort === 'updated') return new Date(b.updated_at) - new Date(a.updated_at);
       });
-      
+
       if (issues.length === 0) {
         content.innerHTML = `
           <div class="empty">
             <div class="empty-icon">📝</div>
             <p>暂无文章</p>
-            <p style="font-size: 13px; margin-top: 8px;">点击上方按钮创建第一篇</p>
-          </div>
-        `;
+            <p style="font-size:13px;margin-top:8px;"><a href="https://github.com/${REPO}/issues/new" target="_blank" rel="noopener">创建第一篇 →</a></p>
+          </div>`;
         return;
       }
-      
+
       content.innerHTML = `<div class="issues-list">${issues.map(issue => {
-        const date = new Date(issue.created_at).toLocaleDateString('zh-CN');
-        const labels = issue.labels || [];
-        
-        return `
-          <article class="issue-item" id="issue-${issue.number}">
-            <div class="issue-header" onclick="toggleIssue(${issue.number})">
-              <span class="issue-number">#${issue.number}</span>
-              <div style="flex: 1;">
-                <div class="issue-title">${escapeHtml(issue.title)}</div>
-                <div class="issue-meta">
-                  <span>📅 ${date}</span>
-                  <span>💬 ${issue.comments} 评论</span>
-                  ${labels.length ? `
-                    <div class="issue-labels">
-                      ${labels.map(l => `
-                        <span class="issue-label" style="background: #${l.color}20; color: #${l.color}">${escapeHtml(l.name)}</span>
-                      `).join('')}
-                    </div>
-                  ` : ''}
-                </div>
-              </div>
-              <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition: transform 0.2s;">
-                <path d="m6 9 6 6 6-6"/>
-              </svg>
-            </div>
-            <div class="issue-body" id="body-${issue.number}">
-              ${issue.body ? marked.parse(issue.body) : '<p style="color: var(--text-muted);">无内容</p>'}
-              <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border);">
-                <a href="${issue.html_url}" target="_blank" style="color: var(--accent); text-decoration: none; font-size: 14px;">
-                  在 GitHub 上查看 →
-                </a>
-              </div>
-            </div>
-          </article>
-        `;
+        const date = new Date(issue.created_at);
+        const dateStr = `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
+        const labels = (issue.labels || []).map(l =>
+          `<span class="issue-label" style="${l.color ? `background:#${l.color}22;color:#${l.color};` : ''}">${escapeHtml(l.name)}</span>`
+        ).join('');
+        const ex = excerpt(issue.body);
+
+        return `<a class="issue-item" href="${escapeHtml(issue.html_url)}" target="_blank" rel="noopener">
+          <div class="issue-title">${escapeHtml(issue.title)}</div>
+          ${ex ? `<div class="issue-excerpt">${escapeHtml(ex)}…</div>` : ''}
+          <div class="issue-meta">
+            <span>💬 ${issue.comments}</span>
+            <span>${dateStr}</span>
+            ${labels}
+          </div>
+        </a>`;
       }).join('')}</div>`;
     }
-    
-    function toggleIssue(number) {
-      const item = document.getElementById(`issue-${number}`);
-      const chevron = item.querySelector('.chevron');
-      item.classList.toggle('expanded');
-      chevron.style.transform = item.classList.contains('expanded') ? 'rotate(180deg)' : '';
-    }
-    
-    function escapeHtml(text) {
-      const div = document.createElement('div');
-      div.textContent = text;
-      return div.innerHTML;
-    }
-    
-    // 筛选事件
+
     document.getElementById('labelFilter').addEventListener('change', (e) => {
       currentLabel = e.target.value;
       renderIssues();
     });
-    
-    document.getElementById('sortSelect').addEventListener('change', (e) => {
+
+    document.getElementById('sortFilter').addEventListener('change', (e) => {
       currentSort = e.target.value;
       renderIssues();
     });
-    
-    // 加载 marked.js 用于解析 Markdown
-    const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/npm/marked/marked.min.js';
-    script.onload = loadIssues;
-    script.onerror = () => {
-      // marked.js 加载失败也能显示，只是不解析 markdown
-      window.marked = { parse: (text) => text.replace(/\n/g, '<br>') };
-      loadIssues();
-    };
-     document.head.appendChild(script);
-  </script>  <!-- ✅ 补上闭合标签 -->
-  <script src="assets/js/main.js"></script>
+
+    loadIssues();
+  </script>
 </body>
+</html>
