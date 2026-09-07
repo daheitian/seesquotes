@@ -7,6 +7,94 @@
   <meta name="description" content="读过的书、划过的线——同步自微信读书">
   <link rel="stylesheet" href="./assets/css/style.css">
   <link rel="alternate" type="application/rss+xml" title="小信号" href="./rss.xml">
+  <style>
+    /* ---------- 阅览页：书封网格 + 笔记时间线（双栏） ---------- */
+    .rd-layout { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 40px; align-items: start; }
+    .rd-toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+    .rd-toolbar input[type="search"] {
+      flex: 1; min-width: 180px; padding: 8px 14px; font-size: 14px;
+      background: transparent; border: none; border-bottom: 1px solid var(--border);
+      color: var(--text-primary); outline: none; border-radius: 0;
+    }
+    .rd-toolbar input[type="search"]:focus { border-bottom-color: var(--text-secondary); }
+    .rd-toolbar select {
+      padding: 8px 10px; font-size: 13px; background: transparent;
+      border: 1px solid var(--border); color: var(--text-secondary); border-radius: 0; outline: none;
+    }
+    .rd-stats { font-size: 13px; color: var(--text-muted); margin-bottom: 22px; letter-spacing: .02em; }
+    .rd-stats b { color: var(--text-secondary); font-weight: 600; }
+    .rd-stats .sep { margin: 0 8px; opacity: .5; }
+
+    /* 书封网格 */
+    .rd-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 14px 12px; }
+    .rd-cover { position: relative; cursor: pointer; aspect-ratio: 2 / 3; overflow: hidden; background: var(--bg-card); }
+    .rd-cover img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .25s ease; }
+    .rd-cover:hover img { transform: scale(1.04); }
+    .rd-cover .cover-fallback { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 26px; }
+    .rd-cover-overlay {
+      position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 10px 8px; background: linear-gradient(to top, rgba(0,0,0,.88) 0%, rgba(0,0,0,.45) 55%, transparent 100%);
+      opacity: 0; transition: opacity .2s ease; pointer-events: none;
+    }
+    .rd-cover:hover .rd-cover-overlay { opacity: 1; }
+    .rd-cover-overlay b { color: #fff; font-size: 12px; font-weight: 600; line-height: 1.35;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .rd-cover-overlay span { color: rgba(255,255,255,.72); font-size: 11px; margin-top: 2px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .rd-cover-overlay i { color: rgba(255,255,255,.55); font-size: 10px; font-style: normal; margin-top: 4px; }
+    .rd-cover-badge {
+      position: absolute; top: 6px; right: 6px; min-width: 18px; height: 18px; padding: 0 5px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(0,0,0,.62); color: rgba(255,255,255,.85); font-size: 10px; border-radius: 9px;
+    }
+    .rd-grid-empty { color: var(--text-muted); font-size: 14px; padding: 40px 0; text-align: center; }
+
+    /* 单本书详情 */
+    .rd-back { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-secondary);
+      background: none; border: none; cursor: pointer; padding: 0; margin-bottom: 18px; }
+    .rd-back:hover { color: var(--text-primary); }
+
+    /* 右栏时间线 */
+    .rd-side { position: sticky; top: 76px; }
+    .rd-side-panel {
+      max-height: calc(100vh - 120px); overflow-y: auto; overscroll-behavior: contain;
+      border: 1px solid var(--border); padding: 18px 16px 14px;
+    }
+    .rd-side-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 4px; }
+    .rd-side-title { font-size: 12px; font-weight: 700; letter-spacing: .18em; color: var(--text-primary); }
+    .rd-side-count { font-size: 11px; color: var(--text-muted); }
+    .rd-side-chips { display: flex; gap: 6px; margin: 10px 0 6px; }
+    .rd-chip {
+      font-size: 11px; padding: 3px 10px; cursor: pointer; background: transparent;
+      border: 1px solid var(--border); color: var(--text-muted); border-radius: 0;
+    }
+    .rd-chip.active { color: var(--text-primary); border-color: var(--text-secondary); }
+    .rd-tl-date { font-size: 12px; font-weight: 600; color: var(--text-secondary); margin: 18px 0 4px; }
+    .rd-tl-item { position: relative; padding: 8px 0 10px 16px; border-left: 1px solid var(--border); }
+    .rd-tl-item::before {
+      content: ""; position: absolute; left: -3.5px; top: 14px; width: 6px; height: 6px;
+      border-radius: 50%; background: var(--accent); opacity: .75;
+    }
+    .rd-tl-meta { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+    .rd-tl-time { font-size: 11px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+    .rd-tl-book { font-size: 12px; color: var(--text-secondary); text-decoration: none; cursor: pointer;
+      max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .rd-tl-book:hover { color: var(--text-primary); }
+    .rd-tl-tag { font-size: 10px; padding: 1px 6px; border: 1px solid var(--border); color: var(--text-muted); }
+    .rd-tl-text { font-size: 13px; line-height: 1.7; color: var(--text-primary); margin-top: 4px;
+      display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+    .rd-tl-chap { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+    .rd-tl-more { display: block; width: 100%; margin-top: 14px; padding: 7px 0; font-size: 12px;
+      background: none; border: 1px solid var(--border); color: var(--text-secondary); cursor: pointer; }
+    .rd-tl-more:hover { color: var(--text-primary); border-color: var(--text-secondary); }
+    .rd-tl-empty { font-size: 13px; color: var(--text-muted); padding: 20px 0; text-align: center; }
+
+    @media (max-width: 960px) {
+      .rd-layout { grid-template-columns: 1fr; gap: 36px; }
+      .rd-side { position: static; }
+      .rd-side-panel { max-height: 480px; }
+    }
+  </style>
 </head>
 <body>
   <header>
@@ -49,7 +137,7 @@
     <a href="./">见室引号</a>
     <a href="./archive.html">归档</a>
     <a href="./reading.html" class="active">阅览</a>
-        <a href="./thoughts.html">想法</a>
+    <a href="./thoughts.html">想法</a>
     <a href="./writing.html">写作</a>
     <a href="./about.html">关于</a>
   </div>
@@ -60,29 +148,40 @@
       <p>读过的书，划过的线——同步自微信读书</p>
     </div>
 
-    <div class="stats">
-      <div class="stat-item"><div class="stat-value" id="bookCount">-</div><div class="stat-label">书</div></div>
-      <div class="stat-item"><div class="stat-value" id="highlightCount">-</div><div class="stat-label">划线</div></div>
-      <div class="stat-item"><div class="stat-value" id="reviewCount">-</div><div class="stat-label">想法</div></div>
-    </div>
+    <div class="rd-layout">
+      <section class="rd-main">
+        <div class="rd-toolbar">
+          <input type="search" id="rdSearch" placeholder="搜索书名、作者或划线内容" autocomplete="off">
+          <select id="categoryFilter"><option value="">全部分类</option></select>
+          <select id="statusFilter">
+            <option value="">全部状态</option>
+            <option value="read">读完</option>
+            <option value="reading">在读</option>
+          </select>
+        </div>
+        <div class="rd-stats" id="rdStats"></div>
+        <div id="content">
+          <div class="loading">
+            <div class="loading-spinner"></div>
+            <p>加载中…</p>
+          </div>
+        </div>
+      </section>
 
-    <div class="filter-tabs">
-      <button class="filter-tab active" data-view="notes">读书笔记</button>
-      <button class="filter-tab" data-view="shelf">书架</button>
-    </div>
-
-    <div class="toolbar" id="catToolbar" style="display:none;">
-      <select id="categoryFilter">
-        <option value="">全部分类</option>
-      </select>
-      <span style="font-size:12px;color:var(--text-muted);" id="catHint"></span>
-    </div>
-
-    <div id="content">
-      <div class="loading">
-        <div class="loading-spinner"></div>
-        <p>加载中…</p>
-      </div>
+      <aside class="rd-side">
+        <div class="rd-side-panel">
+          <div class="rd-side-head">
+            <span class="rd-side-title">TIMELINE</span>
+            <span class="rd-side-count" id="tlCount"></span>
+          </div>
+          <div class="rd-side-chips">
+            <button class="rd-chip active" data-type="">全部</button>
+            <button class="rd-chip" data-type="hl">划线</button>
+            <button class="rd-chip" data-type="rv">想法</button>
+          </div>
+          <div id="timeline"><div class="rd-tl-empty">加载中…</div></div>
+        </div>
+      </aside>
     </div>
   </main>
 
@@ -94,65 +193,119 @@
   <script>
     const { escapeHtml, formatTs, loadJSON } = window.siteUtils;
     let data = null;
-    let view = 'notes';
-    let query = '';
-    let category = '';
-    let renderedCount = 0;
-    const PAGE_SIZE = 10;
+    let merged = [];          // 书架 + 笔记合并后的全部书
+    let notesFlat = [];       // 全部划线/想法平铺（时间线用）
+    let query = '', category = '', status = '', tlType = '';
+    let currentBook = null;   // 详情模式的书
+    let tlRendered = 0;
+    const TL_PAGE = 60;
 
     const content = document.getElementById('content');
+    const timelineEl = document.getElementById('timeline');
 
-    /* ---------- 单本书的渲染 ---------- */
+    /* ---------- 数据准备 ---------- */
+
+    function prepare() {
+      const books = data.books || [];
+      const byId = new Map();
+      for (const b of data.shelf || []) byId.set(b.bookId, { ...b });
+      for (const b of books) byId.set(b.bookId, { ...(byId.get(b.bookId) || {}), ...b, _hasNotes: true });
+      merged = [...byId.values()].sort((a, b) => (b._sort || 0) - (a._sort || 0));
+
+      notesFlat = [];
+      for (const b of books) {
+        for (const h of b.highlights || []) {
+          if (!h.text) continue;
+          notesFlat.push({ t: h.time || 0, type: 'hl', text: h.text, chapter: h.chapter, book: b });
+        }
+        for (const r of b.reviews || []) {
+          if (!r.content) continue;
+          notesFlat.push({ t: r.time || 0, type: 'rv', text: r.content, chapter: r.chapter, book: b });
+        }
+      }
+      notesFlat.sort((a, b2) => (b2.t || 0) - (a.t || 0));
+    }
+
+    function matchBook(b) {
+      if (category) {
+        if (category === '__none__' ? !!b.category : b.category !== category) return false;
+      }
+      if (status === 'read' && b.markedStatus !== 1) return false;
+      if (status === 'reading' && b.markedStatus === 1) return false;
+      if (query) {
+        const q = query.toLowerCase();
+        return (b.title || '').toLowerCase().includes(q) ||
+               (b.author || '').toLowerCase().includes(q) ||
+               (b.highlights || []).some((h) => (h.text || '').toLowerCase().includes(q)) ||
+               (b.reviews || []).some((r) => (r.content || '').toLowerCase().includes(q));
+      }
+      return true;
+    }
+
+    /* ---------- 左栏：书封网格 / 单书详情 ---------- */
+
+    function cleanTitle(t) {
+      return (t || '未命名').replace(/[（(][^）)]{15,}[）)]/g, '').replace(/\s+/g, ' ').trim() || t || '未命名';
+    }
+
+    function renderGrid() {
+      const books = merged.filter(matchBook);
+      if (!books.length) {
+        content.innerHTML = `<div class="rd-grid-empty">${query || category || status ? '没有匹配的书' : '书架还是空的'}</div>`;
+        return;
+      }
+      const grid = `<div class="rd-grid">${books.map((b) => {
+        const n = (b._noteCount || (b.highlights || []).length + (b.reviews || []).length);
+        const open = b._hasNotes
+          ? `<div class="rd-cover" data-open="${escapeHtml(b.bookId)}" title="查看我的笔记">`
+          : b.deepLink
+            ? `<a class="rd-cover" href="${escapeHtml(b.deepLink)}" target="_blank" rel="noopener" title="在微信读书打开">`
+            : `<div class="rd-cover">`;
+        const close = b._hasNotes || !b.deepLink ? '</div>' : '</a>';
+        return `${open}
+          ${b.cover
+            ? `<img src="${escapeHtml(b.cover)}" alt="${escapeHtml(cleanTitle(b.title))}" loading="lazy" onerror="this.style.display='none'">`
+            : `<div class="cover-fallback">📖</div>`}
+          ${b._hasNotes && n ? `<span class="rd-cover-badge">${n}</span>` : ''}
+          <div class="rd-cover-overlay">
+            <b>${escapeHtml(cleanTitle(b.title))}</b>
+            ${b.author ? `<span>${escapeHtml(b.author)}</span>` : ''}
+            ${b._hasNotes ? `<i>${(b.highlights || []).length} 划线 · ${(b.reviews || []).length} 想法</i>` : ''}
+          </div>
+        ${close}`;
+      }).join('')}</div>`;
+      content.innerHTML = grid;
+    }
+
+    /* ---------- 单书详情（复用原笔记排版） ---------- */
 
     function ratingStars(star) {
       if (!star || star < 1) return '';
       const s = Math.min(5, Math.max(1, Math.round(star)));
       return '★'.repeat(s) + '☆'.repeat(5 - s);
     }
+    const rangeStart = (r) => { const n = parseInt(String(r || '').split('-')[0], 10); return isNaN(n) ? 0 : n; };
 
-    // 划线位置排序用："2959-3007" -> 2959
-    const rangeStart = (r) => {
-      const m = String(r || '').split('-')[0];
-      const n = parseInt(m, 10);
-      return isNaN(n) ? 0 : n;
-    };
-
-    // 把想法挂到对应划线（按 range 匹配），返回 {quotes:[{hl, comment}], standalone:[review]}
     function assembleNotes(book) {
-      const highlights = [...(book.highlights || [])].sort((a, b) =>
-        rangeStart(a.range) - rangeStart(b.range)
-      );
+      const highlights = [...(book.highlights || [])].sort((a, b) => rangeStart(a.range) - rangeStart(b.range));
       const commentByRange = new Map();
       const standalone = [];
-
       for (const r of book.reviews || []) {
-        if (r.abstract && r.range) {
-          commentByRange.set(r.range, r);
-        } else {
-          standalone.push(r);
-        }
+        if (r.abstract && r.range) commentByRange.set(r.range, r);
+        else standalone.push(r);
       }
-
-      const quotes = highlights.map((hl) => ({
-        hl,
-        comment: commentByRange.get(hl.range) || null,
-      }));
-
-      // 有 abstract 但没匹配到划线的想法，也作为独立引用块
+      const quotes = highlights.map((hl) => ({ hl, comment: commentByRange.get(hl.range) || null }));
       for (const [range, r] of commentByRange) {
         if (!highlights.some((h) => h.range === range)) {
           quotes.push({ hl: { text: r.abstract, chapter: r.chapter, range, time: r.time }, comment: r });
         }
       }
       quotes.sort((a, b) => rangeStart(a.hl.range) - rangeStart(b.hl.range));
-
       return { quotes, standalone };
     }
 
     function quoteHtml(q) {
-      const comment = q.comment
-        ? `<div class="quote-comment">${escapeHtml(q.comment.content)}</div>`
-        : '';
+      const comment = q.comment ? `<div class="quote-comment">${escapeHtml(q.comment.content)}</div>` : '';
       return `<div class="quote-block">
         <div class="note-chapter">${escapeHtml(q.hl.chapter || '')}</div>
         <blockquote>${escapeHtml(q.hl.text)}</blockquote>
@@ -162,23 +315,12 @@
 
     function bookEntryHtml(book) {
       const { quotes, standalone } = assembleNotes(book);
-      const bookReviews = standalone.filter((r) => !r.chapter);        // 整本书评
-      const chapterReviews = standalone.filter((r) => r.chapter);      // 章节点评
-
-      const lastTime = Math.max(
-        0,
-        ...(book.highlights || []).map((h) => h.time || 0),
-        ...(book.reviews || []).map((r) => r.time || 0)
-      );
-
+      const bookReviews = standalone.filter((r) => !r.chapter);
+      const chapterReviews = standalone.filter((r) => r.chapter);
+      const lastTime = Math.max(0, ...(book.highlights || []).map((h) => h.time || 0), ...(book.reviews || []).map((r) => r.time || 0));
       const rating = (book.reviews || []).find((r) => r.star >= 1)?.star;
       const status = book.markedStatus === 1 ? '读完' : '在读';
-
-      // 清理微信读书书名里的营销副标题括号
-      const title = escapeHtml((book.title || '未命名')
-        .replace(/[（(][^）)]{15,}[）)]/g, '')
-        .replace(/\s+/g, ' ')
-        .trim() || book.title || '未命名');
+      const title = escapeHtml(cleanTitle(book.title));
 
       const metaBits = [];
       if (book.author) metaBits.push(`<span>${escapeHtml(book.author)}</span>`);
@@ -189,19 +331,13 @@
       }
       if (rating) metaBits.push(`<span class="book-rating">${ratingStars(rating)}</span>`);
 
-      // 划线较多时折叠后面的
       const QUOTE_LIMIT = 6;
       const quotesHtml = quotes.map((q, i) =>
-        `<div class="${i >= QUOTE_LIMIT ? 'quote-hidden' : ''}">${quoteHtml(q)}</div>`
-      ).join('');
-
+        `<div class="${i >= QUOTE_LIMIT ? 'quote-hidden' : ''}">${quoteHtml(q)}</div>`).join('');
       const chapterReviewsHtml = chapterReviews.map((r) =>
-        `<div class="book-comment"><div class="note-chapter">${escapeHtml(r.chapter)}</div>${escapeHtml(r.content)}</div>`
-      ).join('');
+        `<div class="book-comment"><div class="note-chapter">${escapeHtml(r.chapter)}</div>${escapeHtml(r.content)}</div>`).join('');
 
-      // title 已在上方定义
-
-      return `<article class="book-entry" id="book-${escapeHtml(book.bookId)}" data-bookid="${escapeHtml(book.bookId)}">
+      return `<article class="book-entry" id="book-${escapeHtml(book.bookId)}">
         <div class="book-entry-head">
           ${book.deepLink
             ? `<a class="book-entry-title" href="${escapeHtml(book.deepLink)}" target="_blank" rel="noopener" title="在微信读书打开">《${title}》</a>`
@@ -219,177 +355,153 @@
       </article>`;
     }
 
-    /* ---------- 视图渲染 ---------- */
+    function openBook(bookId) {
+      const book = merged.find((b) => String(b.bookId) === String(bookId));
+      if (!book || !book._hasNotes) return;
+      currentBook = book;
+      content.innerHTML = `<button class="rd-back" id="rdBack">← 返回书架</button>${bookEntryHtml(book)}`;
+      document.getElementById('rdBack').addEventListener('click', () => { currentBook = null; renderGrid(); });
+      content.querySelector('.continue-btn')?.addEventListener('click', (e) => {
+        e.target.closest('.book-entry').classList.add('expanded');
+        e.target.remove();
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
-    function renderNotes(append = false) {
-      let books = data.books || [];
-      if (category) {
-        books = category === '__none__'
-          ? books.filter((b) => !b.category)
-          : books.filter((b) => b.category === category);
-      }
-      if (query) {
-        const q = query.toLowerCase();
-        books = books.filter((b) =>
-          (b.title || '').toLowerCase().includes(q) ||
-          (b.author || '').toLowerCase().includes(q) ||
-          (b.highlights || []).some((h) => (h.text || '').toLowerCase().includes(q)) ||
-          (b.reviews || []).some((r) => (r.content || '').toLowerCase().includes(q))
-        );
-      }
+    /* ---------- 右栏：时间线 ---------- */
 
-      if (books.length === 0) {
-        content.innerHTML = `<div class="empty"><div class="empty-icon">🔍</div><p>${query ? '没有匹配的笔记' : '还没有读书笔记'}</p></div>`;
+    const WEEK = ['日', '一', '二', '三', '四', '五', '六'];
+    function dateHeader(ts) {
+      const d = new Date(ts * 1000);
+      const today = new Date(); today.setHours(0, 0, 0, 0);
+      const that = new Date(d); that.setHours(0, 0, 0, 0);
+      const diff = Math.round((today - that) / 86400000);
+      const rel = diff === 0 ? ' · 今天' : diff === 1 ? ' · 昨天' : '';
+      return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日 · 周${WEEK[d.getDay()]}${rel}`;
+    }
+    function hhmm(ts) {
+      const d = new Date(ts * 1000);
+      return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+    }
+
+    function timelineData() {
+      const ids = new Set(merged.filter(matchBook).map((b) => String(b.bookId)));
+      return notesFlat.filter((n) => ids.has(String(n.book.bookId)) && (!tlType || n.type === tlType));
+    }
+
+    function renderTimeline(reset = true) {
+      const items = timelineData();
+      document.getElementById('tlCount').textContent = `${items.length} 条`;
+      if (reset) tlRendered = 0;
+      tlRendered = Math.min(tlRendered + TL_PAGE, items.length);
+
+      if (!items.length) {
+        timelineEl.innerHTML = `<div class="rd-tl-empty">${query || tlType ? '没有匹配的笔记' : '还没有笔记'}</div>`;
         return;
       }
 
-      if (append) renderedCount = Math.min(renderedCount + PAGE_SIZE, books.length);
-      else renderedCount = Math.min(PAGE_SIZE, books.length);
-
-      // 每次整体重渲染已展示部分，避免增量插入的状态不同步
-      const shown = books.slice(0, renderedCount);
-      const html = shown.map(bookEntryHtml).join('');
-      const moreHtml = renderedCount < books.length
-        ? `<button class="btn-primary" id="moreBtn" style="background:var(--bg-card);color:var(--text-primary);border:1px solid var(--border);">加载更多（已显示 ${renderedCount} / ${books.length} 本）</button>`
-        : `<p style="font-size:13px;color:var(--text-muted);">已显示全部 ${books.length} 本</p>`;
-
-      content.innerHTML = `<div class="book-feed" id="bookFeed">${html}</div>
-        <div class="load-more" style="text-align:center;padding:24px 0 0;">${moreHtml}</div>`;
-      document.getElementById('moreBtn')?.addEventListener('click', () => renderNotes(true));
+      const shown = items.slice(0, tlRendered);
+      let html = '', lastDay = '';
+      for (const n of shown) {
+        const day = formatTs(n.t);
+        if (day !== lastDay) {
+          html += `<div class="rd-tl-date">${dateHeader(n.t)}</div>`;
+          lastDay = day;
+        }
+        html += `<div class="rd-tl-item">
+          <div class="rd-tl-meta">
+            <span class="rd-tl-time">${hhmm(n.t)}</span>
+            <span class="rd-tl-book" data-open="${escapeHtml(n.book.bookId)}" title="${escapeHtml(cleanTitle(n.book.title))}">《${escapeHtml(cleanTitle(n.book.title))}》</span>
+            <span class="rd-tl-tag">${n.type === 'hl' ? '划线' : '想法'}</span>
+          </div>
+          <p class="rd-tl-text">${escapeHtml(n.text)}</p>
+          ${n.chapter ? `<div class="rd-tl-chap">${escapeHtml(n.chapter)}</div>` : ''}
+        </div>`;
+      }
+      const more = tlRendered < items.length
+        ? `<button class="rd-tl-more" id="tlMore">加载更多（${tlRendered} / ${items.length}）</button>` : '';
+      timelineEl.innerHTML = html + more;
+      document.getElementById('tlMore')?.addEventListener('click', () => renderTimeline(false));
     }
 
-    function renderShelf() {
-      let shelf = data.shelf || [];
-      if (category) {
-        shelf = category === '__none__'
-          ? shelf.filter((b) => !b.category)
-          : shelf.filter((b) => b.category === category);
-      }
-      if (query) {
-        const q = query.toLowerCase();
-        shelf = shelf.filter((b) =>
-          (b.title || '').toLowerCase().includes(q) ||
-          (b.author || '').toLowerCase().includes(q)
-        );
-      }
-      if (shelf.length === 0) {
-        content.innerHTML = `<div class="empty"><div class="empty-icon">📚</div><p>${query || category ? '没有匹配的书' : '书架还是空的'}</p></div>`;
-        return;
-      }
+    /* ---------- 统计行 ---------- */
 
-      const notesIds = new Set((data.books || []).map((b) => b.bookId));
-      content.innerHTML = `<div class="shelf-grid">${shelf.map((b) => {
-        const label = escapeHtml(b.title || '');
-        const hasNotes = notesIds.has(b.bookId);
-        // 有笔记的书：点击进入站内笔记；没有的：跳微信读书
-        const open = hasNotes
-          ? `<span class="shelf-item" data-jump="${escapeHtml(b.bookId)}" title="查看我的笔记" style="cursor:pointer;">`
-          : b.deepLink
-            ? `<a class="shelf-item" href="${escapeHtml(b.deepLink)}" target="_blank" rel="noopener" title="在微信读书打开">`
-            : '<span class="shelf-item">';
-        const close = (hasNotes || !b.deepLink) ? '</span>' : '</a>';
-        return `${open}
-          ${b.cover
-            ? `<img src="${escapeHtml(b.cover)}" alt="${label}" loading="lazy" onerror="this.outerHTML='<div class=&quot;cover-fallback&quot;>📖</div>'">`
-            : `<div class="cover-fallback">📖</div>`}
-          <div class="shelf-title">${label}${b.finished ? ' ✅' : ''}</div>
-        ${close}`;
-      }).join('')}</div>`;
-    }
-
-    function render(append = false) {
-      if (view === 'notes') renderNotes(append); else renderShelf();
-    }
-
-    function updateStats() {
+    function renderStats() {
       const books = data.books || [];
-      document.getElementById('bookCount').textContent = (data.shelf || []).length || books.length;
-      document.getElementById('highlightCount').textContent =
-        books.reduce((n, b) => n + (b.highlights || []).length, 0);
-      document.getElementById('reviewCount').textContent =
-        books.reduce((n, b) => n + (b.reviews || []).length, 0);
+      const hl = books.reduce((n, b) => n + (b.highlights || []).length, 0);
+      const rv = books.reduce((n, b) => n + (b.reviews || []).length, 0);
+      let sync = '';
+      const ls = data.lastSync;
+      if (typeof ls === 'number' && ls > 0) sync = formatTs(ls);
+      else if (typeof ls === 'string' && ls) sync = ls.slice(0, 10);
+      document.getElementById('rdStats').innerHTML =
+        `<b>${(data.shelf || []).length || merged.length}</b> 本书<span class="sep">·</span>` +
+        `<b>${hl}</b> 划线<span class="sep">·</span>` +
+        `<b>${rv}</b> 想法` +
+        (sync ? `<span class="sep">·</span>同步于 ${escapeHtml(sync)}` : '');
     }
 
     /* ---------- 交互 ---------- */
 
-    document.querySelectorAll('.filter-tab').forEach((tab) => {
-      tab.addEventListener('click', () => {
-        document.querySelectorAll('.filter-tab').forEach((t) => t.classList.remove('active'));
-        tab.classList.add('active');
-        view = tab.dataset.view;
-        renderedCount = 0;
-        render();
+    let searchTimer = null;
+    document.getElementById('rdSearch').addEventListener('input', (e) => {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => {
+        query = e.target.value.trim();
+        if (!currentBook) renderGrid();
+        renderTimeline();
+      }, 250);
+    });
+    document.getElementById('categoryFilter').addEventListener('change', (e) => {
+      category = e.target.value;
+      if (!currentBook) renderGrid();
+      renderTimeline();
+    });
+    document.getElementById('statusFilter').addEventListener('change', (e) => {
+      status = e.target.value;
+      if (!currentBook) renderGrid();
+      renderTimeline();
+    });
+    document.querySelectorAll('.rd-chip').forEach((chip) => {
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('.rd-chip').forEach((c) => c.classList.remove('active'));
+        chip.classList.add('active');
+        tlType = chip.dataset.type;
+        renderTimeline();
       });
     });
 
-    // 分类筛选
+    // 封面 / 时间线书名 点击 → 打开单书详情（事件委托）
+    document.querySelector('.rd-layout').addEventListener('click', (e) => {
+      const t = e.target.closest('[data-open]');
+      if (t) { e.preventDefault(); openBook(t.dataset.open); }
+    });
+
     function populateCategories() {
-      const cats = [...new Set([
-        ...(data.books || []).map((b) => b.category),
-        ...(data.shelf || []).map((b) => b.category),
-      ].filter(Boolean))].sort((a, b) => a.localeCompare(b, 'zh'));
+      const cats = [...new Set(merged.map((b) => b.category).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'zh'));
       const select = document.getElementById('categoryFilter');
       cats.forEach((c) => {
         const opt = document.createElement('option');
-        opt.value = c;
-        opt.textContent = c;
+        opt.value = c; opt.textContent = c;
         select.appendChild(opt);
       });
       if (cats.length) {
         const none = document.createElement('option');
-        none.value = '__none__';
-        none.textContent = '未分类';
+        none.value = '__none__'; none.textContent = '未分类';
         select.appendChild(none);
-        document.getElementById('catToolbar').style.display = 'flex';
-        document.getElementById('catHint').textContent = `${cats.length} 个分类`;
       }
     }
-
-    document.getElementById('categoryFilter').addEventListener('change', (e) => {
-      category = e.target.value;
-      renderedCount = 0;
-      render();
-    });
-
-    // 书架 → 站内笔记跳转
-    function jumpToNotes(bookId, tries = 0) {
-      // 注意：getElementById 按字面匹配，不要用 CSS.escape（数字开头 id 会被转义坏）
-      const entry = document.getElementById(`book-${bookId}`);
-      if (entry) {
-        entry.classList.add('expanded');
-        entry.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        return;
-      }
-      // 目标还在未渲染的分页里，继续加载直到找到
-      const moreBtn = document.getElementById('moreBtn');
-      if (moreBtn && tries < 200) {
-        moreBtn.click();
-        setTimeout(() => jumpToNotes(bookId, tries + 1), 60);
-      }
-    }
-
-    content.addEventListener('click', (e) => {
-      const jump = e.target.closest('[data-jump]');
-      if (jump) {
-        const bookId = jump.dataset.jump;
-        document.querySelector(".filter-tab[data-view='notes']")?.click();
-        setTimeout(() => jumpToNotes(bookId), 50);
-        return;
-      }
-      if (e.target.classList.contains('continue-btn')) {
-        e.target.closest('.book-entry').classList.add('expanded');
-        e.target.remove();
-      }
-    });
 
     /* ---------- 加载 ---------- */
 
     (async () => {
       try {
         data = await loadJSON('./_data/weread.json');
-        updateStats();
+        prepare();
+        renderStats();
         populateCategories();
-        render();
+        renderGrid();
+        renderTimeline();
       } catch (err) {
         content.innerHTML = `
           <div class="setup-guide">
@@ -402,6 +514,7 @@
             </ol>
             <p style="font-size:13px;color:var(--text-muted);">使用微信读书官方 Agent API，无需 Cookie，不会过期。</p>
           </div>`;
+        timelineEl.innerHTML = `<div class="rd-tl-empty">暂无数据</div>`;
       }
     })();
   </script>

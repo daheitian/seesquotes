@@ -5,7 +5,8 @@
 // - No Notion token needed (the notion.site is public).
 // - Images are downloaded via Notion's /image/ proxy (S3 URLs are anonymous-denied
 //   and expire) and committed under notion-assets/ for stable hosting.
-// - Dedup/update via hidden marker `<!-- notion-sync:<pageId> -->` in the issue body.
+// - Dedup/update via notion-sync-map.json ({ notionPageId: issueNumber }) — no hidden
+//   markers in issue bodies. Legacy bodies with markers are migrated automatically.
 //
 // Env:
 //   GITHUB_TOKEN   token with repo/issues write access (Actions GITHUB_TOKEN or a PAT)
@@ -36,7 +37,8 @@ const REPO = process.env.REPO ?? "daheitian/seesquotes";
 const IMAGE_BASE = process.env.IMAGE_BASE ?? `https://raw.githubusercontent.com/${REPO}/main`;
 const ASSETS_DIR = path.join(ROOT, "notion-assets");
 const SYNC_LABEL = "notion-blog";
-const MARKER = (id) => `<!-- notion-sync:${id} -->`;
+const MAP_FILE = path.join(ROOT, "notion-sync-map.json"); // { notionPageId: issueNumber }
+const LEGACY_MARKER_RE = /<!-- notion-sync:([0-9a-f-]+) -->/; // only for migrating old bodies
 const DRY_RUN = process.argv.includes("--dry-run");
 const TOKEN = process.env.GITHUB_TOKEN;
 const API = `https://api.github.com/repos/${REPO}`;
@@ -235,19 +237,6 @@ async function gh(pathname, options = {}) {
   throw new Error(`GitHub ${pathname} failed after retries`);
 }
 
-async function listSyncedIssues() {
-  const found = new Map(); // notionId -> issue
-  for (let page = 1; page <= 5; page++) {
-    const issues = await gh(`/issues?state=all&labels=${SYNC_LABEL}&per_page=100&page=${page}`);
-    if (!issues.length) break;
-    for (const it of issues) {
-      const m = (it.body ?? "").match(/<!-- notion-sync:([0-9a-f-]+) -->/);
-      if (m) found.set(m[1], it);
-    }
-  }
-  return found;
-}
-
 const cleanTag = (t) => String(t).split(/[，,]/).map((s) => s.trim()).filter(Boolean).slice(0, 40);
 
 async function ensureLabels(names) {
@@ -337,7 +326,7 @@ if (DRY_RUN) {
 
 if (!TOKEN) { console.error("GITHUB_TOKEN is required for issue creation"); process.exit(1); }
 
-// 3. build bodies/labels
+// 3. build bodies/labels (no hidden markers — mapping lives in notion-sync-map.json)
 const buildBody = (a) => {
   const metaLine = [
     a.date && `📅 ${a.date}`,
@@ -352,14 +341,44 @@ const buildBody = (a) => {
     "---",
     "",
     `> 📡 本文同步自作者 Notion 博客「小信号」 · [阅读原文](${notionUrl(a.id)})`,
-    MARKER(a.id),
   ].join("\n");
 };
 const buildLabels = (a) => [...new Set([SYNC_LABEL, a.category, ...a.tags].filter(Boolean))];
 
-// 4. dedup + sync (create missing, update changed)
-const existing = await listSyncedIssues();
+// 4. load notionId -> issueNumber map (fallback: migrate legacy body markers)
+function loadMap() {
+  try { return JSON.parse(fs.readFileSync(MAP_FILE, "utf8")); } catch { return {}; }
+}
+function saveMap(map) {
+  fs.writeFileSync(MAP_FILE, JSON.stringify(map, null, 1) + "\n");
+}
+
+const notionMap = loadMap(); // notionId -> number
+const existing = new Map(); // notionId -> issue (for change detection)
+
+// list all issues with the sync label, index by number
+const byNumber = new Map();
+for (let page = 1; page <= 5; page++) {
+  const issues = await gh(`/issues?state=all&labels=${SYNC_LABEL}&per_page=100&page=${page}`);
+  if (!issues.length) break;
+  for (const it of issues) byNumber.set(it.number, it);
+  if (issues.length < 100) break;
+}
+
+// legacy migration: recover mappings from body markers, then strip them
+for (const it of byNumber.values()) {
+  const m = (it.body ?? "").match(LEGACY_MARKER_RE);
+  if (m && !Object.values(notionMap).includes(it.number)) {
+    notionMap[m[1]] = it.number;
+    console.log(`migrated marker: ${m[1]} -> #${it.number}`);
+  }
+}
+for (const [notionId, num] of Object.entries(notionMap)) {
+  const it = byNumber.get(num);
+  if (it) existing.set(notionId, it);
+}
 console.log(`already synced issues: ${existing.size}`);
+saveMap(notionMap);
 
 const labelNames = [...new Set(articles.flatMap((a) => buildLabels(a)))];
 await ensureLabels(labelNames);
@@ -379,6 +398,7 @@ for (const a of articles) {
       } else unchanged++;
     } else {
       const issue = await gh("/issues", { method: "POST", body: JSON.stringify({ title: a.title, body, labels }) });
+      notionMap[a.id] = issue.number;
       created++;
       process.stdout.write(`\rcreated: ${created}, updated: ${updated}, unchanged: ${unchanged}  (latest: #${issue.number})`);
     }
@@ -387,4 +407,5 @@ for (const a of articles) {
     console.log(`\n! failed: ${a.title} -> ${e.message.slice(0, 150)}`);
   }
 }
+saveMap(notionMap);
 console.log(`\ndone. created=${created}, updated=${updated}, unchanged=${unchanged}, images=${downloadedImages.size}`);
