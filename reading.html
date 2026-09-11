@@ -10,7 +10,6 @@
   <style>
     /* ---------- 阅览页：书封网格 + 侧栏（时间线/单书笔记，可开关） ---------- */
     .rd-layout { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 40px; align-items: start; }
-    .rd-layout.book-mode { grid-template-columns: minmax(0, 1fr) 430px; }
     .rd-layout.side-off { grid-template-columns: minmax(0, 1fr); }
     .rd-layout.side-off .rd-side { display: none; }
     .rd-tgl {
@@ -19,16 +18,32 @@
     }
     .rd-tgl.active { color: var(--text-primary); border-color: var(--text-secondary); }
     .rd-cover.active { outline: 2px solid var(--accent); outline-offset: -2px; }
-    .rd-panel-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 2px; }
-    .rd-panel-title { font-size: 12px; font-weight: 700; letter-spacing: .18em; color: var(--text-primary); }
-    .rd-panel-book { font-size: 13px; font-weight: 600; color: var(--text-primary); line-height: 1.4;
-      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-    .rd-panel-close { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 17px; line-height: 1; padding: 0 2px; }
-    .rd-panel-close:hover { color: var(--text-primary); }
-    .rd-panel-body .book-entry { border: none; padding: 0; }
-    .rd-panel-body .book-entry-title { font-size: 17px; }
-    .rd-panel-body .quote-block { margin: 14px 0; }
-    .rd-panel-body blockquote { font-size: 14px; }
+
+    /* 单书划线：弹出层 */
+    .rd-modal { position: fixed; inset: 0; z-index: 100; display: none; }
+    .rd-modal.open { display: block; }
+    .rd-modal-backdrop { position: absolute; inset: 0; background: rgba(0, 0, 0, .62); }
+    .rd-modal-box {
+      position: relative; margin: 6vh auto 0; width: min(760px, calc(100% - 32px));
+      max-height: 86vh; display: flex; flex-direction: column;
+      background: var(--bg-secondary); border: 1px solid var(--border);
+    }
+    .rd-modal-head {
+      display: flex; align-items: center; gap: 12px; padding: 18px 22px 14px;
+      border-bottom: 1px solid var(--border); flex-shrink: 0;
+    }
+    .rd-modal-title { font-family: var(--serif); font-size: 19px; font-weight: 700; color: var(--text-primary); line-height: 1.45; }
+    .rd-modal-sub { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+    .rd-modal-close {
+      margin-left: auto; background: none; border: 1px solid var(--border); color: var(--text-secondary);
+      cursor: pointer; font-size: 17px; line-height: 1; padding: 5px 11px; flex-shrink: 0;
+    }
+    .rd-modal-close:hover { color: var(--text-primary); border-color: var(--text-secondary); }
+    .rd-modal-body { padding: 20px 22px 26px; overflow-y: auto; overscroll-behavior: contain; }
+    .rd-modal-body .book-entry { border: none; padding: 0; }
+    .rd-modal-body .book-entry-title { font-size: 18px; }
+    .rd-modal-body .book-entry-head { margin-bottom: 14px; }
+    body.modal-open { overflow: hidden; }
     .rd-toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
     .rd-toolbar input[type="search"] {
       flex: 1; min-width: 180px; padding: 8px 14px; font-size: 14px;
@@ -191,9 +206,8 @@
       <aside class="rd-side">
         <div class="rd-side-panel">
           <div class="rd-panel-head">
-            <span class="rd-panel-title" id="panelTitle">TIMELINE</span>
+            <span class="rd-panel-title">TIMELINE</span>
             <span class="rd-side-count" id="tlCount" style="margin-left:auto;"></span>
-            <button class="rd-panel-close" id="panelClose" title="关闭" style="display:none;">×</button>
           </div>
           <div class="rd-side-chips" id="tlChips">
             <button class="rd-chip active" data-type="">全部</button>
@@ -202,12 +216,26 @@
           </div>
           <div class="rd-panel-body">
             <div id="timeline"><div class="rd-tl-empty">加载中…</div></div>
-            <div id="bookPanel" style="display:none;"></div>
           </div>
         </div>
       </aside>
     </div>
   </main>
+
+  <!-- 单书划线：弹出层 -->
+  <div class="rd-modal" id="bookModal" role="dialog" aria-modal="true">
+    <div class="rd-modal-backdrop" id="modalBackdrop"></div>
+    <div class="rd-modal-box">
+      <div class="rd-modal-head">
+        <div>
+          <div class="rd-modal-title" id="modalTitle"></div>
+          <div class="rd-modal-sub" id="modalSub"></div>
+        </div>
+        <button class="rd-modal-close" id="modalClose" title="关闭（Esc）">×</button>
+      </div>
+      <div class="rd-modal-body" id="modalBody"></div>
+    </div>
+  </div>
 
   <footer>
     <p>小信号 · <a href="https://github.com/daheitian/seesquotes" target="_blank" rel="noopener">GitHub</a> · 由 Notion 与微信读书驱动 · <a href="./rss.xml">RSS 订阅</a></p>
@@ -379,64 +407,67 @@
       </article>`;
     }
 
-    /* 单书笔记：显示在右侧面板，网格保持在左侧不跳动 */
+    /* 单书划线：以弹出层打开（点封面 / 时间线书名） */
     const layout = document.querySelector('.rd-layout');
-    const bookPanel = document.getElementById('bookPanel');
-    const timelineBox = document.getElementById('timeline');
-    const panelTitle = document.getElementById('panelTitle');
-    const panelClose = document.getElementById('panelClose');
-    const tlChips = document.getElementById('tlChips');
     const sideToggle = document.getElementById('sideToggle');
+    const modal = document.getElementById('bookModal');
+    const modalBox = modal.querySelector('.rd-modal-box');
+    const modalBody = document.getElementById('modalBody');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalSub = document.getElementById('modalSub');
 
     function openBook(bookId) {
       const book = merged.find((b) => String(b.bookId) === String(bookId));
       if (!book || !book._hasNotes) return;
       currentBook = book;
-      showSide(true);
-      layout.classList.add('book-mode');
 
-      panelTitle.textContent = `《${cleanTitle(book.title)}》`;
-      panelTitle.classList.add('rd-panel-book');
-      panelClose.style.display = '';
-      tlChips.style.display = 'none';
-      timelineBox.style.display = 'none';
-      bookPanel.style.display = '';
-      bookPanel.innerHTML = bookEntryHtml(book);
-      bookPanel.querySelector('.continue-btn')?.addEventListener('click', (e) => {
+      const hl = (book.highlights || []).length;
+      const rv = (book.reviews || []).length;
+      modalTitle.textContent = `《${cleanTitle(book.title)}》`;
+      modalSub.textContent = [
+        book.author || '',
+        book.markedStatus === 1 ? '读完' : '在读',
+        `${hl} 划线`,
+        rv ? `${rv} 想法` : '',
+      ].filter(Boolean).join(' · ');
+
+      modalBody.innerHTML = bookEntryHtml(book);
+      modalBody.scrollTop = 0;
+      modalBody.querySelector('.continue-btn')?.addEventListener('click', (e) => {
         e.target.closest('.book-entry').classList.add('expanded');
         e.target.remove();
       });
+      // 弹窗内不重复显示标题头部（外面已有书名）
+      const head = modalBody.querySelector('.book-entry-head');
+      if (head) head.style.display = 'none';
+
+      modal.classList.add('open');
+      document.body.classList.add('modal-open');
 
       document.querySelectorAll('.rd-cover.active').forEach((el) => el.classList.remove('active'));
       content.querySelector(`.rd-cover[data-open="${bookId}"]`)?.classList.add('active');
-      document.querySelector('.rd-side-panel').scrollTop = 0;
-      if (window.innerWidth <= 960) {
-        document.querySelector('.rd-side').scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
     }
 
     function closeBook() {
+      if (!currentBook) return;
       currentBook = null;
-      layout.classList.remove('book-mode');
-      panelTitle.classList.remove('rd-panel-book');
-      panelTitle.textContent = 'TIMELINE';
-      panelClose.style.display = 'none';
-      tlChips.style.display = '';
-      bookPanel.style.display = 'none';
-      bookPanel.innerHTML = '';
-      timelineBox.style.display = '';
+      modal.classList.remove('open');
+      document.body.classList.remove('modal-open');
+      modalBody.innerHTML = '';
       document.querySelectorAll('.rd-cover.active').forEach((el) => el.classList.remove('active'));
     }
+
+    document.getElementById('modalClose').addEventListener('click', closeBook);
+    document.getElementById('modalBackdrop').addEventListener('click', closeBook);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeBook(); });
 
     // 侧栏开关（记忆选择）
     function showSide(on) {
       layout.classList.toggle('side-off', !on);
       sideToggle.classList.toggle('active', on);
       try { localStorage.setItem('rd-side', on ? 'on' : 'off'); } catch (e) { /* ignore */ }
-      if (!on && currentBook) closeBook();
     }
     sideToggle.addEventListener('click', () => showSide(layout.classList.contains('side-off')));
-    panelClose.addEventListener('click', closeBook);
 
     /* ---------- 右栏：时间线 ---------- */
 
