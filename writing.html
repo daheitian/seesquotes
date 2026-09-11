@@ -48,6 +48,37 @@
     /* 列表条目：标题用衬线，更像文章索引 */
     .issues-list .issue-title { font-family: var(--serif); font-size: 17px; line-height: 1.6; }
 
+    /* ---------- 工具栏：与头部一致的克制描边风格 ---------- */
+    .wr-toolbar {
+      display: flex; align-items: center; gap: 14px;
+      justify-content: space-between; flex-wrap: wrap; margin-bottom: 18px;
+    }
+    .wr-toolbar .filter-tabs { margin-bottom: 0; flex: 1 1 auto; min-width: 0; }
+    /* 覆盖全站胶囊样式，改为扁平（与全站直角风格一致） */
+    .wr-toolbar .filter-tab { border-radius: 0; padding: 6px 14px; font-size: 13px; background: transparent; }
+    .wr-toolbar .filter-tab:hover { background: var(--bg-card-hover); color: var(--text-primary); }
+    .wr-toolbar .filter-tab.active {
+      background: var(--text-primary); color: var(--bg-primary); border-color: var(--text-primary);
+    }
+    .wr-actions { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+    .wr-select {
+      padding: 7px 12px; background: transparent; border: 1px solid var(--border);
+      color: var(--text-secondary); font-size: 13px; border-radius: 0; cursor: pointer; outline: none;
+      font-family: var(--sans);
+    }
+    .wr-select:hover { color: var(--text-primary); border-color: var(--text-secondary); }
+    .wr-select option { background: var(--bg-card); color: var(--text-primary); }
+    .wr-write {
+      display: inline-flex; align-items: center; gap: 6px; padding: 7px 15px;
+      border: 1px solid var(--border); color: var(--text-secondary); font-size: 13px;
+      text-decoration: none; border-radius: 0; white-space: nowrap; transition: all .2s ease;
+    }
+    .wr-write:hover { color: var(--text-primary); border-color: var(--text-secondary); background: var(--bg-card-hover); }
+    @media (max-width: 600px) {
+      .wr-actions { width: 100%; margin-left: 0; }
+      .wr-toolbar .filter-tabs { width: 100%; }
+    }
+
     .article-toc {
       margin: 26px 0 34px;
       padding: 16px 20px 18px;
@@ -268,16 +299,16 @@
 
     <!-- 列表视图 -->
     <div class="list-view" id="listView">
-      <div class="toolbar">
-        <select id="labelFilter">
-          <option value="">全部标签</option>
-        </select>
-        <select id="sortFilter">
-          <option value="newest">最新优先</option>
-          <option value="oldest">最早优先</option>
-          <option value="updated">最近更新</option>
-        </select>
-        <a href="https://github.com/daheitian/seesquotes/issues/new" target="_blank" rel="noopener" class="btn-primary" style="margin-left:auto;padding:8px 18px;">✍️ 写一篇</a>
+      <div class="wr-toolbar">
+        <div class="filter-tabs" id="labelTabs"></div>
+        <div class="wr-actions">
+          <select id="sortFilter" class="wr-select" title="排序方式">
+            <option value="newest">最新优先</option>
+            <option value="oldest">最早优先</option>
+            <option value="updated">最近更新</option>
+          </select>
+          <a class="wr-write" href="https://github.com/daheitian/seesquotes/issues/new" target="_blank" rel="noopener" title="在 GitHub 新建一篇文章">写一篇</a>
+        </div>
       </div>
       <div id="content">
         <div class="loading">
@@ -359,17 +390,23 @@
       }
     }
 
+    // 标签筛选：扁平 chip（排除同步用的内部标签 notion-blog），带文章数
     function populateLabelFilter() {
-      const labels = new Set();
-      allIssues.forEach(issue => (issue.labels || []).forEach(label => labels.add(label.name)));
-      const select = document.getElementById('labelFilter');
-      while (select.options.length > 1) select.remove(1);
-      Array.from(labels).sort().forEach(label => {
-        const option = document.createElement('option');
-        option.value = label;
-        option.textContent = label;
-        select.appendChild(option);
-      });
+      const counts = new Map();
+      allIssues.forEach(issue => (issue.labels || []).forEach(label => {
+        if (label.name === 'notion-blog') return;
+        counts.set(label.name, (counts.get(label.name) || 0) + 1);
+      }));
+      const labels = [...counts.entries()].sort((a, b) =>
+        b[1] - a[1] || a[0].localeCompare(b[0], 'zh')
+      );
+      const chip = (val, text, count, active) =>
+        `<button class="filter-tab${active ? ' active' : ''}" data-label="${escapeHtml(val)}">${escapeHtml(text)}` +
+        (count != null ? `<span style="opacity:.5;margin-left:5px;">${count}</span>` : '') + `</button>`;
+
+      document.getElementById('labelTabs').innerHTML =
+        chip('', '全部', allIssues.length, currentLabel === '') +
+        labels.map(([name, n]) => chip(name, name, n, currentLabel === name)).join('');
     }
 
     function renderIssues() {
@@ -529,8 +566,11 @@
 
     window.addEventListener('hashchange', route);
 
-    document.getElementById('labelFilter').addEventListener('change', (e) => {
-      currentLabel = e.target.value;
+    document.getElementById('labelTabs').addEventListener('click', (e) => {
+      const btn = e.target.closest('.filter-tab');
+      if (!btn) return;
+      currentLabel = btn.dataset.label;
+      populateLabelFilter();
       renderIssues();
     });
 
