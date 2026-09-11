@@ -32,17 +32,45 @@
       background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 32px;
+      padding: 36px 40px 40px;
     }
 
     .article-title {
       font-family: var(--serif);
-      font-size: 24px;
+      font-size: 27px;
       font-weight: 700;
-      line-height: 1.5;
+      line-height: 1.45;
       color: var(--text-primary);
+      margin-bottom: 12px;
+    }
+
+    /* 编号目录（参考 doc.niallspace.com 的文章页） */
+    /* 列表条目：标题用衬线，更像文章索引 */
+    .issues-list .issue-title { font-family: var(--serif); font-size: 17px; line-height: 1.6; }
+
+    .article-toc {
+      margin: 26px 0 34px;
+      padding: 16px 20px 18px;
+      border: 1px solid var(--border);
+      background: var(--bg-secondary);
+    }
+    .article-toc-title {
+      font-size: 11px;
+      letter-spacing: .2em;
+      color: var(--text-muted);
       margin-bottom: 10px;
     }
+    .article-toc ol { counter-reset: toc; list-style: none; margin: 0; padding: 0; }
+    .article-toc li {
+      counter-increment: toc;
+      font-size: 14px;
+      line-height: 2;
+      color: var(--text-secondary);
+    }
+    .article-toc li::before { content: counter(toc) ". "; color: var(--text-muted); }
+    .article-toc a { color: var(--text-secondary); text-decoration: none; }
+    .article-toc a:hover { color: var(--text-primary); text-decoration: underline; }
+    .article-body h2, .article-body h3, .article-body h1 { scroll-margin-top: 90px; }
 
     .article-meta {
       display: flex;
@@ -376,8 +404,9 @@
           <div class="issue-title">${escapeHtml(issue.title)}</div>
           ${ex ? `<div class="issue-excerpt">${escapeHtml(ex)}…</div>` : ''}
           <div class="issue-meta">
-            <span>💬 ${issue.comments}</span>
             <span>${dateStr}</span>
+            <span>${readingTime(issue.body)}</span>
+            ${issue.comments ? `<span>💬 ${issue.comments}</span>` : ''}
             ${labels}
           </div>
         </a>`;
@@ -385,6 +414,36 @@
     }
 
     /* ================= 文章视图（站内阅读） ================= */
+
+    // 阅读时长估算（中文约 400 字/分钟）
+    function readingTime(text) {
+      const chars = (text || '').replace(/\s/g, '').length;
+      return `约 ${Math.max(1, Math.round(chars / 400))} 分钟`;
+    }
+
+    // 从正文标题生成编号目录（用 data-target + 平滑滚动，避免污染 #post- 路由）
+    function buildToc(box) {
+      const body = box.querySelector('.article-body');
+      if (!body) return;
+      const heads = [...body.querySelectorAll('h1, h2, h3')];
+      if (heads.length < 2) return;
+      const items = heads.map((h, i) => {
+        const id = `section-${i + 1}`;
+        h.id = id;
+        return `<li><a href="#" data-target="${id}">${escapeHtml(h.textContent.trim())}</a></li>`;
+      }).join('');
+      const nav = document.createElement('nav');
+      nav.className = 'article-toc';
+      nav.innerHTML = `<div class="article-toc-title">目录</div><ol>${items}</ol>`;
+      nav.addEventListener('click', (e) => {
+        const a = e.target.closest('a[data-target]');
+        if (!a) return;
+        e.preventDefault();
+        const el = document.getElementById(a.dataset.target);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+      body.parentNode.insertBefore(nav, body);
+    }
 
     async function openArticle(number) {
       listView.classList.add('hidden');
@@ -428,6 +487,7 @@
             <h1 class="article-title">${escapeHtml(issue.title)}</h1>
             <div class="article-meta">
               <span>${formatDate(issue.created_at)}</span>
+              <span>${readingTime(issue.body)}</span>
               ${issue.comments ? `<span>💬 ${issue.comments}</span>` : ''}
               ${labels}
               <a href="${escapeHtml(issue.html_url)}" target="_blank" rel="noopener" style="margin-left:auto;font-size:12px;">在 GitHub 编辑 →</a>
@@ -435,6 +495,7 @@
             <div class="article-body">${renderMarkdown(issue.body) || '<p style="color:var(--text-muted);">（正文为空）</p>'}</div>
             ${commentsHtml}
           </article>`;
+        buildToc(box);
         window.scrollTo(0, 0);
       } catch (error) {
         box.innerHTML = `
