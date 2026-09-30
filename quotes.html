@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>见室引号 | 小信号</title>
+  <meta name="description" content="一些金句 一些思考 一些优质信息源">
+  <link rel="stylesheet" href="./assets/css/style.css">
+  <link rel="alternate" type="application/rss+xml" title="小信号" href="./rss.xml">
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <a href="./" class="logo">小信号<span>.</span></a>
+      <nav>
+        <a href="./">主页</a>
+        <a href="./writing.html">写作</a>
+        <a href="./thoughts.html">想法</a>
+        <a href="./reading.html">阅览</a>
+        <a href="./quotes.html" class="active">见室引号</a>
+        <a href="./archive.html">归档</a>
+        <a href="./about.html">关于</a>
+      </nav>
+      <div class="controls">
+        <a href="./search.html" class="btn-icon" title="搜索">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+        </a>
+        <button class="btn-icon" id="themeBtn" title="切换主题">
+          <svg id="sunIcon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+          </svg>
+          <svg id="moonIcon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none">
+            <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+          </svg>
+        </button>
+        <button class="menu-btn" id="menuBtn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 12h18M3 6h18M3 18h18"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="mobile-nav" id="mobileNav">
+    <button class="mobile-nav-close" id="mobileNavClose">&times;</button>
+    <a href="./">主页</a>
+    <a href="./writing.html">写作</a>
+    <a href="./thoughts.html">想法</a>
+    <a href="./reading.html">阅览</a>
+    <a href="./quotes.html" class="active">见室引号</a>
+    <a href="./archive.html">归档</a>
+    <a href="./about.html">关于</a>
+  </div>
+
+  <main>
+    <div class="page-header">
+      <h1>见室引号</h1>
+      <p>一些金句 一些思考 一些优质信息源</p>
+      <div class="hero-meta">
+        <button class="hero-meta-btn" id="randomBtn">🎲 随机一条</button>
+        <span class="hero-meta-sep">·</span>
+        <span>金句 <b id="postCount">-</b></span>
+        <span class="hero-meta-sep">·</span>
+        <span>最近更新 <b id="lastUpdate">-</b></span>
+      </div>
+    </div>
+
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="搜索想法…" autocomplete="off">
+    </div>
+
+    <div id="content">
+      <div class="loading">
+        <div class="loading-spinner"></div>
+        <p>加载中…</p>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>小信号 · <a href="https://github.com/daheitian/seesquotes" target="_blank" rel="noopener">GitHub</a> · 由 Notion 与微信读书驱动 · <a href="./rss.xml">RSS 订阅</a></p>
+  </footer>
+
+  <script src="./assets/js/main.js"></script>
+  <script>
+    const { escapeHtml, formatDate, renderQuoteBody, needsClamp, sourceLink, loadJSON } = window.siteUtils;
+    let allPosts = [];
+    const RECENT_LIMIT = 30;
+
+    function renderPosts(posts, limit = false) {
+      const content = document.getElementById('content');
+      if (posts.length === 0) {
+        content.innerHTML = `<div class="empty"><div class="empty-icon">📭</div><p>暂无内容</p></div>`;
+        return;
+      }
+
+      // 精选分离：勾选了「精选」的置顶展示（最多 5 条），不占时间线额度
+      const key = (p) => p.url || p.title || '';
+      const featuredAll = posts.filter((p) => p.featured === true);
+      const pinned = limit ? featuredAll.slice(0, 5) : featuredAll;
+      const pinnedIds = new Set(pinned.map(key));
+      const rest = posts.filter((p) => !pinnedIds.has(key(p)));
+
+      const limited = limit && rest.length > RECENT_LIMIT;
+      const shown = limited ? rest.slice(0, RECENT_LIMIT) : rest;
+
+      const badge = (p) => (p.featured ? '<span style="display:inline-block;padding:1px 8px;background:var(--accent-soft);color:var(--accent);border-radius:100px;font-size:11px;margin-bottom:6px;">★ 精选</span>' : '');
+
+      const card = (post) => {
+        const text = post.content || post.title || '';
+        const url = post.url || '';
+        const clamp = needsClamp(text);
+
+        return `<article class="entry">
+          ${badge(post)}
+          ${sourceLink(url, 'entry-src')}
+          <div class="entry-body${clamp ? ' clamped' : ''}">${renderQuoteBody(text)}</div>
+          ${clamp ? '<button class="show-more" type="button">展开全文</button>' : ''}
+          <div class="entry-meta">${formatDate(post.date || post.pubDate)}</div>
+        </article>`;
+      };
+
+      const pinnedHtml = pinned.length
+        ? `<p style="font-size:13px;color:var(--text-muted);margin-bottom:2px;">★ 精选</p><div class="timeline">${pinned.map(card).join('')}</div><p style="font-size:13px;color:var(--text-muted);margin:20px 0 2px;">最新</p>`
+        : '';
+
+      const items = shown.map(card).join('');
+      content.innerHTML = `${pinnedHtml}<div class="timeline">${items}</div>${limited ? `<button class="view-all" id="viewAllBtn" type="button">查看全部 ${rest.length} 条 ↓</button>` : ''}`;
+      document.getElementById('viewAllBtn')?.addEventListener('click', () => renderPosts(allPosts));
+    }
+
+    async function load(force = false) {
+      const content = document.getElementById('content');
+      if (force) {
+        content.innerHTML = '<div class="loading"><div class="loading-spinner"></div><p>刷新中…</p></div>';
+      }
+      try {
+        const url = force ? `./notion-data.json?t=${Date.now()}` : './notion-data.json';
+        const data = await loadJSON(url);
+        allPosts = data.posts || data;
+        document.getElementById('postCount').textContent = allPosts.length;
+        if (allPosts.length > 0) {
+          const lastDate = new Date(allPosts[0].date || allPosts[0].pubDate);
+          document.getElementById('lastUpdate').textContent = `${lastDate.getMonth() + 1}/${lastDate.getDate()}`;
+        }
+        renderPosts(allPosts, true);
+      } catch (error) {
+        content.innerHTML = `
+          <div class="error">
+            <div class="error-icon">⚠️</div>
+            <h3>加载失败</h3>
+            <p>${escapeHtml(error.message)}</p>
+            <button class="btn-primary" onclick="load(true)">重试</button>
+          </div>`;
+      }
+    }
+
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+      const query = e.target.value.trim().toLowerCase();
+      if (!query) return renderPosts(allPosts, true);
+      renderPosts(allPosts.filter(p =>
+        (p.title || '').toLowerCase().includes(query) ||
+        (p.content || '').toLowerCase().includes(query)
+      ));
+    });
+
+    document.getElementById('randomBtn').addEventListener('click', () => {
+      if (allPosts.length === 0) return;
+      renderPosts([allPosts[Math.floor(Math.random() * allPosts.length)]]);
+    });
+
+    load();
+  </script>
+</body>
+</html>

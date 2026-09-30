@@ -4,20 +4,52 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>归档 | 小信号</title>
-  <meta name="description" content="稍后读清单与全部金句的时间线归档">
+  <meta name="description" content="全部文章按年份排列的归档目录">
   <link rel="stylesheet" href="./assets/css/style.css">
   <link rel="alternate" type="application/rss+xml" title="小信号" href="./rss.xml">
+  <style>
+    main { max-width: 640px; padding-top: 34px; }
+
+    .page-header { text-align: left; padding: 14px 0 26px; border-bottom: 1px solid var(--border); margin-bottom: 8px; }
+    .page-header h1 { font-size: 23px; letter-spacing: 2px; margin-bottom: 7px; }
+    .page-header p { margin: 0; max-width: none; font-size: 13px; color: var(--text-muted); }
+
+    .ar-year { margin-top: 30px; }
+    .ar-year-head {
+      display: flex; align-items: baseline; gap: 10px;
+      padding-bottom: 10px; margin-bottom: 4px;
+      border-bottom: 1px solid var(--border);
+    }
+    .ar-year-head h2 {
+      font-family: var(--serif); font-size: 20px; font-weight: 700;
+      color: var(--text-primary); margin: 0; letter-spacing: .04em;
+    }
+    .ar-year-head span { font-size: 12px; color: var(--text-muted); }
+
+    .ar-list { list-style: none; margin: 0; padding: 0; }
+    .ar-list li { border-bottom: 1px solid var(--border); }
+    .ar-list li:last-child { border-bottom: none; }
+    .ar-list a {
+      display: block; padding: 12px 0;
+      font-size: 15px; line-height: 1.6; color: var(--text-primary);
+      text-decoration: none; transition: color .15s ease;
+    }
+    .ar-list a:hover { color: var(--accent); }
+
+    .ar-empty { font-size: 13px; color: var(--text-muted); padding: 14px 0; }
+  </style>
 </head>
 <body>
   <header>
     <div class="header-inner">
       <a href="./" class="logo">小信号<span>.</span></a>
       <nav>
-        <a href="./">见室引号</a>
-        <a href="./archive.html" class="active">归档</a>
-        <a href="./reading.html">阅览</a>
-        <a href="./thoughts.html">想法</a>
+        <a href="./">主页</a>
         <a href="./writing.html">写作</a>
+        <a href="./thoughts.html">想法</a>
+        <a href="./reading.html">阅览</a>
+        <a href="./quotes.html">见室引号</a>
+        <a href="./archive.html" class="active">归档</a>
         <a href="./about.html">关于</a>
       </nav>
       <div class="controls">
@@ -46,28 +78,22 @@
 
   <div class="mobile-nav" id="mobileNav">
     <button class="mobile-nav-close" id="mobileNavClose">&times;</button>
-    <a href="./">见室引号</a>
-    <a href="./archive.html" class="active">归档</a>
-    <a href="./reading.html">阅览</a>
-    <a href="./thoughts.html">想法</a>
+    <a href="./">主页</a>
     <a href="./writing.html">写作</a>
+    <a href="./thoughts.html">想法</a>
+    <a href="./reading.html">阅览</a>
+    <a href="./quotes.html">见室引号</a>
+    <a href="./archive.html" class="active">归档</a>
     <a href="./about.html">关于</a>
   </div>
 
   <main>
     <div class="page-header">
       <h1>归档</h1>
-      <p>想读还没读的清单，按时间倒序</p>
+      <p>全部文章，按年份排列 · 只列标题</p>
     </div>
 
-    <div class="toolbar" style="justify-content:space-between;">
-      <span style="font-size:13px;color:var(--text-muted);" id="archiveCount"></span>
-      <div class="search-box" style="flex:1;max-width:320px;margin-bottom:0;">
-        <input type="text" id="archiveSearch" placeholder="筛选…" autocomplete="off">
-      </div>
-    </div>
-
-    <div id="timeline">
+    <div id="content">
       <div class="loading">
         <div class="loading-spinner"></div>
         <p>加载中…</p>
@@ -81,69 +107,63 @@
 
   <script src="./assets/js/main.js"></script>
   <script>
-    const { escapeHtml, formatDate, renderQuoteBody, needsClamp, loadJSON, hostname } = window.siteUtils;
-    let readlater = null;
-    let query = '';
+    const { escapeHtml } = window.siteUtils;
+    const REPO = 'daheitian/seesquotes';
+    const content = document.getElementById('content');
 
-    const timeline = document.getElementById('timeline');
-    const countEl = document.getElementById('archiveCount');
-
-    function entryHtml(item) {
-      const text = item.title || '';
-      const url = item.url || '';
-      const tags = [...(item.tags || []), ...(item.tag ? [item.tag] : [])];
-      const clamp = needsClamp(text);
-      const tagHtml = tags.length
-        ? `<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">${tags.map((t) =>
-            `<span style="padding:2px 8px;background:var(--accent-soft);border-radius:2px;font-size:11px;color:var(--accent);">${escapeHtml(t)}</span>`
-          ).join('')}</div>`
-        : '';
-      return `<article class="entry">
-        ${url ? `<a class="entry-src" href="${escapeHtml(url)}" target="_blank" rel="noopener">${escapeHtml(hostname(url))}</a>` : ''}
-        <div class="entry-body${clamp ? ' clamped' : ''}">${renderQuoteBody(text)}</div>
-        ${clamp ? '<button class="show-more" type="button">展开全文</button>' : ''}
-        ${tagHtml}
-        <div class="entry-meta">${formatDate(item.date || item.pubDate)}${url ? ' · <a href="' + escapeHtml(url) + '" target="_blank" rel="noopener" style="color:var(--text-muted);">查看原文</a>' : ''}</div>
-      </article>`;
-    }
-
-    function render() {
-      const items = (readlater?.items || []).filter((i) => {
-        if (!query.trim()) return true;
-        return (i.title || '').toLowerCase().includes(query.trim().toLowerCase());
-      });
-      const total = readlater?.items?.length || 0;
-      countEl.textContent = items.length === total ? `共 ${total} 条` : `${items.length} / ${total} 条`;
-
-      if (items.length === 0) {
-        timeline.innerHTML = `<div class="empty">${query ? '没有匹配的内容' : '还没有内容'}</div>`;
+    function render(issues) {
+      if (!issues.length) {
+        content.innerHTML = '<p class="ar-empty">还没有文章。<a href="./writing.html">去写作页看看 →</a></p>';
         return;
       }
-      timeline.innerHTML = `<div class="timeline">${items.map(entryHtml).join('')}</div>`;
+
+      // 按年份分组，年份倒序；同年按时间倒序
+      const groups = new Map();
+      issues.forEach((i) => {
+        const y = new Date(i.created_at).getFullYear();
+        if (!groups.has(y)) groups.set(y, []);
+        groups.get(y).push(i);
+      });
+      const years = [...groups.keys()].sort((a, b) => b - a);
+
+      content.innerHTML = years.map((y) => {
+        const list = groups.get(y).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        return `
+          <section class="ar-year">
+            <div class="ar-year-head">
+              <h2>${y}</h2>
+              <span>${list.length} 篇</span>
+            </div>
+            <ul class="ar-list">
+              ${list.map((i) => `<li><a href="./writing.html#post-${i.number}">${escapeHtml(i.title)}</a></li>`).join('')}
+            </ul>
+          </section>`;
+      }).join('');
     }
 
-    document.getElementById('archiveSearch').addEventListener('input', (e) => {
-      query = e.target.value;
-      render();
-    });
-
-    (async () => {
+    async function load() {
       try {
-        readlater = await loadJSON('./_data/readlater.json');
-        render();
-      } catch (err) {
-        timeline.innerHTML = `
-          <div class="setup-guide">
-            <h3>🔖 稍后读还没有数据</h3>
-            <p style="font-size:14px;color:var(--text-secondary);margin-bottom:14px;">需要把你的稍后读 Notion 数据库接入同步：</p>
-            <ol>
-              <li>确保稍后读数据库已<strong>连接你的 Notion Integration</strong>（数据库右上角 ··· → Connections）</li>
-              <li>仓库 <code>Settings → Secrets and variables → Actions</code> 新建 Secret：<code>READLATER_DATABASE_ID</code></li>
-              <li>Actions 手动运行 <code>Sync Notion Data</code></li>
-            </ol>
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 10000);
+        const res = await fetch(`https://api.github.com/repos/${REPO}/issues?state=all&per_page=100`, {
+          signal: controller.signal,
+          headers: { 'Accept': 'application/vnd.github.v3+json' }
+        });
+        clearTimeout(timer);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        render((await res.json()).filter((i) => !i.pull_request));
+      } catch (e) {
+        content.innerHTML = `
+          <div class="error">
+            <div class="error-icon">⚠️</div>
+            <h3>加载失败</h3>
+            <p>${escapeHtml(e.message)}</p>
+            <button class="btn-primary" onclick="load()">重试</button>
           </div>`;
       }
-    })();
-</script>
+    }
+
+    load();
+  </script>
 </body>
 </html>

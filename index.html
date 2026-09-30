@@ -3,21 +3,75 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>见室引号 | 小信号</title>
+  <title>小信号 · 见室</title>
   <meta name="description" content="一些金句 一些思考 一些优质信息源">
   <link rel="stylesheet" href="./assets/css/style.css">
   <link rel="alternate" type="application/rss+xml" title="小信号" href="./rss.xml">
+  <style>
+    main { max-width: 640px; padding-top: 34px; }
+
+    .home-hero { padding: 12px 0 30px; border-bottom: 1px solid var(--border); margin-bottom: 34px; }
+    .home-hero h1 {
+      font-family: var(--serif); font-size: 27px; font-weight: 700;
+      letter-spacing: 3px; color: var(--text-primary); margin: 0 0 10px;
+    }
+    .home-hero .home-sub { font-size: 13px; color: var(--text-muted); margin: 0 0 18px; }
+    .home-hero p.home-desc {
+      font-size: 15px; line-height: 1.9; color: var(--text-secondary); margin: 0;
+    }
+    .home-hero p.home-desc a { color: var(--text-primary); border-bottom: 1px solid var(--border); }
+    .home-hero p.home-desc a:hover { border-bottom-color: var(--text-secondary); }
+
+    .home-sec { margin-bottom: 38px; }
+    .home-sec-head {
+      display: flex; align-items: baseline; justify-content: space-between;
+      gap: 12px; margin-bottom: 4px;
+    }
+    .home-sec-head h2 {
+      font-size: 12px; font-weight: 600; letter-spacing: .18em;
+      color: var(--text-muted); margin: 0;
+    }
+    .home-sec-head a { font-size: 12px; color: var(--text-muted); }
+    .home-sec-head a:hover { color: var(--text-primary); }
+
+    .home-list { list-style: none; margin: 0; padding: 0; }
+    .home-list li { border-bottom: 1px solid var(--border); }
+    .home-list li:last-child { border-bottom: none; }
+    .home-row {
+      display: flex; align-items: baseline; gap: 14px;
+      padding: 13px 0; text-decoration: none; color: inherit;
+    }
+    .home-row .home-row-title {
+      flex: 1 1 auto; min-width: 0; font-size: 15px; line-height: 1.6;
+      color: var(--text-primary);
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .home-row:hover .home-row-title { color: var(--accent); }
+    .home-row .home-row-date {
+      flex: 0 0 auto; font-size: 12px; color: var(--text-muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .home-quote-body {
+      font-family: var(--serif); font-size: 16px; line-height: 1.95;
+      color: var(--text-primary); margin: 0 0 8px; white-space: pre-wrap;
+    }
+    .home-quote-meta { font-size: 12px; color: var(--text-muted); }
+    .home-mute { font-size: 13px; color: var(--text-muted); margin: 0; padding: 13px 0; }
+    .home-think { font-size: 14px; line-height: 1.85; color: var(--text-secondary); margin: 0 0 6px; }
+  </style>
 </head>
 <body>
   <header>
     <div class="header-inner">
       <a href="./" class="logo">小信号<span>.</span></a>
       <nav>
-        <a href="./" class="active">见室引号</a>
-        <a href="./archive.html">归档</a>
-        <a href="./reading.html">阅览</a>
-        <a href="./thoughts.html">想法</a>
+        <a href="./" class="active">主页</a>
         <a href="./writing.html">写作</a>
+        <a href="./thoughts.html">想法</a>
+        <a href="./reading.html">阅览</a>
+        <a href="./quotes.html">见室引号</a>
+        <a href="./archive.html">归档</a>
         <a href="./about.html">关于</a>
       </nav>
       <div class="controls">
@@ -46,37 +100,54 @@
 
   <div class="mobile-nav" id="mobileNav">
     <button class="mobile-nav-close" id="mobileNavClose">&times;</button>
-    <a href="./" class="active">见室引号</a>
-    <a href="./archive.html">归档</a>
-    <a href="./reading.html">阅览</a>
-        <a href="./thoughts.html">想法</a>
+    <a href="./" class="active">主页</a>
     <a href="./writing.html">写作</a>
+    <a href="./thoughts.html">想法</a>
+    <a href="./reading.html">阅览</a>
+    <a href="./quotes.html">见室引号</a>
+    <a href="./archive.html">归档</a>
     <a href="./about.html">关于</a>
   </div>
 
   <main>
-    <div class="page-header">
-      <h1>见室引号</h1>
-      <p>一些金句 一些思考 一些优质信息源</p>
-      <div class="hero-meta">
-        <button class="hero-meta-btn" id="randomBtn">🎲 随机一条</button>
-        <span class="hero-meta-sep">·</span>
-        <span>金句 <b id="postCount">-</b></span>
-        <span class="hero-meta-sep">·</span>
-        <span>最近更新 <b id="lastUpdate">-</b></span>
-      </div>
+    <div class="home-hero">
+      <h1>小信号</h1>
+      <p class="home-sub">一些金句 一些思考 一些优质信息源</p>
+      <p class="home-desc">
+        这里是见室的个人站点。读到的句子放进<a href="./quotes.html">见室引号</a>，
+        想清楚的事写成<a href="./writing.html">文章</a>，
+        正在读的书留在<a href="./reading.html">阅览</a>。
+        内容由 Notion 与微信读书自动同步，也可以<a href="./rss.xml">订阅 RSS</a>。
+      </p>
     </div>
 
-    <div class="search-box">
-      <input type="text" id="searchInput" placeholder="搜索想法…" autocomplete="off">
-    </div>
-
-    <div id="content">
-      <div class="loading">
-        <div class="loading-spinner"></div>
-        <p>加载中…</p>
+    <section class="home-sec">
+      <div class="home-sec-head">
+        <h2>最近写作</h2>
+        <a href="./writing.html">全部 →</a>
       </div>
-    </div>
+      <ul class="home-list" id="homeWriting">
+        <li><p class="home-mute">加载中…</p></li>
+      </ul>
+    </section>
+
+    <section class="home-sec">
+      <div class="home-sec-head">
+        <h2>最近想法</h2>
+        <a href="./thoughts.html">全部 →</a>
+      </div>
+      <ul class="home-list" id="homeThoughts">
+        <li><p class="home-mute">加载中…</p></li>
+      </ul>
+    </section>
+
+    <section class="home-sec" id="quoteSec">
+      <div class="home-sec-head">
+        <h2>随手一句</h2>
+        <a href="./quotes.html" id="quoteRefresh">换一条 ↻</a>
+      </div>
+      <div id="homeQuote"><p class="home-mute">加载中…</p></div>
+    </section>
   </main>
 
   <footer>
@@ -85,93 +156,78 @@
 
   <script src="./assets/js/main.js"></script>
   <script>
-    const { escapeHtml, formatDate, renderQuoteBody, needsClamp, sourceLink, loadJSON } = window.siteUtils;
-    let allPosts = [];
-    const RECENT_LIMIT = 30;
+    const { escapeHtml, formatDate, loadJSON } = window.siteUtils;
+    const REPO = 'daheitian/seesquotes';
 
-    function renderPosts(posts, limit = false) {
-      const content = document.getElementById('content');
-      if (posts.length === 0) {
-        content.innerHTML = `<div class="empty"><div class="empty-icon">📭</div><p>暂无内容</p></div>`;
-        return;
-      }
+    const ymd = (iso) => {
+      const d = new Date(iso);
+      if (isNaN(d)) return '';
+      return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
+    };
 
-      // 精选分离：勾选了「精选」的置顶展示（最多 5 条），不占时间线额度
-      const key = (p) => p.url || p.title || '';
-      const featuredAll = posts.filter((p) => p.featured === true);
-      const pinned = limit ? featuredAll.slice(0, 5) : featuredAll;
-      const pinnedIds = new Set(pinned.map(key));
-      const rest = posts.filter((p) => !pinnedIds.has(key(p)));
-
-      const limited = limit && rest.length > RECENT_LIMIT;
-      const shown = limited ? rest.slice(0, RECENT_LIMIT) : rest;
-
-      const badge = (p) => (p.featured ? '<span style="display:inline-block;padding:1px 8px;background:var(--accent-soft);color:var(--accent);border-radius:100px;font-size:11px;margin-bottom:6px;">★ 精选</span>' : '');
-
-      const card = (post) => {
-        const text = post.content || post.title || '';
-        const url = post.url || '';
-        const clamp = needsClamp(text);
-
-        return `<article class="entry">
-          ${badge(post)}
-          ${sourceLink(url, 'entry-src')}
-          <div class="entry-body${clamp ? ' clamped' : ''}">${renderQuoteBody(text)}</div>
-          ${clamp ? '<button class="show-more" type="button">展开全文</button>' : ''}
-          <div class="entry-meta">${formatDate(post.date || post.pubDate)}</div>
-        </article>`;
-      };
-
-      const pinnedHtml = pinned.length
-        ? `<p style="font-size:13px;color:var(--text-muted);margin-bottom:2px;">★ 精选</p><div class="timeline">${pinned.map(card).join('')}</div><p style="font-size:13px;color:var(--text-muted);margin:20px 0 2px;">最新</p>`
-        : '';
-
-      const items = shown.map(card).join('');
-      content.innerHTML = `${pinnedHtml}<div class="timeline">${items}</div>${limited ? `<button class="view-all" id="viewAllBtn" type="button">查看全部 ${rest.length} 条 ↓</button>` : ''}`;
-      document.getElementById('viewAllBtn')?.addEventListener('click', () => renderPosts(allPosts));
-    }
-
-    async function load(force = false) {
-      const content = document.getElementById('content');
-      if (force) {
-        content.innerHTML = '<div class="loading"><div class="loading-spinner"></div><p>刷新中…</p></div>';
-      }
+    async function loadWriting() {
+      const box = document.getElementById('homeWriting');
       try {
-        const url = force ? `./notion-data.json?t=${Date.now()}` : './notion-data.json';
-        const data = await loadJSON(url);
-        allPosts = data.posts || data;
-        document.getElementById('postCount').textContent = allPosts.length;
-        if (allPosts.length > 0) {
-          const lastDate = new Date(allPosts[0].date || allPosts[0].pubDate);
-          document.getElementById('lastUpdate').textContent = `${lastDate.getMonth() + 1}/${lastDate.getDate()}`;
-        }
-        renderPosts(allPosts, true);
-      } catch (error) {
-        content.innerHTML = `
-          <div class="error">
-            <div class="error-icon">⚠️</div>
-            <h3>加载失败</h3>
-            <p>${escapeHtml(error.message)}</p>
-            <button class="btn-primary" onclick="load(true)">重试</button>
-          </div>`;
+        const res = await fetch(`https://api.github.com/repos/${REPO}/issues?state=all&per_page=100`, {
+          headers: { 'Accept': 'application/vnd.github.v3+json' }
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const issues = (await res.json()).filter(i => !i.pull_request).slice(0, 6);
+        box.innerHTML = issues.length
+          ? issues.map(i => `
+          <li><a class="home-row" href="./writing.html#post-${i.number}">
+            <span class="home-row-title">${escapeHtml(i.title)}</span>
+            <span class="home-row-date">${ymd(i.created_at)}</span>
+          </a></li>`).join('')
+          : '<li><p class="home-mute">还没有文章</p></li>';
+      } catch (e) {
+        box.innerHTML = '<li><p class="home-mute"><a href="./writing.html">前往写作页 →</a></p></li>';
       }
     }
 
-    document.getElementById('searchInput').addEventListener('input', (e) => {
-      const query = e.target.value.trim().toLowerCase();
-      if (!query) return renderPosts(allPosts, true);
-      renderPosts(allPosts.filter(p =>
-        (p.title || '').toLowerCase().includes(query) ||
-        (p.content || '').toLowerCase().includes(query)
-      ));
+    async function loadThoughts() {
+      const box = document.getElementById('homeThoughts');
+      try {
+        const data = await loadJSON('./_data/thoughts.json');
+        const posts = (data.posts || data).slice(0, 3);
+        box.innerHTML = posts.length
+          ? posts.map(p => `
+          <li style="padding:13px 0;">
+            <p class="home-think">${escapeHtml(p.content || p.title || '')}</p>
+            <span style="font-size:12px;color:var(--text-muted);">${ymd(p.date)}</span>
+          </li>`).join('')
+          : '<li><p class="home-mute">还没有想法</p></li>';
+      } catch (e) {
+        box.innerHTML = '<li><p class="home-mute"><a href="./thoughts.html">前往想法页 →</a></p></li>';
+      }
+    }
+
+    let quotes = [];
+    function renderQuote() {
+      const box = document.getElementById('homeQuote');
+      if (!quotes.length) { box.innerHTML = '<p class="home-mute">暂无</p>'; return; }
+      const q = quotes[Math.floor(Math.random() * quotes.length)];
+      box.innerHTML = `
+        <p class="home-quote-body">${escapeHtml((q.content || q.title || '').slice(0, 220))}</p>
+        <div class="home-quote-meta">${formatDate(q.date || q.pubDate)}</div>`;
+    }
+    async function loadQuotes() {
+      try {
+        const data = await loadJSON('./notion-data.json');
+        quotes = data.posts || data;
+        renderQuote();
+      } catch (e) {
+        document.getElementById('homeQuote').innerHTML =
+          '<p class="home-mute"><a href="./quotes.html">前往见室引号 →</a></p>';
+      }
+    }
+    document.getElementById('quoteRefresh').addEventListener('click', (e) => {
+      if (quotes.length) { e.preventDefault(); renderQuote(); }
     });
 
-    document.getElementById('randomBtn').addEventListener('click', () => {
-      if (allPosts.length === 0) return;
-      renderPosts([allPosts[Math.floor(Math.random() * allPosts.length)]]);
-    });
-
-    load();
+    loadWriting();
+    loadThoughts();
+    loadQuotes();
   </script>
 </body>
 </html>

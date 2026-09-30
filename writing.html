@@ -243,6 +243,134 @@
     .article-view .comment-avatar,
     .article-view .comment-content code,
     .article-view .comment-content pre { border-radius: 2px; }
+    /* ================================================================
+       Bear Blog 风格层（参考 pens.me）
+       要点：单栏 640px、去掉卡片盒子、细分隔线、元信息克制
+       ================================================================ */
+    main { max-width: 640px; padding-top: 30px; }
+
+    /* 页头：左对齐、更收敛 */
+    .page-header { text-align: left; padding: 16px 0 24px; }
+    .page-header h1 { font-size: 23px; letter-spacing: 2px; margin-bottom: 7px; }
+    .page-header p { margin: 0; max-width: none; font-size: 13px; color: var(--text-muted); }
+
+    /* 工具栏：无底色，一条细线分隔 */
+    .wr-toolbar {
+      display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+      background: none; border: none; border-bottom: 1px solid var(--border);
+      border-radius: 0; padding: 0 0 12px; margin: 0 0 2px;
+    }
+    .wr-toolbar .filter-tabs { flex: 1 1 auto; min-width: 0; }
+    .wr-toolbar .filter-tab {
+      background: none; border: none; border-radius: 0;
+      padding: 2px 0; margin-right: 15px;
+      font-size: 13px; color: var(--text-muted);
+      transition: color .15s ease;
+    }
+    .wr-toolbar .filter-tab:hover { color: var(--text-secondary); background: none; border: none; }
+    .wr-toolbar .filter-tab.active {
+      background: none; color: var(--text-primary);
+      border: none; box-shadow: inset 0 -1px 0 var(--text-secondary);
+    }
+    .wr-actions { gap: 12px; }
+    .wr-select {
+      border: none; border-bottom: 1px solid transparent; border-radius: 0;
+      background: none; padding: 2px 0; font-size: 13px; color: var(--text-muted);
+    }
+    .wr-select:hover { border-bottom-color: var(--border); background: none; color: var(--text-primary); }
+    .wr-write {
+      border: none; border-bottom: 1px solid var(--border); border-radius: 0;
+      background: none; padding: 2px 0; font-size: 13px; color: var(--text-muted);
+    }
+    .wr-write:hover { color: var(--text-primary); border-bottom-color: var(--text-secondary); background: none; }
+
+    /* 列表：行式 + 细分隔线，无卡片 */
+    .issues-list { display: block; }
+    .issue-item {
+      display: block; background: none; border: none; border-radius: 0;
+      border-bottom: 1px solid var(--border);
+      padding: 20px 0; text-decoration: none;
+      transition: opacity .15s ease;
+    }
+    .issue-item:last-child { border-bottom: none; }
+    .issue-head { display: flex; align-items: baseline; gap: 16px; }
+    .issues-list .issue-title {
+      flex: 1 1 auto; min-width: 0;
+      font-family: var(--serif); font-size: 17px; font-weight: 600;
+      line-height: 1.55; color: var(--text-primary);
+      transition: color .15s ease;
+    }
+    .issue-item:hover .issue-title { color: var(--accent); }
+    .issue-date {
+      flex: 0 0 auto; font-size: 12px; color: var(--text-muted);
+      font-variant-numeric: tabular-nums; letter-spacing: .02em;
+    }
+    .issue-excerpt {
+      margin: 7px 0 0; font-size: 14px; line-height: 1.75;
+      color: var(--text-secondary);
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .issue-meta {
+      margin-top: 9px; font-size: 12px; color: var(--text-muted);
+      display: flex; flex-wrap: wrap; gap: 14px;
+    }
+
+    /* 返回链接 */
+    .back-link {
+      background: none; border: none; border-radius: 0; padding: 0;
+      font-size: 13px; color: var(--text-muted); margin-bottom: 26px;
+    }
+    .back-link:hover { color: var(--text-primary); }
+
+    /* 文章正文：去掉卡片，纯文本流 */
+    .article {
+      background: none; border: none; border-radius: 0; padding: 0;
+    }
+    .article-title {
+      font-size: 27px; line-height: 1.4; letter-spacing: 0;
+      margin: 0 0 12px; font-weight: 700;
+    }
+    .article-meta {
+      font-size: 13px; color: var(--text-muted);
+      padding-bottom: 22px; margin-bottom: 30px;
+      border-bottom: 1px solid var(--border);
+      display: flex; flex-wrap: wrap; align-items: center; gap: 14px;
+    }
+    .article-meta a { margin-left: auto; font-size: 12px; }
+    .article-body { font-size: 16px; line-height: 1.9; }
+    .article-body h1 { font-size: 22px; margin: 2em 0 .7em; }
+    .article-body h2 { font-size: 19px; margin: 2em 0 .7em; }
+    .article-body h3 { font-size: 17px; margin: 1.8em 0 .6em; }
+    .article-body p { margin-bottom: 1.25em; }
+    .article-body blockquote {
+      border-left: 2px solid var(--border-strong);
+      padding: 2px 0 2px 16px; margin: 1.6em 0;
+      color: var(--text-secondary); font-size: 15px;
+    }
+    .article-body img { border-radius: 0; margin: 1.8em 0; }
+
+    /* 目录：轻量边框盒 */
+    /* 注意：全局 nav 是 flex 胶囊样式，目录同是 <nav>，需显式复位 */
+    .article-toc {
+      display: block; align-items: initial; gap: 0;
+      background: none; border: 1px solid var(--border); border-radius: 0;
+      padding: 18px 20px; margin: 0 0 34px;
+    }
+    .article-toc-title { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 8px; letter-spacing: .1em; }
+    .article-toc ol { display: block; }
+    .article-toc li { line-height: 1.95; font-size: 14px; }
+    .article-toc a {
+      color: var(--text-secondary); font-size: 14px;
+      padding: 0; border-radius: 0; font-weight: 400; background: none;
+    }
+    .article-toc a:hover { background: none; text-decoration: underline; }
+    .article-toc a:hover { color: var(--text-primary); }
+
+    @media (max-width: 560px) {
+      .issue-head { flex-direction: column; gap: 3px; }
+      .issue-date { order: -1; }
+      .article-title { font-size: 23px; }
+    }
   </style>
 </head>
 <body>
@@ -250,11 +378,12 @@
     <div class="header-inner">
       <a href="./" class="logo">小信号<span>.</span></a>
       <nav>
-        <a href="./">见室引号</a>
-        <a href="./archive.html">归档</a>
-        <a href="./reading.html">阅览</a>
-        <a href="./thoughts.html">想法</a>
+        <a href="./">主页</a>
         <a href="./writing.html" class="active">写作</a>
+        <a href="./thoughts.html">想法</a>
+        <a href="./reading.html">阅览</a>
+        <a href="./quotes.html">见室引号</a>
+        <a href="./archive.html">归档</a>
         <a href="./about.html">关于</a>
       </nav>
       <div class="controls">
@@ -283,11 +412,12 @@
 
   <div class="mobile-nav" id="mobileNav">
     <button class="mobile-nav-close" id="mobileNavClose">&times;</button>
-    <a href="./">见室引号</a>
-    <a href="./archive.html">归档</a>
-    <a href="./reading.html">阅览</a>
-        <a href="./thoughts.html">想法</a>
+    <a href="./">主页</a>
     <a href="./writing.html" class="active">写作</a>
+    <a href="./thoughts.html">想法</a>
+    <a href="./reading.html">阅览</a>
+    <a href="./quotes.html">见室引号</a>
+    <a href="./archive.html">归档</a>
     <a href="./about.html">关于</a>
   </div>
 
@@ -436,15 +566,19 @@
           `<span class="issue-label" style="${l.color ? `background:#${l.color}22;color:#${l.color};` : ''}">${escapeHtml(l.name)}</span>`
         ).join('');
         const ex = excerpt(issue.body);
+        const ymd = `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}`;
+        const cats = (issue.labels || []).filter(l => l.name !== 'notion-blog').map(l => l.name);
 
         return `<a class="issue-item" href="#post-${issue.number}">
-          <div class="issue-title">${escapeHtml(issue.title)}</div>
-          ${ex ? `<div class="issue-excerpt">${escapeHtml(ex)}…</div>` : ''}
+          <div class="issue-head">
+            <span class="issue-title">${escapeHtml(issue.title)}</span>
+            <time class="issue-date">${ymd}</time>
+          </div>
+          ${ex ? `<p class="issue-excerpt">${escapeHtml(ex)}…</p>` : ''}
           <div class="issue-meta">
-            <span>${dateStr}</span>
             <span>${readingTime(issue.body)}</span>
+            ${cats.length ? `<span>${escapeHtml(cats.join(' · '))}</span>` : ''}
             ${issue.comments ? `<span>💬 ${issue.comments}</span>` : ''}
-            ${labels}
           </div>
         </a>`;
       }).join('')}</div>`;
@@ -501,9 +635,10 @@
         const comments = commentsRes.ok ? await commentsRes.json() : [];
 
         const date = new Date(issue.created_at);
-        const labels = (issue.labels || []).map(l =>
-          `<span class="issue-label" style="${l.color ? `background:#${l.color}22;color:#${l.color};` : ''}">${escapeHtml(l.name)}</span>`
-        ).join('');
+        const labels = (issue.labels || [])
+          .filter(l => l.name !== 'notion-blog')
+          .map(l => `<span>${escapeHtml(l.name)}</span>`)
+          .join('');
 
         const commentsHtml = comments.length ? `
           <div class="comments-section">
